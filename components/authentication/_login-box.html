@@ -1,0 +1,33 @@
+<div ng-if='!logged_in' id="logged-out" class="btn-group btn-group-xs">
+    <!-- Only show stuff to authenticate when user is not logged in -->
+    <button type="button" class="btn btn-default" ng-click="authenticate()" data-title="Login" data-type="info" data-placement="bottom" bs-tooltip>  Login
+        <span class="glyphicon glyphicon-log-in"></span>
+    </button>
+</div>
+<div ng-if="logged_in != null" id="logged-in">
+    <div id="user-preferences-buttons" class="btn-group btn-group-xs">
+        <button type="button" ng-if="wheel && root" class="btn btn-default"  ng-click="toggleSuperUser()">
+            <span class="glyphicon glyphicon-eye-open"> </span>
+        </button>
+
+        <button type="button" ng-if="wheel && !root" class="btn btn-default" ng-click="toggleSuperUser()">
+            <span class="glyphicon glyphicon-eye-close"> </span>
+        </button>
+
+        <button type="button" class="btn btn-default" id="username" ng-click="">
+            <img ng-src="{{gravatarURL + email_hash}}?s=20"></img>
+            <span>&nbsp;{{user_firstname}}&nbsp;{{user_lastname}}&nbsp;</span>
+        </button>
+
+        <button type="button" class="btn btn-default" ng-click="">
+            <span class="glyphicon glyphicon-cog"></span>
+        </button>
+
+        <button type="button" class="btn btn-default" ng-click="logout();">
+            <span class="glyphicon glyphicon-log-out login-glyph"> </span>
+        </button>
+    </div>
+</div>
+
+
+

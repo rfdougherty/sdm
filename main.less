@@ -1,0 +1,337 @@
+@import (less) "active_config/less/variables.less";
+
+@min-width-table: 1000px;
+@tabs-header-height: 30px;
+
+li#buttons {
+    float: right;
+}
+
+.nav-tabs>li:not(.active)>a,.nav-tabs>li:not(.active)>a:hover,.nav-tabs>li:not(.active)>a:focus {
+    border: solid 1px black;
+    color: black;
+    height: @tabs-header-height;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.nav-tabs>li.active>a,.nav-tabs>li.active>a:hover,.nav-tabs>li.active>a:focus {
+    border-color: black;
+    border-bottom-color: transparent;
+    color: @fgcol2;
+    height: @tabs-header-height;
+    background-color: @bgcol2;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.nav-tabs>li {
+    height: @tabs-header-height;
+}
+
+div#navigation>ul.nav.nav-tabs {
+    min-width: @min-width-table;
+    margin-left: 15px;
+    margin-right: 15px;
+    height: @tabs-header-height;
+    li>a>span.glyphicon {
+        margin-right: 3px;
+        &.glyphicon-folder-open {
+            margin-right: 6px;
+        }
+    }
+}
+
+.nav-tabs {
+    border-bottom-color: black;
+}
+
+/*header section */
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 40px;
+    background-color: @bgcol1;
+    z-index: 10;
+    border-bottom: @headerfooter-border-style;
+    #header-logo {
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        img {
+            max-height: 24px;
+        }
+    }
+    #header-text {
+        position: absolute;
+        top: 8px;
+        text-align: center;
+        font-size: 20px;
+        left: 0px;
+        right: 0px;
+        z-index: -1;
+        color: @fgcol1;
+        font-variant: small-caps;
+        line-height: 100%;
+    }
+    #header-toolbar {
+        position: absolute;
+        top: 7px;
+        right: 15px;
+        color: @fgcol1;
+    }
+    a, button, button:hover, a:hover {
+        color: @fgcol1;
+        background-color: @bgcol1;
+        text-decoration: none;
+        border-color: @fgcol1;
+        height: 24px;
+        bottom: 1px;
+        span {
+            position: relative;
+            top: 1px;
+        }
+    }
+}
+
+/* footer section */
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 40px;
+    background-color: @bgcol1;
+    z-index: 10;
+    border-top: @headerfooter-border-style;
+    #footer-links {
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        span {
+            padding-left: 10px;
+        }
+        span.scitran {
+            padding-right: 20px;
+            border-right: solid 1px @fgcol1;
+        }
+        span.customizable {
+            padding-left: 10px;
+            padding-right: 10px;
+            border-right: solid 1px @fgcol1;
+        }
+        a, a:hover{
+            color: @fgcol1;
+            text-decoration: none;
+        }
+    }
+    #footer-copyright {
+        position: absolute;
+        top: 10px;
+        right : 15px;
+        color: @fgcol1;
+    }
+}
+
+
+div#sdm-main {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+div#sdm-table-root, div#tree-view{
+    position: absolute;
+    bottom: 41px;
+    top: 70px;
+    left: 15px;
+    right: 15px;
+    min-width: @min-width-table;
+    border: solid 1px black;
+    border-top: none;
+}
+
+div#tree-view>div {
+    position: absolute;
+    top: 0px;
+    bottom: 5px;
+    overflow: scroll;
+    width: 100%;
+}
+
+.container {
+    width: 100%;
+}
+
+.expander {
+    float: right;
+}
+
+.sdm-table-content {
+    position: absolute;
+    border: 1px black solid;
+    top: 28px;
+    right: 5px;
+    left: 5px;
+    bottom: 5px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+.sdm-table-content {
+    display: inline;
+    .scrollbar {
+        float: right;
+    }
+}
+
+.sdm-table-content .container {
+    .row {
+        //width: 100%;
+        height: 24px;
+        input {
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            font-size: 12px;
+            z-index: 10;
+        }
+        div.col {
+            padding-top: 2px;
+            padding-right: 5px;
+            padding-left: 0px;
+            span.content {
+                position: absolute;
+                padding-left: 20px;
+                padding-right: 20px;
+                top: 2px;
+                left: 0px;
+                white-space: nowrap;
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                &.undefined {
+                    color: grey;
+                    font-style: italic;
+
+                }
+            }
+        }
+        div.col:last-child {
+            padding-right: 5px;
+            padding-left: 0px;
+        }
+    }
+    .row.grey {
+        background-color: @bgcol3;
+    }
+}
+
+.sdm-table-header {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    left: 5px;
+    .container .row{
+        font-variant: small-caps;
+        font-size: 16px;
+        div.content {
+            background-color: @bgcol2;
+            border: 1px solid black;
+            border-bottom: 0px;
+            color: @fgcol2;
+            padding-left: 20px;
+        }
+
+        div.col {
+            padding-right: 5px;
+            padding-left: 0px;
+        }
+        div.col.nospace {
+            padding-right: 0px;
+            padding-left: 0px;
+            div.content {
+                border-right: 0px;
+            }
+        }
+        div.col:last-child {
+            padding-right: 0px;
+            padding-left: 0px;
+        }
+    }
+}
+
+span.expander.glyphicon{
+    font-size: 11px;
+    top: 5px;
+    &:hover {
+        color: @bgcol1;
+        cursor: pointer; cursor: hand;
+    }
+}
+
+// tree visualization section
+
+.node {
+  cursor: pointer;
+}
+
+.node circle {
+  fill: white;
+  stroke: @bgcol2;
+  stroke-width: 1.5px;
+}
+
+.node:hover {
+    circle {
+        stroke: @bgcol1;
+    }
+}
+
+.node text {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: @bgcol3;
+  stroke-width: 1.5px;
+}
+
+.node.expandible circle {
+    fill: @bgcol2;
+}
+
+.node.expandible:hover circle {
+    fill: @bgcol1;
+    stroke: @bgcol1;
+}
+
+
+//buttons toolbar section
+//@import (less) "components/partials/buttons.less";
+
+ul > li#buttons > div.toolbar {
+    border: 1px solid black;
+    border-bottom-color: transparent;
+    border-radius: 4px 4px 0 0;
+    height: @tabs-header-height;
+    background-color: white;
+    padding: 3px 5px 3px 5px;
+    .btn-group-xs > button.btn, button.btn-xs {
+        border: 1px solid transparent;
+        background-color: @bgcol2;
+        color: white;
+    }
+
+    .btn-group-xs > button.btn.active,  .btn-group-xs > button.btn:hover {
+        background-color: @bgcol1;
+    }
+
+    .btn-group-xs > button.btn:not(:first-child) {
+        border-left: 1px solid white;
+    }
+    .btn-group-xs > button.btn:first-child {
+        border-right: 1px solid white;
+    }
+
+}

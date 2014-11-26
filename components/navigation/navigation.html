@@ -1,0 +1,9 @@
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" ng-repeat="tab in sdmNavigationController.tabs" ng-class="{active:sdmNavigationController.isActiveTab(tab)}">
+        <a href="#{{tab.path}}">
+            <span class="glyphicon glyphicon-{{tab.glyphicon}}"></span>
+            {{tab.title}}
+        </a>
+    </li>
+    <li role="presentation" id="buttons" ng-include="'components/buttons/buttons.html'"></li>
+</ul>
