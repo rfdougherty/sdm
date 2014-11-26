@@ -1,6 +1,6 @@
 @import (less) "active_config/less/variables.less";
 
-@min-width-table: 1000px;
+@min-width-table: 1170px;
 @tabs-header-height: 30px;
 
 li#buttons {
@@ -48,9 +48,10 @@ div#navigation>ul.nav.nav-tabs {
 
 /*header section */
 .header {
-    position: fixed;
+    position: absolute;
     top: 0;
     width: 100%;
+    min-width: @min-width-table + 30;
     height: 40px;
     background-color: @bgcol1;
     z-index: 10;
@@ -97,9 +98,10 @@ div#navigation>ul.nav.nav-tabs {
 
 /* footer section */
 .footer {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     width: 100%;
+    min-width: @min-width-table + 30;
     /* Set the fixed height of the footer here */
     height: 40px;
     background-color: @bgcol1;
@@ -108,30 +110,41 @@ div#navigation>ul.nav.nav-tabs {
     #footer-links {
         position: absolute;
         top: 10px;
-        left: 15px;
+        left: 0px;
+        width: 100%;
         span {
             padding-left: 10px;
         }
         span.scitran {
-            padding-right: 20px;
-            border-right: solid 1px @fgcol1;
+            padding-left: 15px;
+            padding-right: 30px;
+            //border-right: solid 1px @fgcol1;
         }
         span.customizable {
-            padding-left: 10px;
-            padding-right: 10px;
-            border-right: solid 1px @fgcol1;
+            padding-left: 30px;
+            padding-right: 30px;
+            //border-right: solid 1px @fgcol1;
+            span:first-child {
+                padding-left: 0px;
+            }
         }
-        a, a:hover{
+        a, a:hover {
             color: @fgcol1;
             text-decoration: none;
         }
+        span.divider {
+            width: 100%;
+            text-align: center;
+        }
+        span#footer-copyright {
+            float: right;
+            padding-right : 15px;
+            padding-left: 30px;
+            color: @fgcol1;
+        }
+
     }
-    #footer-copyright {
-        position: absolute;
-        top: 10px;
-        right : 15px;
-        color: @fgcol1;
-    }
+
 }
 
 

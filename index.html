@@ -14,39 +14,44 @@
 </head>
 
 <body>
-    <div class="header">
-        <div id="header-logo" ng-include="'active_config/html/custom-header-logo.html'">
-        </div>
 
-        <div id="header-text" ng-include="'active_config/html/custom-header-main-text.html'">
-        </div>
 
-        <div id="header-toolbar" ng-include src="'components/authentication/_login-box.html'" ng-controller="LoginController">
-        </div>
-    </div>
+    <div id="sdm-main" class="main-content">
+        <div class="header">
+            <div id="header-logo" ng-include="'active_config/html/custom-header-logo.html'">
+            </div>
 
-    <div id="sdm-main" class="main-content" ng-controller="SdmViewData as sdmViewData">
+            <div id="header-text" ng-include="'active_config/html/custom-header-main-text.html'">
+            </div>
+
+            <div id="header-toolbar" ng-include src="'components/authentication/_login-box.html'" ng-controller="LoginController">
+            </div>
+        </div>
         <div id="navigation"
              ng-controller="SdmNavigationController as sdmNavigationController"
              ng-include="'components/navigation/navigation.html'">
         </div>
-        <div ng-view>
+        <div  ng-controller="SdmViewData as sdmViewData" ng-view>
+        </div>
+        <div class="footer">
+            <div id="footer-links">
+                <span class="scitran">
+                    <a href="http://scitran.io/" target="_blank">Scientific Transparency</a>
+                </span>
+                <span class="divider"></span>
+                <span class="customizable" ng-include="'active_config/html/custom-footer-links.html'">
+                </span>
+                <span class="divider"></span>
+
+                <span id="footer-copyright" ng-include="'active_config/html/custom-footer-copyright.html'">
+                </span>
+            </div>
+
+
         </div>
     </div>
 
-    <div class="footer">
-        <div id="footer-links">
-            <span class="scitran">
-                <a href="http://scitran.io/" target="_blank">Scientific Transparency</a>
-            </span>
 
-            <span class="customizable" ng-include="'active_config/html/custom-footer-links.html'">
-            </span>
-        </div>
-
-        <div id="footer-copyright" ng-include="'active_config/html/custom-footer-copyright.html'">
-        </div>
-    </div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 
