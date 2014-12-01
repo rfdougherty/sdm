@@ -30,12 +30,6 @@
                 };
                 $cookieStore.put(SDM_KEY_CACHED_ACCESS_DATA, value_auth_data);
 
-
-                //Wipe out some of the existing data
-                //$scope.appData.clearCachedData();
-
-                //Load Application Data
-                //$scope.loadApplicationData();
                 deferred.resolve(value_auth_data);
             }).
             error(function(data, status, headers, config) {

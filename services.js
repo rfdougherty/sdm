@@ -8,12 +8,12 @@
 var nimsServices = angular.module('sdm.services', ['sdmHttpServices', 'sdmD3Service']).
 value('version', '0.11');
 
-var httpServices = angular.module('sdmHttpServices', ['ngCookies']);
+var httpServices = angular.module('sdmHttpServices', ['ngCookies', 'sdm.authentication.services.sdmUserManager']);
 
-httpServices.factory('makeAPICall', ['$http', '$cookieStore', function($http, $cookieStore) {
+httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', function($http, $cookieStore, sdmUserManager) {
 
     var makeAPICall = {
-        async: function(url, site) {
+        async: function(url, site, iter) {
             console.log("MAKE API CALL\nwith url="+url+" and site="+site);
             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
             var accessToken =
@@ -32,12 +32,29 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', function($http, $c
                 console.dir(response);
                 console.log("\n");
                 // The return value gets picked up by the then in the controller.
-                return response.data;
+                return {data: response.data};
             }, function(reason) { //call if the http request fails
                 console.log(reason);
+                if (reason.status == '401' && (typeof iter === 'undefined' || iter < 2)) {
+                    iter = typeof iter === 'undefined'?1:iter + 1;
+                    return sdmUserManager.authenticate();
+                }
+                if (reason.status == '401' && typeof iter !== 'undefined') {
+                    console.log('authentication: reached maximum number of iterations');
+                    return {data: []};
+                }
                 if (reason.status == '404') {
                     console.log("there is probably something wrong with the url or the server is unavailable");
+                    return {data: []};
                 }
+            }).then(function(value) {
+                if (value.data) {
+                    return value.data;
+                } else {
+                    return makeAPICall.async(url, site, iter);
+                }
+            }).then(function(finalResult){
+                return finalResult;
             });
             // Return the promise to the controller
             return promise;
