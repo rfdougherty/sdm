@@ -7,6 +7,7 @@
             node: null,
             sessionKey: 1
         };
+        _this.sdmData = {};
 
         $scope.$watch(function(){
             var userData = sdmUserManager.getAuthData();
@@ -23,9 +24,8 @@
             console.log('new', newValue);
             console.log('old', oldValue);
             if (newValue.logged_in !== oldValue.logged_in || newValue.root !== oldValue.root || newValue === oldValue) {
-                _this.data = {};
                 sdmAPIAdapter.treeInit().then(function(result){
-                    _this.data = result;
+                    _this.sdmData.data = result;
                     _this.trigger = {
                         node: result,
                         sessionKey:  (_this.trigger.sessionKey + 1)%10
@@ -50,7 +50,7 @@
 
         _this.expandNode = function(){
             return function(node) {
-                console.log('node', node);
+                console.log('node expanded', node);
                 sdmAPIAdapter.expandNode(node).then(
                     function() {
                         _this.trigger = {
@@ -61,6 +61,8 @@
                 );
             }
         };
+
+        _this.headers = sdmAPIAdapter.headers();
     }
 
     SdmViewData.$inject = ['$scope', 'sdmAPIAdapter', 'sdmUserManager', 'sdmViewManager'];

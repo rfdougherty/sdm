@@ -5,7 +5,8 @@ var sdmApp = angular.module('sdm', [
     'sdm.treeViews',
     'sdm.buttons',
     'sdm.services',
-    'sdm.navigation'
+    'sdm.navigation',
+    'sdm.dataFiltering'
 ]);
 
 var COMING_SOON = '<div id="tree-view">Coming Soon!!!</div>';

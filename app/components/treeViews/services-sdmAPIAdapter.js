@@ -2,10 +2,11 @@
 
 (function(){
 
-
+    var idDataNode = 0;
     var DataNode = function(data, site, level, children) {
         this.level = level;
         this.site = site;
+        this.uniqueId = idDataNode++;
         this.id = data && data._id ?data._id.$oid : null;
         if (level) {
             angular.forEach(
@@ -18,7 +19,7 @@
             );
         }
         this.children = children?children:[];
-        this.isLeaf = false;
+        this.isLeaf = true;//by default each node is a leaf
         this.hasData = true;
     }
 
@@ -42,7 +43,8 @@
             next_level: 'groups',
             properties: {
                 name: objectAccessor('name')
-            }
+            },
+            headers: ['Site']
         };
 
         var groups = {
@@ -50,7 +52,8 @@
             next_level: 'projects',
             properties: {
                 name: objectAccessor('group_name')
-            }
+            },
+            headers: ['Group']
         };
 
         var projects = {
@@ -58,7 +61,8 @@
             next_level: 'sessions',
             properties: {
                 name: objectAccessor('name')
-            }
+            },
+            headers: ['Project']
         };
 
         var sessions = {
@@ -70,7 +74,8 @@
                     function(o){
                         return o.subject.code;
                     }
-            }
+            },
+            headers: ['Session', 'Subject']
         };
 
         var acquisitions = {
@@ -83,7 +88,8 @@
                         return d.kind
                     }).join(', ');
                 }
-            }
+            },
+            headers: ['Acquisition', 'Description', 'Data Type']
         }
 
         return {
@@ -156,13 +162,15 @@
 
         var expandNode = function(node, triggerChange) {
             var deferred = $q.defer();
+            var newNode = angular.copy(node);
+            node.parent.children[node.index] = newNode;
+            node = newNode;
+            if (node.key) node.key++;
             if (node.children) {
-                node.isLeaf = true;
                 node._children = node.children;
                 node.children = null;
                 deferred.resolve();
             } else if (node._children){
-                node.isLeaf = false;
                 node.children = node._children;
                 node._children = null;
                 deferred.resolve();
@@ -177,13 +185,8 @@
                             var groups = _get_tree_init_structure(projects, node.site);
                             node.children = groups;
                             if (groups.length){
-                                node.isLeaf = false;
                                 node.hasData = true;
                             } else {
-                                var newNode = new DataNode();
-                                angular.extend(newNode, node);
-                                node.parent.children[node.index] = newNode;
-                                node = newNode;
                                 node.hasData = false;
                                 console.log('node', node);
                             }
@@ -200,17 +203,12 @@
                 promise.then(
                     function(result){
                         if (!result.length) {
-                            var newNode = new DataNode();
-                            angular.extend(newNode, node);
-                            node.parent.children[node.index] = newNode;
-                            node = newNode;
                             node.hasData = false;
                             console.log('node', node);
                             deferred.resolve();
                             return;
                         }
                         node.hasData = true;
-                        node.isLeaf = false;
                         node.children = result.map(
                             function(childData){
                                 return new DataNode(
@@ -220,12 +218,8 @@
                                     )
                             });
                         node.children.sort(naturalSortByName);
-                        if (node.children.length) {
-                            node.children[0].isFirstChild = true;
-                        }
                         node.children.forEach(function(child, i){
                             child.index = i;
-                            child.isLeaf = true;
                         });
                         deferred.resolve();
                     }, function(reason){
@@ -236,9 +230,17 @@
             return deferred.promise;
         }
 
+
+        var headers = function(){
+            console.log('headers called');
+
+            return levelDescription;
+        }
+
         return {
             treeInit: treeInit,
-            expandNode: expandNode
+            expandNode: expandNode,
+            headers: headers
         };
     }
 
@@ -291,21 +293,20 @@
             }
 
             if (d.children && d.children.length) {
-                d.children[0].isFirstChild = true;
+                //d.children[0].isFirstChild = true;
                 d._children = d.children;
                 d._children.forEach(collapse);
                 d.children = null;
             }
-
-            d.isLeaf = true;
         }
 
         group_list.sort(naturalSortByName);
 
         group_list.forEach(collapse);
+        /*
         if (group_list[0]) {
             group_list[0].isFirstChild = true;
-        }
+        }*/
 
         return group_list;
     }
@@ -322,7 +323,7 @@
             var x = 0, y = -1, n = 0, i, j;
 
             while (i = (j = t.charAt(x++)).charCodeAt(0)) {
-                var m = (i == 46 || (i >=48 && i <= 57));
+                var m = ((i >=48 && i <= 57));
                 if (m !== n) {
                     tz[++y] = "";
                     n = m;

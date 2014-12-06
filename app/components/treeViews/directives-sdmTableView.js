@@ -4,9 +4,9 @@
 (function(){
 
     angular.module('sdm.treeViews.directives.sdmTableView',
-        ['sdmD3Service'])
-    .directive('sdmTableView', ['sdmD3Service',
-        function(sdmD3Service){
+        ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree'])
+    .directive('sdmTableView', ['sdmD3Service', 'sdmFilterTree',
+        function(sdmD3Service, sdmFilterTree){
 
             // Runs during compile
             return {
@@ -15,8 +15,10 @@
                 // terminal: true,
                 scope: {
                     sdmData: '=',
-                    trigger: '=',
-                    sdmExpandNode: '&'
+                    trigger: '=sdmTrigger',
+                    sdmExpandNode: '&',
+                    sdmHeaders: '=',
+                    sdmFilter: '='
                 }, // {} = isolate, true = child, false/undefined = no change
                 // controllerAs: 'tableController',
                 // controller: TableController,
@@ -28,9 +30,14 @@
                             '<div class="container">' +
                                 '<div class="row">' +
                                     '<div class="col-md-2 col-xs-2 col-lg-2 col-sm-2 col"' +
-                                        ' ng-repeat="header in headers" ng-class="{nospace:header.nospace}">' +
+                                        ' ng-repeat="header in headersTitles" ng-class="{nospace:header.nospace}">' +
                                         '<div class="content">' +
                                             '{{header.title}}' +
+                                        '</div>' +
+                                        '<div class="filter">' +
+                                            '<input type="text" ng-model="header.filter.string" ' +
+                                                    'ng-model-options = "{ debounce: 200 }" ' +
+                                                    'placeholder="filter" ng-change="setFilter()">' +
                                         '</div>' +
                                     '</div>' +
                                 '</div>' +
@@ -48,21 +55,42 @@
                         var containerElement = $element[0]
                             .getElementsByClassName('sdm-table-content')[0]
                             .getElementsByClassName('container')[0];
-                        var headersString = $attr.sdmTableHeader.split(':');
-                        $scope.headers = headersString.map(function(s){
-                            var properties = s.split(',');
-                            return {
-                                title: properties[0],
-                                nospace: properties[1]
-                            }
-                        });
 
-                        sdmD3Service.d3().then(function() {
+                        $scope.headersTitles = getHeaderTitles($scope.sdmHeaders);
+
+                        sdmD3Service.d3().then(function(d3) {
                             $scope.$watch('trigger', function(newValue, oldValue){
                                 console.log('scope.data', $scope.sdmData);
                                 console.log('scope.trigger', $scope.trigger);
+                                var filterSrv = sdmFilterTree(d3);
                                 if (typeof $scope.sdmData !== 'undefined'){
-                                    updateView(containerElement, $scope.sdmData, $scope.sdmExpandNode(), $scope.trigger);
+                                    updateView(
+                                        containerElement,
+                                        $scope.sdmData.data,
+                                        $scope.sdmExpandNode(),
+                                        $scope.trigger,
+                                        filterSrv.filter);
+                                }
+                                $scope.setFilter = function(){
+                                    //var refreshData = angular.copy($scope.sdmData.data);
+                                    //$scope.sdmData.data = refreshData;
+                                    //$scope.trigger.sessionKey;
+                                    $scope.headersTitles.forEach(
+                                        function(h){
+                                            console.log(h);
+                                            if (h.filter){
+                                                filterSrv.createFilter(h, h.filter.string);
+                                            }
+                                        });
+                                    if (typeof $scope.sdmData !== 'undefined'){
+                                        updateView(
+                                            containerElement,
+                                            $scope.sdmData.data,
+                                            $scope.sdmExpandNode(),
+                                            $scope.trigger,
+                                            filterSrv.filter,
+                                            true);
+                                    }
                                 }
                             });
                         });
@@ -72,29 +100,47 @@
         }
     ]);
 
+    var getHeaderTitles = function(headers) {
+        var titles = [];
+        angular.forEach(headers, function(value, key){
+            if (value.headers) {
+                console.log('header properties', value.properties);
+                var newTitles = value.headers.map(function(header, i, a){
+                    var result = {
+                        title: header,
+                        name: header.toLowerCase() + 's',
+                        nospace: i !== a.length - 1
+                    }
+                    if (result.name == value.name) {
+                        result.accessor = function(node){ return node.name};
+                    } else if (value.properties[header.toLowerCase()]) {
+                        result.accessor = function(node){ return node[header.toLowerCase()] };
+                    }
+                    return result;
+                });
+                this.push.apply(this, newTitles);
+            }
+        }, titles);
+        return titles;
+    }
+
     var sessionKey;
 
-    var getLeaves = function (data) {
-        var nodes = d3.layout.tree()(data);
 
-        var previous_node = null;
-
-        var leaves = nodes.filter(
-            function(node){
-                return node.isLeaf;
-            });
-        return leaves;
-    };
-
-
-    var updateView = function(rootElement, data, clickCallback, trigger) {
-        sessionKey = trigger.sessionKey?trigger.sessionKey:0;
+    var updateView = function(rootElement, data, clickCallback, trigger, getLeaves, all) {
+        sessionKey = trigger.sessionKey?trigger.sessionKey:-1;
         var leaves = getLeaves(data);
+        var selection;
 
         var rows = d3.select(rootElement)
             .selectAll('div.d3row')
             .data(leaves, generateLeafKey);
 
+        rows.exit().remove();
+
+        if (all){
+            rows.each(updateRow(clickCallback));
+        }
         rows.enter()
             .insert('div')
             .classed('row', true)
@@ -103,7 +149,7 @@
 
         rows.classed('grey', function(d, i){ return (i + 1)%2;});
 
-        rows.exit().remove();
+        //rows.exit().remove();
 
         return rows;
     };
@@ -188,7 +234,7 @@
 
     function generateLeafKey(leaf) {
         if (leaf.key) {
-            return leaf.key + leaf.hasData;
+            return leaf.key;
         }
         var node = leaf;
         var key = '';
@@ -197,7 +243,7 @@
             node = node.parent;
         }
         leaf.key = key + sessionKey;
-        return leaf.key + leaf.hasData;
+        return leaf.key;
     };
 
 

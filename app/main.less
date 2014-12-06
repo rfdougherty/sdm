@@ -183,7 +183,7 @@ div#tree-view>div {
 .sdm-table-content {
     position: absolute;
     border: 1px black solid;
-    top: 28px;
+    top: 60px;
     right: 5px;
     left: 5px;
     bottom: 5px;
@@ -245,14 +245,30 @@ div#tree-view>div {
     right: 5px;
     left: 5px;
     .container .row{
-        font-variant: small-caps;
+
         font-size: 16px;
         div.content {
+            font-variant: small-caps;
             background-color: @bgcol2;
             border: 1px solid black;
             border-bottom: 0px;
             color: @fgcol2;
             padding-left: 20px;
+        }
+        div.filter {
+            background-color: @bgcol2;
+            border: 1px solid black;
+            border-bottom: 0px;
+            border-top: 0px;
+            color: @fgcol2;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 4px;
+            height: 32px;
+            input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
         }
 
         div.col {
@@ -263,6 +279,9 @@ div#tree-view>div {
             padding-right: 0px;
             padding-left: 0px;
             div.content {
+                border-right: 0px;
+            }
+            div.filter {
                 border-right: 0px;
             }
         }

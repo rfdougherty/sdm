@@ -39,7 +39,7 @@ module.exports = function (grunt) {
     watch: {
       js: {
         files: ['<%= sdmapp.app %>/components/{,**/}*.js'],
-        tasks: ['newer:jshint:all'],
+        //tasks: ['newer:jshint:all'],
         options: {
           livereload: '<%= connect.options.livereload %>'
         }
