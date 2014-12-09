@@ -2,6 +2,7 @@
 
 
 (function(){
+    var d3;
 
     angular.module('sdm.treeViews.directives.sdmTableView',
         ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree'])
@@ -51,15 +52,17 @@
                 replace: true,
                 // transclude: true,
                 link: {
-                    post: function($scope, $element, $attr) {
+                    post: function($scope, $element) {
                         var containerElement = $element[0]
                             .getElementsByClassName('sdm-table-content')[0]
                             .getElementsByClassName('container')[0];
 
                         $scope.headersTitles = getHeaderTitles($scope.sdmHeaders);
 
-                        sdmD3Service.d3().then(function(d3) {
-                            $scope.$watch('trigger', function(newValue, oldValue){
+
+                        sdmD3Service.d3().then(function(_d3) {
+                            d3 = _d3;
+                            $scope.$watch('trigger', function(){
                                 console.log('scope.data', $scope.sdmData);
                                 console.log('scope.trigger', $scope.trigger);
                                 var filterSrv = sdmFilterTree(d3);
@@ -71,6 +74,17 @@
                                         $scope.trigger,
                                         filterSrv.filter);
                                 }
+
+                                var getFilter = filterSrv.getFilter;
+                                $scope.headersTitles.forEach(function(header){
+                                    var searchString = getFilter(header.name).searchString;
+                                    if (searchString) {
+                                        header.filter = {
+                                            string: searchString
+                                        };
+                                    }
+                                });
+
                                 $scope.setFilter = function(){
                                     //var refreshData = angular.copy($scope.sdmData.data);
                                     //$scope.sdmData.data = refreshData;
@@ -91,7 +105,7 @@
                                             filterSrv.filter,
                                             true);
                                     }
-                                }
+                                };
                             });
                         });
                     }
@@ -110,11 +124,11 @@
                         title: header,
                         name: header.toLowerCase() + 's',
                         nospace: i !== a.length - 1
-                    }
-                    if (result.name == value.name) {
-                        result.accessor = function(node){ return node.name};
+                    };
+                    if (result.name === value.name) {
+                        result.accessor = function(node){ return node.name;};
                     } else if (value.properties[header.toLowerCase()]) {
-                        result.accessor = function(node){ return node[header.toLowerCase()] };
+                        result.accessor = function(node){ return node[header.toLowerCase()]; };
                     }
                     return result;
                 });
@@ -122,7 +136,7 @@
             }
         }, titles);
         return titles;
-    }
+    };
 
     var sessionKey;
 
@@ -130,7 +144,6 @@
     var updateView = function(rootElement, data, clickCallback, trigger, getLeaves, all) {
         sessionKey = trigger.sessionKey?trigger.sessionKey:-1;
         var leaves = getLeaves(data);
-        var selection;
 
         var rows = d3.select(rootElement)
             .selectAll('div.d3row')
@@ -156,7 +169,7 @@
 
 
     var updateRow = function (clickCallback) {
-        return function(leaf, i) {
+        return function(leaf) {
             var dataRow = createDataRow(leaf);
 
             d3.select(this)
@@ -170,30 +183,30 @@
 
             var selection = cells.enter()
                 .append('span')
-                .classed("sdm-cell",
+                .classed('sdm-cell',
                     true);
 
             createCell(selection, clickCallback);
-        }
+        };
     };
 
     var createCell = function(selection, clickCallback) {
-        selection.each(function(d, i){
+        selection.each(function(d){
             d3.keys(d.level.properties).forEach(function(p, i, a){
-                var classed = [d.level.name, p, "col col-md-2 col-sm-2 col-lg-2 col-xs-2"].join(" ");
-                var d3_element = d3.select(this).append('div')
+                var classed = [d.level.name, p, 'col col-md-2 col-sm-2 col-lg-2 col-xs-2'].join(' ');
+                var d3Element = d3.select(this).append('div')
                     .classed(classed, true);
                 var value = d[p];
                 if (d.show) {
                     if (i === 0){
-                        d3_element.append('input').attr('type', 'checkbox');
+                        d3Element.append('input').attr('type', 'checkbox');
                     }
-                    d3_element.append('span')
+                    d3Element.append('span')
                         .classed('content', true)
                         .classed(UNDEFINED_PLACEHOLDER, function(){return typeof value === 'undefined';})
                         .text(value||UNDEFINED_PLACEHOLDER);
                     if (i === a.length - 1){
-                        d3_element.append('span').attr('class',
+                        d3Element.append('span').attr('class',
                             function(d){
                                 var icon;
                                 if (d.hasData){
@@ -216,20 +229,20 @@
         leaf.show = true;
         var dataRow = [leaf];
         var node = leaf;
-        var add_parent_name_to_row = true;
+        var addParentNameToRow = true;
         while (node.parent) {
-            add_parent_name_to_row &= node.isFirstChild;
-            node.parent.show = add_parent_name_to_row;
+            addParentNameToRow = node.isFirstChild && addParentNameToRow;
+            node.parent.show = addParentNameToRow;
             dataRow.unshift(node.parent);
             node = node.parent;
-        };
+        }
         return dataRow;
     };
 
     function _zeroPadding(n, m) {
-        var pad = new Array(1 + m).join("0");
+        var pad = new Array(1 + m).join('0');
         return (pad + n).slice(-pad.length);
-    };
+    }
 
 
     function generateLeafKey(leaf) {
@@ -244,7 +257,7 @@
         }
         leaf.key = key + sessionKey;
         return leaf.key;
-    };
+    }
 
 
 })();

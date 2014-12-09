@@ -32,7 +32,7 @@ module.exports = function (grunt) {
     clean: {
       test: ['<%= sdmapp.inst %>', 'coverage'],
       build: ['<%= sdmapp.dist %>'],
-      node_modules: ['node_modules']
+      nodeModules: ['node_modules']
     },
 
     // Watches files for changes and runs tasks based on the changed files
@@ -102,7 +102,7 @@ module.exports = function (grunt) {
           middleware: function(connect) {
             return [
               connect.static('coverage/phantomjs')
-            ]
+            ];
           }
         }
       },
@@ -207,7 +207,7 @@ module.exports = function (grunt) {
       }
     },
 
-    protractor_coverage: {
+    protractorCoverage: {
         options: {
             keepAlive: true,
             noColor: false,
@@ -299,7 +299,7 @@ module.exports = function (grunt) {
     'symlink:inst',
     'instrument',
     'connect:e2e',
-    'protractor_coverage:local',
+    'protractorCoverage:local',
     'makeReport'
     ]
   );
