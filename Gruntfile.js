@@ -128,6 +128,23 @@ module.exports = function (grunt) {
                 }
             }
         }
+      },
+      integration: {
+        options: {
+            port: 9000,
+            base: '<%= sdmapp.inst %>/app'
+        },
+        runtime: {
+            options: {
+                middleware: function (connect) {
+                    return [
+                        lrSnippet,
+                        mountFolder(connect, '<%= sdmapp.inst %>'),
+                        mountFolder(connect, '.......')
+                    ];
+                }
+            }
+        }
       }
     },
 
@@ -207,7 +224,7 @@ module.exports = function (grunt) {
       }
     },
 
-    protractorCoverage: {
+    protractor_coverage: {
         options: {
             keepAlive: true,
             noColor: false,
@@ -221,6 +238,13 @@ module.exports = function (grunt) {
               //baseUrl: 'https://localhost:9000',
               configFile: 'test/e2e/protractor-conf.js'
             }
+        },
+        integration: {
+            options: {
+              //baseUrl: 'https://localhost:9000',
+              coverageDir: 'coverage/integration',
+              configFile: 'test/integration/protractor-conf.js'
+            }
         }
     },
 
@@ -233,12 +257,12 @@ module.exports = function (grunt) {
     },
 
     makeReport: {
-        src: 'coverage/e2e/*.json',
-        options: {
-            type: 'lcov',
-            dir: 'coverage/e2e',
-            print: 'detail'
-        }
+      src: 'coverage/**/*.json',
+      options: {
+        type: 'lcov',
+        dir: 'coverage/reports',
+        print: 'detail'
+      }
     }
   });
 
@@ -299,7 +323,17 @@ module.exports = function (grunt) {
     'symlink:inst',
     'instrument',
     'connect:e2e',
-    'protractorCoverage:local',
+    'protractor_coverage:local',
+    'makeReport'
+    ]
+  );
+
+  grunt.registerTask('integ', [
+    'copy:coverageE2E',
+    'symlink:inst',
+    'instrument',
+    'connect:integration',
+    'protractor_coverage:integration',
     'makeReport'
     ]
   );

@@ -45,6 +45,7 @@ angular.module('sdm.authentication.services.angularOauth', []).
       verifyFunc: REQUIRED_AND_MISSING,
       scopes: []
     };
+    /*
 
     var getTokenFromStorage = function(){
       var tokenData = localStorage[config.localStorageName];
@@ -70,6 +71,7 @@ angular.module('sdm.authentication.services.angularOauth', []).
       }
       return false;
     };
+    */
 
     var extendConfig = function(configExtension){
       config = angular.extend(config, configExtension);
@@ -79,6 +81,7 @@ angular.module('sdm.authentication.services.angularOauth', []).
       extendConfig(configExtension);
     };
 
+    /*
     // Attempt to load a previously saved config in localstorage
     this.autoloadFromStorage = function(){
       var token = getTokenFromStorage();
@@ -86,6 +89,7 @@ angular.module('sdm.authentication.services.angularOauth', []).
         extendConfig(token);
       }
     };
+    */
 
     this.$get = ['$q', '$http', '$window', '$rootScope', function($q, $http, $window, $rootScope) {
       /**
@@ -126,26 +130,29 @@ angular.module('sdm.authentication.services.angularOauth', []).
       return {
         // TODO: get/set might want to support expiration to reauthenticate
         // TODO: check for localStorage support and otherwise perhaps use other methods of storing data (e.g. cookie)
-
+/*
         extendConfig: function(config){
           extendConfig(config);
         },
+*/
+
         /**
          * Returns the stored access token.
          *
          * @returns {string} The access token.
          */
+         /*
         get: function() {
           return getTokenFromStorage();
         },
-
+*/
         /**
          * Persist the access token so that it can be retrieved later by.
          *
          * @param accessToken (string) verified access token
          * @param expiresIn (int) number of seconds until token expiration
          */
-        set: function(accessToken, expiresIn) {
+/*        set: function(accessToken, expiresIn) {
           var params = getParams(), data = {};
           data.client_id = params.client_id;
           data.redirect_uri = params.redirect_uri;
@@ -154,7 +161,7 @@ angular.module('sdm.authentication.services.angularOauth', []).
           data.expires = new Date().getTime() + (parseInt(expiresIn) * 1000);
           storeTokenToStorage(data);
         },
-
+*/
         /**
          * Verifies that the access token is was issued for the use of the current client.
          *
@@ -254,8 +261,8 @@ angular.module('sdm.authentication.services.angularOauth', []).
           // TODO: reject deferred if the popup was closed without a message being delivered + maybe offer a timeout
 
           return deferred.promise;
-        },
-
+        }
+/*
         getTokenType: function(){
           return 'Bearer'
         },
@@ -285,7 +292,7 @@ angular.module('sdm.authentication.services.angularOauth', []).
 
         unset: function(){
           localStorage.removeItem(config.localStorageName);
-        }
+        }*/
       }
     }];
   });

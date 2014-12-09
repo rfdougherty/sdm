@@ -44,7 +44,7 @@
                                 '</div>' +
                             '</div>' +
                         '</div>' +
-                        '<div class="sdm-table-content">' +
+                        '<div id="sdm-main-table-content" class="sdm-table-content">' +
                             '<div class="container"></div>' +
                         '</div>' +
                     '</div>',
