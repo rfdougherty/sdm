@@ -3,7 +3,8 @@
 (function(){
 
     var sdmUserManager = function ($http, $cookieStore, $q, Token) {
-        var value_auth_data;
+        var value_auth_data = {};
+        var initialized = false;
 
         var login = function(access_token) {
             var deferred = $q.defer();
@@ -17,17 +18,17 @@
             success(function(data, status, headers, config) {
                 //parse and return info
                 console.log('data', data);
-                value_auth_data = {
+                angular.extend(value_auth_data, {
                     access_token: access_token,
                     user_uid: data['_id'],
-                    user_firstname: data['firstname'],
-                    user_lastname: data['lastname'],
+                    firstname: data['firstname'],
+                    lastname: data['lastname'],
                     root: data['root'],
                     wheel: data['wheel'],
                     logged_in: true,
                     email_hash: data['email_hash'],
                     preferences: data['preferences']
-                };
+                });
                 $cookieStore.put(SDM_KEY_CACHED_ACCESS_DATA, value_auth_data);
 
                 deferred.resolve(value_auth_data);
@@ -104,10 +105,10 @@
         }
 
 
-        var updateUserData = function(data, callback) {
+        var updateUserData = function(data) {
             var deferred = $q.defer();
             var url = BASE_URL + 'users/' + value_auth_data.user_uid;
-            console.log(data);
+            //console.log(data);
             $http({
                 method: 'PUT',
                 url: url,
@@ -118,6 +119,29 @@
                 }
             }).
             success(function(){
+                console.log('userdata updated');
+                angular.extend(value_auth_data, data);
+                $cookieStore.put(SDM_KEY_CACHED_ACCESS_DATA, value_auth_data);
+                deferred.resolve(value_auth_data);
+            });
+            return deferred.promise;
+        }
+
+        var getUserDataFromAPI = function() {
+            var deferred = $q.defer();
+            var url = BASE_URL + 'users/' + value_auth_data.user_uid;
+            //console.log(data);
+            $http({
+                method: 'GET',
+                url: url,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': value_auth_data.access_token
+                }
+            }).
+            success(function(data){
+                console.log('userdata received');
+                console.log(data);
                 angular.extend(value_auth_data, data);
                 $cookieStore.put(SDM_KEY_CACHED_ACCESS_DATA, value_auth_data);
                 deferred.resolve(value_auth_data);
@@ -130,8 +154,8 @@
             value_auth_data.logged_in = null;
             value_auth_data.access_token = null;
             value_auth_data.user_uid = null;
-            value_auth_data.user_firstname = null;
-            value_auth_data.user_lastname = null;
+            value_auth_data.firstname = null;
+            value_auth_data.lastname = null;
             value_auth_data.root = null;
             value_auth_data.wheel = null;
             value_auth_data.preferences = null;
@@ -141,8 +165,9 @@
         };
 
         var getAuthData = function() {
-            if (typeof value_auth_data === 'undefined') {
-                value_auth_data = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
+            if (!initialized) {
+                angular.extend(value_auth_data, $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA));
+                initialized = true;
             }
             return value_auth_data;
         }
@@ -153,7 +178,9 @@
             changeViewPreference: changeViewPreference,
             logout: logout,
             getAuthData: getAuthData,
-            login: login
+            login: login,
+            updateUserData: updateUserData,
+            getUserDataFromAPI: getUserDataFromAPI
         }
     }
 

@@ -1,21 +1,21 @@
-<div ng-if='!logged_in' id="logged-out" class="btn-group btn-group-xs">
+<div ng-if='!userData.logged_in' id="logged-out" class="btn-group btn-group-xs">
     <!-- Only show stuff to authenticate when user is not logged in -->
     <button type="button" class="btn btn-default" ng-click="authenticate()" data-title="Login" data-type="info" data-placement="bottom" bs-tooltip> Login <span class="glyphicon glyphicon-log-in"></span>
     </button>
 </div>
-<div ng-if="logged_in != null" id="logged-in">
+<div ng-if="userData.logged_in != null" id="logged-in">
     <div id="user-preferences-buttons" class="btn-group btn-group-xs">
-        <button type="button" ng-if="wheel && root" class="btn btn-default"  ng-click="toggleSuperUser()">
+        <button type="button" ng-if="userData.wheel && userData.root" class="btn btn-default"  ng-click="toggleSuperUser()">
             <span class="glyphicon glyphicon-eye-open"> </span>
         </button>
 
-        <button type="button" ng-if="wheel && !root" class="btn btn-default" ng-click="toggleSuperUser()">
+        <button type="button" ng-if="userData.wheel && !userData.root" class="btn btn-default" ng-click="toggleSuperUser()">
             <span class="glyphicon glyphicon-eye-close"> </span>
         </button>
 
-        <button type="button" class="btn btn-default" id="username" ng-click="">
-            <img ng-src="{{gravatarURL + email_hash}}?s=20"></img>
-            <span>&nbsp;{{user_firstname}}&nbsp;{{user_lastname}}&nbsp;</span>
+        <button type="button" class="btn btn-default" id="username" sdm-popover-click sdm-popover-template-content="preferencesContent.html" sdm-popover-style-top="35px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-left="-287px" sdm-popover-arrow="top">
+            <img ng-src="{{gravatarURL + userData.email_hash}}?s=20"></img>
+            <span>&nbsp;{{userData.firstname}}&nbsp;{{userData.lastname}}&nbsp;</span>
         </button>
 
         <button type="button" class="btn btn-default" ng-click="">

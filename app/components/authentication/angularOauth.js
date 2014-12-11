@@ -200,6 +200,7 @@ angular.module('sdm.authentication.services.angularOauth', []).
          *      `status`, `headers`, `config`).
          */
         getTokenByPopup: function(extraParams, popupOptions) {
+          console.log(popupOptions);
 
           var params = getParams();
           var requiredAndMissing = [];
@@ -214,15 +215,16 @@ angular.module('sdm.authentication.services.angularOauth', []).
               "configure the following options using " +
               "TokenProvider.extendConfig: " + requiredAndMissing.join(", "))
           }
-
+          var width = 306;
           popupOptions = angular.extend({
             name: 'AuthPopup',
             openParams: {
-              width: 920,
-              height: 655,
+              width: 306,
+              height: 504,
               resizable: true,
               scrollbars: true,
-              status: true
+              status: true,
+              left: (screen.width - width)/2
             }
           }, popupOptions);
 

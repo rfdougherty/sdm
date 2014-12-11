@@ -3,52 +3,21 @@
 var nimsAuthControllers = angular.module('sdm.authentication.controllers',
     ['sdm.authentication.services.sdmUserManager']);
 var _auth_data;
+var _user_manager;
 
 nimsAuthControllers.controller('LoginController', [
     '$scope', 'sdmUserManager',
     function($scope, sdmUserManager) {
         $scope.gravatarURL = GRAVATAR_IMG_URL;
-        $scope.authenticate = function(){
-            sdmUserManager.authenticate().then(
-                function(result){
-                    angular.extend($scope, result);
-                });
-        };
 
-        $scope.toggleSuperUser = function(){
-            sdmUserManager.toggleSuperUser().then(
-                function(result){
-                    angular.extend($scope, result);
-                });
-        };
+        $scope.authenticate = sdmUserManager.authenticate;
+        $scope.toggleSuperUser = sdmUserManager.toggleSuperUser;
+        $scope.logout = sdmUserManager.logout;
+        $scope.getAuthData= sdmUserManager.getAuthData;
 
-        $scope.logout = function(){
-            angular.extend($scope, sdmUserManager.logout());
-        };
+        $scope.userData = sdmUserManager.getAuthData();
 
-        $scope.getAuthData= function(){
-            return sdmUserManager.getAuthData();
-        };
-
-
-        $scope.$watch(function(){
-            var userData = sdmUserManager.getAuthData();
-
-            return userData;
-        }, function(newAuthData){
-            if (typeof newAuthData !== 'undefined') {
-                angular.extend($scope, newAuthData);
-                $scope.emailHash = $scope.email_hash;
-            }
-        });
-
-        var authData = sdmUserManager.getAuthData();
-        if (typeof authData !== 'undefined') {
-            sdmUserManager.login(authData.access_token).then(
-            function(newAuthData){
-                console.log('newAuthData', newAuthData);
-                angular.extend($scope, newAuthData);
-                $scope.emailHash = $scope.email_hash;
-            });
+        if (typeof $scope.userData !== 'undefined') {
+            sdmUserManager.login($scope.userData.access_token);
         }
     }]);

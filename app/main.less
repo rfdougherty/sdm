@@ -33,7 +33,8 @@ div#navigation>ul.nav.nav-tabs {
     min-width: @min-width-table;
     margin-left: 15px;
     margin-right: 15px;
-    height: @tabs-header-height;
+    height: @tabs-header-height + 2px;
+    border-top: 2px solid white;
     li>a>span.glyphicon {
         margin-right: 3px;
         &.glyphicon-folder-open {
@@ -82,7 +83,7 @@ div#navigation>ul.nav.nav-tabs {
         right: 15px;
         color: @fgcol1;
     }
-    a, button, button:hover, a:hover {
+    a, button, button:hover, a:hover, button:active, button:focus {
         color: @fgcol1;
         background-color: @bgcol1;
         text-decoration: none;
@@ -156,7 +157,7 @@ div#sdm-main {
 div#sdm-table-root, div#tree-view{
     position: absolute;
     bottom: 41px;
-    top: 70px;
+    top: 72px;
     left: 15px;
     right: 15px;
     min-width: @min-width-table;

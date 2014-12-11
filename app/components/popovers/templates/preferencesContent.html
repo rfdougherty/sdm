@@ -1,0 +1,37 @@
+<sdm-update-user-preferences>
+    <div class="user-preferences-header">
+        <input type="text" ng-model="sdmUPController.firstname" placeholder="first name" ng-show="sdmUPController.editable">
+        </input>
+
+        <input type="text" ng-model="sdmUPController.lastname" placeholder="last name" ng-show="sdmUPController.editable">
+        </input>
+        <div class="username" ng-show="!sdmUPController.editable">{{sdmUPController.firstname}} {{sdmUPController.lastname}}</div>
+        <div class="user-preferences-buttons">
+            <div id="user-preferences-edit" ng-click="sdmUPController.makeEditable($event)" ng-if="!sdmUPController.editable">Edit</div>
+            <div id="user-preferences-cancel" ng-click="sdmUPController.cancel($event)" ng-if="sdmUPController.editable">Cancel</div>
+            <div id="user-preferences-save" ng-click="sdmUPController.save($event)" ng-if="sdmUPController.editable">Save</div>
+        </div>
+    </div>
+
+    <div class="user-preferences-image">
+        <img ng-src="{{sdmUPController.gravatarURL + sdmUPController.email_hash}}?s=100&d=retro"></img>
+    </div>
+
+    <div class="user-preferences-input">
+        <div>
+            <span class="sdm-input-label">UID</span>
+            <span class="input-placeholder">{{sdmUPController.user_uid}}</span>
+        </div>
+        <div>
+            <span class="sdm-input-label">Email</span>
+            <span class="input-placeholder" ng-show="!sdmUPController.editable">{{sdmUPController.email}}</span>
+            <input type="text" ng-model="sdmUPController.email" ng-show="sdmUPController.editable">
+            </input>
+        </div>
+        <div>
+            <span class="sdm-input-label">Phone</span>
+            <span class="input-placeholder">{{sdmUPController.phone}}</span>
+        </div>
+    </div>
+
+</sdm-update-user-preferences>

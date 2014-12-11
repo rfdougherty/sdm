@@ -179,7 +179,7 @@ module.exports = function (grunt) {
           dest: '<%= sdmapp.dist %>',
           src: [
              '*.{js,html,less}',
-             'components/**/*.{js,html}',
+             'components/**/*.{js,html,less}',
              'config/**/*',
              'bootstrap/**/*'
           ]
@@ -194,6 +194,7 @@ module.exports = function (grunt) {
           src: [
             '*.{html,less}',
             'components/**/*.html',
+            'components/**/*.less',
             'config/**/*',
             'bootstrap/**/*',
             '!config/**/*.js'
