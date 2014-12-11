@@ -260,7 +260,7 @@ module.exports = function (grunt) {
       src: 'coverage/**/*.json',
       options: {
         type: 'lcov',
-        dir: 'coverage/reports',
+        dir: 'coverage/e2e',
         print: 'detail'
       }
     }

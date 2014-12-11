@@ -103,7 +103,7 @@
     })();
 
     var sdmAPIAdapter = function($q, makeAPICall) {
-        var sites_url = BASE_URL +'sites';
+        var sites_url = BASE_URL + 'sites';
         var projects_url = BASE_URL + 'projects';
 
         var treeInit = function() {

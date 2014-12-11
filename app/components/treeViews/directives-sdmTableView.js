@@ -36,9 +36,22 @@
                                             '{{header.title}}' +
                                         '</div>' +
                                         '<div class="filter">' +
+                                            '<button type="button" class="btn btn-default btn-xs exclude" ng-show="header.filter.string" ' +
+                                                'ng-click="filterExclude(header)" ' +
+                                                'ng-keyup="clearESC($event, header)">' +
+                                                '<span class="glyphicon"' +
+                                                ' ng-class="{\'glyphicon-plus-sign\':!header.filter.excluded,' +
+                                                            '\'glyphicon-minus-sign\':header.filter.excluded}">' +
+                                                '</span>' +
+                                            '</button>' +
                                             '<input type="text" ng-model="header.filter.string" ' +
-                                                    'ng-model-options = "{ debounce: 200 }" ' +
-                                                    'placeholder="filter" ng-change="setFilter()">' +
+                                                    'ng-model-options = "{ debounce: 100 }" ' +
+                                                    'placeholder="filter" ng-change="setFilter(header)" ' +
+                                                    'ng-keyup="clearESC($event, header)">' +
+                                            '<button type="button" class="btn btn-default btn-xs remove" ng-show="header.filter.string" ng-click="clearFilter(header)">' +
+                                                '<span class="glyphicon-remove glyphicon">' +
+                                                '</span>' +
+                                            '</button>' +
                                         '</div>' +
                                     '</div>' +
                                 '</div>' +
@@ -85,17 +98,20 @@
                                     }
                                 });
 
-                                $scope.setFilter = function(){
+                                $scope.setFilter = function(header){
                                     //var refreshData = angular.copy($scope.sdmData.data);
                                     //$scope.sdmData.data = refreshData;
                                     //$scope.trigger.sessionKey;
-                                    $scope.headersTitles.forEach(
-                                        function(h){
-                                            console.log(h);
-                                            if (h.filter){
-                                                filterSrv.createFilter(h, h.filter.string);
-                                            }
-                                        });
+                                    console.log(header);
+                                    if (header.filter){
+                                        if (!header.filter.string) {
+                                            header.filter.excluded = false;
+                                        }
+                                        filterSrv.createFilter(
+                                            header,
+                                            header.filter.string,
+                                            header.filter.excluded);
+                                    }
                                     if (typeof $scope.sdmData !== 'undefined'){
                                         updateView(
                                             containerElement,
@@ -105,6 +121,26 @@
                                             filterSrv.filter,
                                             true);
                                     }
+                                };
+
+                                $scope.clearFilter = function(header) {
+                                    header.filter.string = '';
+                                    header.filter.excluded = false;
+                                    $scope.setFilter(header);
+                                };
+
+                                $scope.clearESC = function(event, header) {
+                                    console.log('event', event);
+                                    if (event.keyCode === 27) {
+                                        header.filter.string = '';
+                                        header.filter.excluded = false;
+                                        $scope.setFilter(header);
+                                    }
+                                };
+
+                                $scope.filterExclude = function(header) {
+                                    header.filter.excluded = !header.filter.excluded;
+                                    $scope.setFilter(header);
                                 };
                             });
                         });
@@ -123,7 +159,8 @@
                     var result = {
                         title: header,
                         name: header.toLowerCase() + 's',
-                        nospace: i !== a.length - 1
+                        nospace: i !== a.length - 1,
+                        excluded: false
                     };
                     if (result.name === value.name) {
                         result.accessor = function(node){ return node.name;};

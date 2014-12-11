@@ -30,12 +30,18 @@
             };
         }
 
-        var createFilter = function(header, searchString) {
-            console.log('filter', header.name, searchString);
+        var createFilter = function(header, searchString, exclude) {
+            console.log('filter', header.name, searchString, exclude);
             console.log(header);
             filters[header.name] = {
                 filter: function(node) {
-                    return header.accessor(node)?header.accessor(node).toLowerCase().indexOf(searchString) > -1:false;
+                    var match =
+                        header.accessor(node)?
+                            header.accessor(node)
+                                  .toLowerCase()
+                                  .indexOf(searchString.toLowerCase()) > -1
+                            :false;
+                    return exclude?!match:match;
                 },
                 searchString: searchString
             }

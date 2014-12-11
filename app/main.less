@@ -256,6 +256,7 @@ div#tree-view>div {
             padding-left: 20px;
         }
         div.filter {
+            position: relative;
             background-color: @bgcol2;
             border: 1px solid black;
             border-bottom: 0px;
@@ -266,11 +267,37 @@ div#tree-view>div {
             padding-bottom: 8px;
             height: 28px;
             font-size: 12px;
+
+            button.exclude, button.exclude:active {
+                position: absolute;
+                left: 2px;
+                top: 2px;
+                background-color: transparent;
+                width: 16px;
+                padding-left: 2px;
+                outline: none;
+                border: none;
+            }
+            button.exclude.active {
+                color: @fgcol3;
+            }
             input {
                 width: 100%;
                 margin-bottom: 20px;
+                display: inline-block;
+                outline: none;
+            }
+            button.remove {
+                position: absolute;
+                right: 2px;
+                top: 1px;
+                background-color: transparent;
+                width: 16px;
+                padding-left: 2px;
+                outline: none;
             }
         }
+
 
         div.col {
             padding-right: 5px;
