@@ -13,7 +13,6 @@ describe('public data test', function() {
 
     GEServiceEl.click();
 
-    //element.all(by.partialButtonText('Renzo'))
     var filter = function (header) {
         return element(by.cssContainingText('.sdm-table-header .container .col', header))
                          .element(by.tagName('input'));

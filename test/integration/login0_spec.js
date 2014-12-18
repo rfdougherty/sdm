@@ -6,10 +6,8 @@ describe('sdm test authenticated user', function() {
 
     element(by.partialButtonText('Login')).click();
     browser.wait(function(){
-        return element(by.partialButtonText('Renzo')).isPresent();
+        return element(by.id('username')).isPresent();
     }, 60000)
-    //element.all(by.partialButtonText('Renzo'))
-    //var filterSession = element.all(by.css)
 
     GEServiceEl.click();
     element.all(by.cssContainingText('.sdm-cell', 'untitled')).first().all(by.className('glyphicon')).first().click();
@@ -18,12 +16,37 @@ describe('sdm test authenticated user', function() {
     GEServiceEl.click();
 
     GEServiceEl.click();
+    expect(
+        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        ).toBe(true);
+    expect(
+        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        ).toBe(false);
 
     element(by.css('button .glyphicon-tree-conifer')).click();
+    expect(
+        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        ).toBe(false);
+    expect(
+        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        ).toBe(true);
 
     element(by.css('button .glyphicon-log-out')).click();
+    expect(
+        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        ).toBe(false);
+    expect(
+        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        ).toBe(true);
 
     element(by.css('button .glyphicon-th-list')).click();
+    expect(
+        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        ).toBe(true);
+    expect(
+        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        ).toBe(false);
+
 
     browser.wait(function(){
         return element(by.partialButtonText('Login')).isPresent();
@@ -31,7 +54,24 @@ describe('sdm test authenticated user', function() {
 
     element(by.partialButtonText('Login')).click();
 
+    browser.wait(function(){
+        return element(by.id('username')).isPresent();
+    }, 60000);
+
+    expect(
+        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        ).toBe(false);
+    expect(
+        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        ).toBe(true);
+
     element(by.css('button .glyphicon-th-list')).click();
+    expect(
+        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        ).toBe(true);
+    expect(
+        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        ).toBe(false);
 
     element(by.css('button .glyphicon-eye-open')).click();
 
