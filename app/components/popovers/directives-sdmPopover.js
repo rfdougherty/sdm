@@ -8,7 +8,7 @@ _$;
         function($compile, $document) {
             var body = $document.find('body').eq(0);
             var templatePopover =
-                '<div class="popover">' +
+                '<div class="popover" ng-class="sdmPopoverClass">' +
                     '<div class="popover-overlay" ng-click="hidePopover($event, 0)"></div>' +
                     '<div class="popover-dialog" ng-style="dialogStyle">' +
                         '<div class="popover-content" ng-include="sdmPopoverTemplateContent">' +
@@ -25,12 +25,20 @@ _$;
                 link: function($scope, $element, $attrs) {
                     $scope.dialogStyle = {};
                     var attrKeys = Object.getOwnPropertyNames($attrs);
+                    var match;
                     for (var i = 0; i < attrKeys.length; i++) {
-                        var match = attrRegex.exec(attrKeys[i]);
+                        match = attrRegex.exec(attrKeys[i]);
                         if (match !== null) {
                             $scope.dialogStyle[match[1].toLowerCase()] = $attrs[attrKeys[i]];
                         }
                     }
+
+                    if ($attrs.sdmPopoverClass) {
+                        $scope.sdmPopoverClass = $attrs.sdmPopoverClass;
+                    }
+                    else
+                        throw 'Error in popover popup: missing popover class.';
+
 
                     if ($attrs.sdmPopoverTemplateContent)
                         $scope.sdmPopoverTemplateContent = popoverTemplatesPath + $attrs.sdmPopoverTemplateContent;
