@@ -1,6 +1,4 @@
 'use strict';
-var _popover, _$element, _hidePopover,
-_$;
 
 (function() {
     angular.module('sdm.popovers.directives.sdmPopover', [])
@@ -16,13 +14,13 @@ _$;
                     '</div>' +
                 '</div>';
                 var attrRegex =  /^sdmPopoverStyle(.*$)/;
-                var popoverTemplatesPath = 'components/popovers/templates/';
             return {
                 restrict: 'A',
-                $scope: {},
+                scope: {},
                 replace: false, // Replace with the template below
                 transclude: false, // we want to insert custom content inside the directive
                 link: function($scope, $element, $attrs) {
+                    console.log($scope.headersTitles);
                     $scope.dialogStyle = {};
                     var attrKeys = Object.getOwnPropertyNames($attrs);
                     var match;
@@ -33,6 +31,9 @@ _$;
                         }
                     }
 
+                    $scope.hasDynamicPosition = $attrs.sdmPopoverDynamicPosition==='true'?true:false;
+
+
                     if ($attrs.sdmPopoverClass) {
                         $scope.sdmPopoverClass = $attrs.sdmPopoverClass;
                     }
@@ -41,40 +42,41 @@ _$;
 
 
                     if ($attrs.sdmPopoverTemplateContent)
-                        $scope.sdmPopoverTemplateContent = popoverTemplatesPath + $attrs.sdmPopoverTemplateContent;
+                        $scope.sdmPopoverTemplateContent = $attrs.sdmPopoverTemplateContent;
                     else
                         throw 'Error in popover popup: missing template.';
-
-                    var timerHide, timerShow;
-                    var popover;
 
                     $scope.showPopover = function($event){
                         console.log('showPopover');
                         $event.stopPropagation();
                         $event.preventDefault();
-                        clearTimeout(timerHide);
-                        if (typeof popover !== 'undefined') {
+                        console.log('event x', $event.offsetX);
+                        if ($scope.hasDynamicPosition) {
+                            $scope.dialogStyle.left = $event.offsetX - 10;
+                        }
+                        clearTimeout($scope.timerHide);
+                        if (typeof $scope.popover !== 'undefined') {
                             return;
                         }
-                        timerShow = setTimeout(function() {
+                        $scope.timerShow = setTimeout(function() {
                             $scope.$apply(function(){
-                                popover = $compile(templatePopover)($scope);
-                                $element.append(popover);
+                                $scope.popover = $compile(templatePopover)($scope);
+                                $element.append($scope.popover);
                             });
                         }, 600);
                     };
 
                     $scope._hidePopover = function($event, timeout){
-                        console.log('hidePopover');
+                        console.log('hidePopover', $scope.popover);
                         timeout = typeof timeout === 'undefined' ? 400 : timeout;
 
                         $event.stopPropagation();
                         $event.preventDefault();
-                        clearTimeout(timerShow);
-                        timerHide = setTimeout(function() {
-                            if (typeof popover !== 'undefined') {
-                                popover[0].remove();
-                                popover = undefined;
+                        clearTimeout($scope.timerShow);
+                        $scope.timerHide = setTimeout(function() {
+                            if (typeof $scope.popover !== 'undefined') {
+                                $scope.popover[0].remove();
+                                $scope.popover = undefined;
                             }
                         }, timeout);
                     }
