@@ -1,13 +1,16 @@
 'use strict';
 
+var _element;
 
 (function(){
     var d3;
+    var sdmCellOnHover;
 
     angular.module('sdm.treeViews.directives.sdmTableView',
         ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree'])
-    .directive('sdmTableView', ['sdmD3Service', 'sdmFilterTree',
-        function(sdmD3Service, sdmFilterTree){
+    .directive('sdmTableView', ['$compile', 'sdmD3Service', 'sdmFilterTree',
+        function($compile, sdmD3Service, sdmFilterTree){
+
 
             // Runs during compile
             return {
@@ -36,6 +39,14 @@
                             .getElementsByClassName('container')[0];
 
                         $scope.headersTitles = getHeaderTitles($scope.sdmHeaders);
+
+                        sdmCellOnHover = function() {
+                            if (typeof this.sdmCellCompiled === 'undefined') {
+                                _element = this;
+                                $compile(this.parentElement)($scope);
+                                this.sdmCellCompiled = true;
+                            }
+                        };
 
 
                         sdmD3Service.d3().then(function(_d3) {
@@ -203,10 +214,24 @@
                     if (i === 0){
                         d3Element.append('input').attr('type', 'checkbox');
                     }
-                    d3Element.append('span')
+                    d3Element.append('div')
                         .classed('content', true)
                         .classed(UNDEFINED_PLACEHOLDER, function(){return typeof value === 'undefined';})
+                        .append('span')
+                        .attr({
+                            'sdm-popover-click': '',
+                            'sdm-popover-class': 'sdm-info-toolbar',
+                            'sdm-popover-template-content': 'components/infoToolbar/infoToolbarPopover.html',
+                            'sdm-popover-dynamic-position': 'false',
+                            'sdm-popover-style-width': '64px',
+                            'sdm-popover-style-height': '28px',
+                            'sdm-popover-style-top': '24px'
+                        })
+                        .on('mouseenter', sdmCellOnHover)
+                        .append('span')
+                        .classed('text', true)
                         .text(value||UNDEFINED_PLACEHOLDER);
+
                     if (i === a.length - 1){
                         d3Element.append('span').attr('class',
                             function(d){

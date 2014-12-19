@@ -16,7 +16,6 @@
                         controller.cancel = function($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
-                            //$scope.$parent.hidePopover($event);
                             controller.editable = false;
                             var userData = sdmUserManager.getAuthData();
                             controller.firstname = userData.firstname;
@@ -58,7 +57,6 @@
                                     email: controller.email
                                 }
                                 sdmUserManager.updateUserData(data).then(function(){
-                                    //$scope.$parent.hidePopover($event);
                                     controller.editable = false;
                                     $scope.$parent.enableEvents();
                                 });

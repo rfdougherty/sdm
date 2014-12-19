@@ -1,0 +1,29 @@
+div.popover.sdm-info-toolbar {
+    position: relative;
+    overflow: visible;
+    top: 0px;
+    left: 0px;
+    height: 32px;
+}
+
+div.popover.sdm-info-toolbar .popover-dialog {
+    //position: ;
+    top: 22px;
+    left: -4px;
+    width: 84px;
+    overflow: visible;
+    &:before {
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-bottom: 7px solid black;
+        top: 0px;
+        left: 15%;
+    }
+    &:after {
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-bottom: 6px solid white;
+        top: 0px;
+        left: 15%;
+    }
+}
