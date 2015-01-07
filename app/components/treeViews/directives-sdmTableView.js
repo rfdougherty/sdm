@@ -1,6 +1,6 @@
 'use strict';
 
-var _element;
+var _sdmData, _element;
 
 (function(){
     var d3;
@@ -20,7 +20,7 @@ var _element;
                 scope: {
                     sdmData: '=',
                     trigger: '=sdmTrigger',
-                    sdmExpandNode: '&',
+                    sdmActions: '&',
                     sdmHeaders: '=',
                     sdmFilter: '='
                 }, // {} = isolate, true = child, false/undefined = no change
@@ -34,6 +34,7 @@ var _element;
                 // transclude: true,
                 link: {
                     post: function($scope, $element) {
+                        _sdmData = $scope.sdmData;
                         var containerElement = $element[0]
                             .getElementsByClassName('sdm-table-content')[0]
                             .getElementsByClassName('container')[0];
@@ -42,7 +43,6 @@ var _element;
 
                         sdmCellOnHover = function() {
                             if (typeof this.sdmCellCompiled === 'undefined') {
-                                _element = this;
                                 $compile(this.parentElement)($scope);
                                 this.sdmCellCompiled = true;
                             }
@@ -59,9 +59,10 @@ var _element;
                                     updateView(
                                         containerElement,
                                         $scope.sdmData.data,
-                                        $scope.sdmExpandNode(),
+                                        $scope.sdmActions(),
                                         $scope.trigger,
-                                        filterSrv.filter);
+                                        filterSrv.filter,
+                                        $scope.trigger.all);
                                 }
 
                                 var getFilter = filterSrv.getFilter;
@@ -92,7 +93,7 @@ var _element;
                                         updateView(
                                             containerElement,
                                             $scope.sdmData.data,
-                                            $scope.sdmExpandNode(),
+                                            $scope.sdmActions(),
                                             $scope.trigger,
                                             filterSrv.filter,
                                             true);
@@ -154,7 +155,7 @@ var _element;
     var sessionKey;
 
 
-    var updateView = function(rootElement, data, clickCallback, trigger, getLeaves, all) {
+    var updateView = function(rootElement, data, actions, trigger, getLeaves, all) {
         sessionKey = trigger.sessionKey?trigger.sessionKey:-1;
         var leaves = getLeaves(data);
 
@@ -165,23 +166,21 @@ var _element;
         rows.exit().remove();
 
         if (all){
-            rows.each(updateRow(clickCallback));
+            rows.each(updateRow(actions));
         }
         rows.enter()
             .insert('div')
             .classed('row', true)
             .classed('d3row', true)
-            .each(updateRow(clickCallback));
+            .each(updateRow(actions));
 
         rows.classed('grey', function(d, i){ return (i + 1)%2;});
-
-        //rows.exit().remove();
 
         return rows;
     };
 
 
-    var updateRow = function (clickCallback) {
+    var updateRow = function (actions) {
         return function(leaf) {
             var dataRow = createDataRow(leaf);
 
@@ -199,11 +198,12 @@ var _element;
                 .classed('sdm-cell',
                     true);
 
-            createCell(selection, clickCallback);
+            createCell(selection, actions);
         };
     };
 
-    var createCell = function(selection, clickCallback) {
+
+    var createCell = function(selection, actions) {
         selection.each(function(d){
             d3.keys(d.level.properties).forEach(function(p, i, a){
                 var classed = [d.level.name, p, 'col col-md-2 col-sm-2 col-lg-2 col-xs-2'].join(' ');
@@ -212,7 +212,15 @@ var _element;
                 var value = d[p];
                 if (d.show) {
                     if (i === 0){
-                        d3Element.append('input').attr('type', 'checkbox');
+                        d3Element.append('input').attr({
+                            'type': 'checkbox'
+                        }).property({
+                            'checked': d.checked||false,
+                            'indeterminate': d.indeterminate
+                        }).on('click', function(d){
+                            console.log(this.checked);
+                            actions.checkNode(d);
+                        });
                     }
                     d3Element.append('div')
                         .classed('content', true)
@@ -244,7 +252,7 @@ var _element;
                                     icon = 'glyphicon-ban-circle';
                                 }
                                 return 'glyphicon nav-glyph expander ' + icon;
-                            }).on('click', clickCallback);
+                            }).on('click', actions.expandNode);
                     }
                 }
             }, this);

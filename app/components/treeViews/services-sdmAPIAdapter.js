@@ -21,6 +21,10 @@
         this.children = children?children:[];
         this.isLeaf = true;//by default each node is a leaf
         this.hasData = true;
+        this.childrenChecked = 0;
+        this.childrenIndeterminate = 0;
+        this.checked = false;
+        this.indeterminate = false;
     }
 
 
@@ -220,7 +224,10 @@
                         node.children.sort(naturalSortByName);
                         node.children.forEach(function(child, i){
                             child.index = i;
+                            child.checked = node.checked;
                         });
+                        node.childrenChecked = node.checked?node.children.length:0;
+                        node.childrenIndeterminate = 0;
                         deferred.resolve();
                     }, function(reason){
                         console.log(reason);
@@ -228,6 +235,34 @@
                     });
             }
             return deferred.promise;
+        };
+
+        var checkNode = function (node, isClickedNode, check) {
+            console.log(node);
+            var checked = node.checked;
+            var indeterminate = node.indeterminate;
+            node.checked = (typeof check === 'undefined')?!(node.checked||node.indeterminate):check;
+            node.indeterminate = false;
+            var children = node.children || node._children || [];
+            node.childrenChecked = node.checked?children.length:0;
+            node.childrenIndeterminate = 0;
+            children.forEach(function(c){return checkNode(c, false, node.checked)});
+            if (isClickedNode && node.parent) {
+                updateParent(node.parent, node.checked - checked, node.indeterminate - indeterminate);
+            }
+        };
+
+        var updateParent = function (node, increment, incrementIndeterminate) {
+            console.log(node, increment);
+            var checked = node.checked;
+            var indeterminate = node.indeterminate;
+            node.childrenChecked += increment;
+            node.childrenIndeterminate += incrementIndeterminate;
+            node.checked = node.childrenChecked  === node.children.length;
+            node.indeterminate = !node.checked && node.childrenChecked + node.childrenIndeterminate > 0;
+            if (node.parent) {
+                updateParent(node.parent, node.checked - checked, node.indeterminate - indeterminate);
+            }
         }
 
 
@@ -235,11 +270,12 @@
             console.log('headers called');
 
             return levelDescription;
-        }
+        };
 
         return {
             treeInit: treeInit,
             expandNode: expandNode,
+            checkNode: checkNode,
             headers: headers
         };
     }
