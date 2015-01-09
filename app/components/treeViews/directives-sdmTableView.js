@@ -49,23 +49,25 @@ var _sdmData, _element;
                         };
 
 
+                        var actions = $scope.sdmActions();
+                        actions.getLeaves = sdmFilterTree.filter;
+                        actions.selector = sdmFilterTree.selector;
+
                         sdmD3Service.d3().then(function(_d3) {
                             d3 = _d3;
                             $scope.$watch('trigger', function(){
                                 console.log('scope.data', $scope.sdmData);
                                 console.log('scope.trigger', $scope.trigger);
-                                var filterSrv = sdmFilterTree(d3);
                                 if (typeof $scope.sdmData !== 'undefined'){
                                     updateView(
                                         containerElement,
                                         $scope.sdmData.data,
-                                        $scope.sdmActions(),
+                                        actions,
                                         $scope.trigger,
-                                        filterSrv.filter,
-                                        $scope.trigger.all);
+                                        $scope.trigger.all?selectAllNodes:null);
                                 }
 
-                                var getFilter = filterSrv.getFilter;
+                                var getFilter = sdmFilterTree.getFilter;
                                 $scope.headersTitles.forEach(function(header){
                                     var searchString = getFilter(header.name).searchString;
                                     if (searchString) {
@@ -84,7 +86,7 @@ var _sdmData, _element;
                                         if (!header.filter.string) {
                                             header.filter.excluded = false;
                                         }
-                                        filterSrv.createFilter(
+                                        sdmFilterTree.createFilter(
                                             header,
                                             header.filter.string,
                                             header.filter.excluded);
@@ -93,10 +95,9 @@ var _sdmData, _element;
                                         updateView(
                                             containerElement,
                                             $scope.sdmData.data,
-                                            $scope.sdmActions(),
+                                            actions,
                                             $scope.trigger,
-                                            filterSrv.filter,
-                                            true);
+                                            selectAllNodes);
                                     }
                                 };
 
@@ -127,6 +128,10 @@ var _sdmData, _element;
         }
     ]);
 
+    var selectAllNodes = function (node) {
+        return true;
+    };
+
     var getHeaderTitles = function(headers) {
         var titles = [];
         angular.forEach(headers, function(value, key){
@@ -154,10 +159,16 @@ var _sdmData, _element;
 
     var sessionKey;
 
+    var refresh;
 
-    var updateView = function(rootElement, data, actions, trigger, getLeaves, all) {
+    var updateView = function(rootElement, data, actions, trigger, selector) {
+
+        refresh = function(selector) {
+            return updateView(rootElement, data, actions, trigger, selector)
+        };
+
         sessionKey = trigger.sessionKey?trigger.sessionKey:-1;
-        var leaves = getLeaves(data);
+        var leaves = actions.getLeaves(data);
 
         var rows = d3.select(rootElement)
             .selectAll('div.d3row')
@@ -165,8 +176,8 @@ var _sdmData, _element;
 
         rows.exit().remove();
 
-        if (all){
-            rows.each(updateRow(actions));
+        if (selector){
+            rows.filter(selector).each(updateRow(actions));
         }
         rows.enter()
             .insert('div')
@@ -218,8 +229,8 @@ var _sdmData, _element;
                             'checked': d.checked||false,
                             'indeterminate': d.indeterminate
                         }).on('click', function(d){
-                            console.log(this.checked);
-                            actions.checkNode(d);
+                            actions.selector(d);
+                            refresh(selectAllNodes);
                         });
                     }
                     d3Element.append('div')

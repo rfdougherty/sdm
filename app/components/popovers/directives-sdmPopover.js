@@ -20,7 +20,6 @@
                 replace: false, // Replace with the template below
                 transclude: false, // we want to insert custom content inside the directive
                 link: function($scope, $element, $attrs) {
-                    console.log($scope.headersTitles);
                     $scope.dialogStyle = {};
                     var attrKeys = Object.getOwnPropertyNames($attrs);
                     var match;
@@ -47,10 +46,8 @@
                         throw 'Error in popover popup: missing template.';
 
                     $scope.showPopover = function($event){
-                        console.log('showPopover');
                         $event.stopPropagation();
                         $event.preventDefault();
-                        console.log('event x', $event.offsetX);
                         if ($scope.hasDynamicPosition) {
                             $scope.dialogStyle.left = $event.offsetX - 10;
                         }
@@ -67,7 +64,6 @@
                     };
 
                     $scope._hidePopover = function($event, timeout){
-                        console.log('hidePopover', $scope.popover);
                         timeout = typeof timeout === 'undefined' ? 400 : timeout;
 
                         $event.stopPropagation();
