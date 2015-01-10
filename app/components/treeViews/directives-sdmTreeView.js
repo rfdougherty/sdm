@@ -17,7 +17,7 @@
                 scope: {
                     sdmData: '=',
                     trigger: '=',
-                    sdmExpandNode: '&'
+                    sdmActions: '&'
                 }, // {} = isolate, true = child, false/undefined = no change
                 // controllerAs: 'tableController',
                 // controller: TableController,
@@ -38,7 +38,7 @@
                             $scope.$watch('trigger', function(newValue, oldValue){
                                 var source = (newValue === oldValue)?null:newValue.node;
                                 if (typeof source !== 'undefined' && typeof $scope.sdmData !== 'undefined'){
-                                    updateView($scope.sdmData.data, source, $scope.sdmExpandNode());
+                                    updateView($scope.sdmData.data, source, $scope.sdmActions().expandNode);
                                 }
                             });
                         });

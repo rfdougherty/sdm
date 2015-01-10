@@ -1,7 +1,5 @@
 'use strict';
 
-var _element;
-
 (function(){
     var d3;
     var sdmCellOnHover;
@@ -10,9 +8,6 @@ var _element;
         ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree'])
     .directive('sdmTableView', ['$compile', 'sdmD3Service', 'sdmFilterTree',
         function($compile, sdmD3Service, sdmFilterTree){
-
-
-            // Runs during compile
             return {
                 // name: '',
                 // priority: 1,
@@ -20,7 +15,7 @@ var _element;
                 scope: {
                     sdmData: '=',
                     trigger: '=sdmTrigger',
-                    sdmExpandNode: '&',
+                    sdmActions: '&',
                     sdmHeaders: '=',
                     sdmFilter: '='
                 }, // {} = isolate, true = child, false/undefined = no change
@@ -34,6 +29,7 @@ var _element;
                 // transclude: true,
                 link: {
                     post: function($scope, $element) {
+                        sdmFilterTree.sdmData = $scope.sdmData;
                         var containerElement = $element[0]
                             .getElementsByClassName('sdm-table-content')[0]
                             .getElementsByClassName('container')[0];
@@ -42,29 +38,30 @@ var _element;
 
                         sdmCellOnHover = function() {
                             if (typeof this.sdmCellCompiled === 'undefined') {
-                                _element = this;
                                 $compile(this.parentElement)($scope);
                                 this.sdmCellCompiled = true;
                             }
                         };
 
+                        var actions = $scope.sdmActions();
+                        actions.getLeaves = sdmFilterTree.filter;
+                        actions.selector = sdmFilterTree.selector;
 
                         sdmD3Service.d3().then(function(_d3) {
                             d3 = _d3;
                             $scope.$watch('trigger', function(){
                                 console.log('scope.data', $scope.sdmData);
                                 console.log('scope.trigger', $scope.trigger);
-                                var filterSrv = sdmFilterTree(d3);
                                 if (typeof $scope.sdmData !== 'undefined'){
                                     updateView(
                                         containerElement,
                                         $scope.sdmData.data,
-                                        $scope.sdmExpandNode(),
+                                        actions,
                                         $scope.trigger,
-                                        filterSrv.filter);
+                                        $scope.trigger.all?selectAllNodes:null);
                                 }
 
-                                var getFilter = filterSrv.getFilter;
+                                var getFilter = sdmFilterTree.getFilter;
                                 $scope.headersTitles.forEach(function(header){
                                     var searchString = getFilter(header.name).searchString;
                                     if (searchString) {
@@ -83,7 +80,7 @@ var _element;
                                         if (!header.filter.string) {
                                             header.filter.excluded = false;
                                         }
-                                        filterSrv.createFilter(
+                                        sdmFilterTree.createFilter(
                                             header,
                                             header.filter.string,
                                             header.filter.excluded);
@@ -92,10 +89,9 @@ var _element;
                                         updateView(
                                             containerElement,
                                             $scope.sdmData.data,
-                                            $scope.sdmExpandNode(),
+                                            actions,
                                             $scope.trigger,
-                                            filterSrv.filter,
-                                            true);
+                                            selectAllNodes);
                                     }
                                 };
 
@@ -126,6 +122,10 @@ var _element;
         }
     ]);
 
+    var selectAllNodes = function (node) {
+        return true;
+    };
+
     var getHeaderTitles = function(headers) {
         var titles = [];
         angular.forEach(headers, function(value, key){
@@ -153,10 +153,16 @@ var _element;
 
     var sessionKey;
 
+    var refresh;
 
-    var updateView = function(rootElement, data, clickCallback, trigger, getLeaves, all) {
+    var updateView = function(rootElement, data, actions, trigger, selector) {
+
+        refresh = function(selector) {
+            return updateView(rootElement, data, actions, trigger, selector)
+        };
+
         sessionKey = trigger.sessionKey?trigger.sessionKey:-1;
-        var leaves = getLeaves(data);
+        var leaves = actions.getLeaves(data);
 
         var rows = d3.select(rootElement)
             .selectAll('div.d3row')
@@ -164,24 +170,22 @@ var _element;
 
         rows.exit().remove();
 
-        if (all){
-            rows.each(updateRow(clickCallback));
+        if (selector){
+            rows.filter(selector).each(updateRow(actions));
         }
         rows.enter()
             .insert('div')
             .classed('row', true)
             .classed('d3row', true)
-            .each(updateRow(clickCallback));
+            .each(updateRow(actions));
 
         rows.classed('grey', function(d, i){ return (i + 1)%2;});
-
-        //rows.exit().remove();
 
         return rows;
     };
 
 
-    var updateRow = function (clickCallback) {
+    var updateRow = function (actions) {
         return function(leaf) {
             var dataRow = createDataRow(leaf);
 
@@ -199,11 +203,12 @@ var _element;
                 .classed('sdm-cell',
                     true);
 
-            createCell(selection, clickCallback);
+            createCell(selection, actions);
         };
     };
 
-    var createCell = function(selection, clickCallback) {
+
+    var createCell = function(selection, actions) {
         selection.each(function(d){
             d3.keys(d.level.properties).forEach(function(p, i, a){
                 var classed = [d.level.name, p, 'col col-md-2 col-sm-2 col-lg-2 col-xs-2'].join(' ');
@@ -212,20 +217,30 @@ var _element;
                 var value = d[p];
                 if (d.show) {
                     if (i === 0){
-                        d3Element.append('input').attr('type', 'checkbox');
+                        d3Element.append('input').attr({
+                            'type': 'checkbox'
+                        }).property({
+                            'checked': d.checked||false,
+                            'indeterminate': d.indeterminate
+                        }).on('click', function(d){
+                            actions.selector(d);
+                            refresh(selectAllNodes);
+                        });
                     }
                     d3Element.append('div')
                         .classed('content', true)
                         .classed(UNDEFINED_PLACEHOLDER, function(){return typeof value === 'undefined';})
                         .append('span')
                         .attr({
-                            'sdm-popover-click': '',
+                            'sdm-popover': '',
                             'sdm-popover-class': 'sdm-info-toolbar',
                             'sdm-popover-template-content': 'components/infoToolbar/infoToolbarPopover.html',
                             'sdm-popover-dynamic-position': 'false',
                             'sdm-popover-style-width': '64px',
                             'sdm-popover-style-height': '28px',
-                            'sdm-popover-style-top': '24px'
+                            'sdm-popover-style-top': '24px',
+                            'sdm-popover-show': 'mouseenter',
+                            'sdm-popover-hide': 'mouseleave'
                         })
                         .on('mouseenter', sdmCellOnHover)
                         .append('span')
@@ -244,7 +259,7 @@ var _element;
                                     icon = 'glyphicon-ban-circle';
                                 }
                                 return 'glyphicon nav-glyph expander ' + icon;
-                            }).on('click', clickCallback);
+                            }).on('click', actions.expandNode);
                     }
                 }
             }, this);

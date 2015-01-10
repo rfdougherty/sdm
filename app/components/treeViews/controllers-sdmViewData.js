@@ -48,17 +48,30 @@
             };
         }, true);
 
-        _this.expandNode = function(){
-            return function(node) {
-                console.log('node expanded', node);
-                sdmAPIAdapter.expandNode(node).then(
-                    function() {
+        _this.actions = function(){
+            return {
+                expandNode: function(node) {
+                    console.log('node expanded', node);
+                    sdmAPIAdapter.expandNode(node).then(
+                        function() {
+                            _this.trigger = {
+                                node: node,
+                                sessionKey: (_this.trigger.sessionKey + 1)%10
+                            };
+                        }
+                    );
+                },
+                checkNode: function(node) {
+                    console.log('selected', node);
+                    sdmAPIAdapter.checkNode(node, true);
+                    $scope.$apply(function(){
                         _this.trigger = {
                             node: node,
-                            sessionKey: (_this.trigger.sessionKey + 1)%10
+                            sessionKey: (_this.trigger.sessionKey + 1)%10,
+                            all: true
                         };
-                    }
-                );
+                    });
+                }
             }
         };
 

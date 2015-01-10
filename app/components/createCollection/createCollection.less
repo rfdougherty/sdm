@@ -1,0 +1,56 @@
+div.sdm-create-collection {
+    .popover-dialog {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -100%);
+        -webkit-transform: translate(-50%, -100%);
+        -moz-transform: translate(-50%, -100%);
+
+    }
+
+    .popover-dialog:before, .popover-dialog:after {
+        top: 0px;
+        left: 95%;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+    }
+    .popover-overlay {
+        background-color: lightgray;
+    }
+}
+
+sdm-create-collection {
+    div.collection-option {
+        text-align: center;
+        button {
+            width: 60%;
+            margin: 14px;
+            background-color: lightgray;
+        }
+    }
+
+    div.collection-confirm-buttons {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        text-align: right;
+        div {
+            display: inline;
+            margin-left: 20px;
+        }
+    }
+
+    div.add-to-collection, div.create-collection {
+        div {
+            margin-top: 10px
+        }
+    }
+
+    span.sdm-input-label {
+        float: left;
+        width: 100px;
+        font-weight: bold;
+    }
+
+}

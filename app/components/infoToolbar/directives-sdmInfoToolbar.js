@@ -3,7 +3,7 @@
 (function() {
     angular.module('sdm.infoToolbar.directives.sdmInfoToolbar',
             [])
-        .directive('sdmInfoToolbar',
+        .directive('sdmInfoToolbar', ['',
             function() {
                 return {
                     restrict: 'E',
@@ -15,5 +15,6 @@
                     link: function($scope){}
                     }
                 }
+            ]
         );
 })();

@@ -21,6 +21,10 @@
         this.children = children?children:[];
         this.isLeaf = true;//by default each node is a leaf
         this.hasData = true;
+        this.childrenChecked = 0;
+        this.childrenIndeterminate = 0;
+        this.checked = false;
+        this.indeterminate = false;
     }
 
 
@@ -173,6 +177,12 @@
             } else if (node._children){
                 node.children = node._children;
                 node._children = null;
+                /**if (node.checked) {
+                    node.childrenChecked = node.children.length;
+                    node.children.forEach(function(child){
+                        child.checked = true;
+                    });
+                }**/
                 deferred.resolve();
             } else {
                 if (typeof node.level.next_level === 'undefined'){
@@ -220,7 +230,10 @@
                         node.children.sort(naturalSortByName);
                         node.children.forEach(function(child, i){
                             child.index = i;
+                            child.checked = node.checked;
                         });
+                        node.childrenChecked = node.checked?node.children.length:0;
+                        node.childrenIndeterminate = 0;
                         deferred.resolve();
                     }, function(reason){
                         console.log(reason);
@@ -228,18 +241,18 @@
                     });
             }
             return deferred.promise;
-        }
+        };
 
-
-        var headers = function(){
+        var headers = function () {
             console.log('headers called');
 
             return levelDescription;
-        }
+        };
 
         return {
             treeInit: treeInit,
             expandNode: expandNode,
+  //          checkNode: checkNode,
             headers: headers
         };
     }

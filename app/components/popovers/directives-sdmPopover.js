@@ -2,7 +2,7 @@
 
 (function() {
     angular.module('sdm.popovers.directives.sdmPopover', [])
-        .directive('sdmPopoverClick', ['$compile', '$document',
+        .directive('sdmPopover', ['$compile', '$document',
         function($compile, $document) {
             var body = $document.find('body').eq(0);
             var templatePopover =
@@ -24,6 +24,9 @@
                     $scope.dialogStyle = {};
                     var attrKeys = Object.getOwnPropertyNames($attrs);
                     var match;
+                    console.log('sdmAppendToBody', $attrs.sdmAppendToBody);
+                    var rootElement = typeof $attrs.sdmAppendToBody ==='undefined'?
+                        $element : angular.element(document.getElementsByTagName('body'));
                     for (var i = 0; i < attrKeys.length; i++) {
                         match = attrRegex.exec(attrKeys[i]);
                         if (match !== null) {
@@ -47,12 +50,12 @@
                         throw 'Error in popover popup: missing template.';
 
                     $scope.showPopover = function($event){
-                        console.log('showPopover');
-                        $event.stopPropagation();
-                        $event.preventDefault();
-                        console.log('event x', $event.offsetX);
-                        if ($scope.hasDynamicPosition) {
-                            $scope.dialogStyle.left = $event.offsetX - 10;
+                        if ($event) {
+                            $event.stopPropagation();
+                            $event.preventDefault();
+                            if ($scope.hasDynamicPosition) {
+                                $scope.dialogStyle.left = $event.offsetX - 10;
+                            }
                         }
                         clearTimeout($scope.timerHide);
                         if (typeof $scope.popover !== 'undefined') {
@@ -61,17 +64,17 @@
                         $scope.timerShow = setTimeout(function() {
                             $scope.$apply(function(){
                                 $scope.popover = $compile(templatePopover)($scope);
-                                $element.append($scope.popover);
+                                rootElement.append($scope.popover);
                             });
                         }, 600);
                     };
 
                     $scope._hidePopover = function($event, timeout){
-                        console.log('hidePopover', $scope.popover);
                         timeout = typeof timeout === 'undefined' ? 400 : timeout;
-
-                        $event.stopPropagation();
-                        $event.preventDefault();
+                        if ($event) {
+                            $event.stopPropagation();
+                            $event.preventDefault();
+                        }
                         clearTimeout($scope.timerShow);
                         $scope.timerHide = setTimeout(function() {
                             if (typeof $scope.popover !== 'undefined') {
@@ -83,8 +86,12 @@
 
                     $scope.enableEvents = function(){
                         $scope.hidePopover = $scope._hidePopover;
-                        $element.on('mouseenter', $scope.showPopover);
-                        $element.on('mouseleave', $scope.hidePopover);
+                        if ($attrs.sdmPopoverShow) {
+                            $element.on($attrs.sdmPopoverShow, $scope.showPopover);
+                        }
+                        if ($attrs.sdmPopoverHide) {
+                            $element.on($attrs.sdmPopoverHide, $scope.hidePopover);
+                        }
                     }
 
                     $scope.disableEvents = function() {

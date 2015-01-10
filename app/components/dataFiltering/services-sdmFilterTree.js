@@ -3,7 +3,6 @@
 (function(){
 
     var sdmFilterTree = function(){
-        var _d3;
 
         var filterLeaves = function(node) {
             return node.isLeaf;
@@ -19,7 +18,7 @@
                     filter: function(node){return true}
                 }
             }
-        }
+        };
 
         var getLevelFilter = function(level) {
             var levelFilters = level.headers.map(function(h) {
@@ -28,7 +27,7 @@
             return function(node) {
                 return levelFilters.every(function(f) { return f(node);});
             };
-        }
+        };
 
         var createFilter = function(header, searchString, exclude) {
             console.log('filter', header.name, searchString, exclude);
@@ -45,32 +44,27 @@
                 },
                 searchString: searchString
             }
-        }
+        };
 
         var filter = function(tree) {
             var nodes = [];
             var iterator = depthFirst(tree);
             var n = iterator.next();
-            var count = 0;
             while (!n.done) {
-                count++;
                 if (n.value.isLeaf) {
                     nodes.push(n.value);
                 }
                 n = iterator.next();
             }
-            var d3_nodes = _d3.layout.tree()(tree);
-            if (_d3.keys(filters).length === 0 && d3_nodes.length !== count) {
-                console.log('d3 nodes', d3_nodes);
-                console.log('leaf nodes', nodes);
-                throw "check node count"
-            }
             return nodes;
-        }
+        };
 
         var depthFirst = function(tree) {
             var element;
             var elements = [tree];
+            if (tree) {
+                tree.rowId = 0;
+            }
             function next() {
                 element = elements.pop();
                 var firstChild;
@@ -93,6 +87,7 @@
                         thisChild = filteredChildren[i];
                         isFirstChild = i === filteredChildren.length - 1;
                         thisChild.isFirstChild = isFirstChild;
+                        thisChild.rowId = element.rowId + i;
                         //console.log(thisChild);
                         elements.push(thisChild);
                     }
@@ -109,32 +104,153 @@
             return {
                 next: next
             };
-        }
+        };
 
-        var depthFirstAction = function(tree, action) {
-            var iterator = depthFirst(tree);
-            function next() {
-                var node = iterator.next();
-                if (!node.done) {
-                    action(node.value);
+        var getSelected = function (tree) {
+            var selected = [];
+            var action = function (node) {
+                if (node.checked && (!node.parent || !node.parent.checked)) {
+                    selected.push(node);
                 }
-                return node;
             }
-            return {
-                next: next
+            var iterator = depthFirst(tree);
+            var node = iterator.next();
+            while (!node.done){
+                action(node.value);
+                node = iterator.next();
+            }
+            return selected;
+        };
+
+        var selectorUnchecked = function (node) {
+            var preAction = function (node) {
+                //console.log(node.name, 'preAction');
+                var checked = node.checked;
+                var indeterminate = node.indeterminate;
+                if (!node.children || node.children.length === 0) {
+                    selectorIndeterminate(node);
+                    if (node.parent) {
+                        node.parent.childrenChecked += node.checked - checked;
+                        node.parent.childrenIndeterminate += node.indeterminate - indeterminate;
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+
+            var postAction = function (node) {
+                //console.log(node.name, 'postAction');
+                var checked = node.checked;
+                var indeterminate = node.indeterminate;
+                node.checked = node.childrenChecked === node.children.length;
+                node.indeterminate = !node.checked && node.childrenChecked + node.childrenIndeterminate > 0;
+                if (node.parent) {
+                    node.parent.childrenChecked += node.checked - checked;
+                    node.parent.childrenIndeterminate += node.indeterminate - indeterminate;
+                }
+                return true;
+            };
+            var queue = [];
+            var parentNode = node.parent;
+            while (parentNode) {
+                queue.unshift({action: postAction, node: parentNode})
+                parentNode = parentNode.parent;
+            }
+            queue.push({action: preAction, node: node});
+            var action;
+            while (queue.length) {
+                action = queue.pop();
+                if (!action.action(action.node)) {
+                    queue.push({action: postAction, node: action.node});
+                    action.node.children.forEach(function(child){
+                        if (getLevelFilter(child.level)(child)){
+                            queue.push({action: preAction, node: child});
+                        }
+                    });
+                }
+            }
+        };
+
+        var selectorChecked = function (node, initial) {
+            var checked = node.checked;
+            var indeterminate = node.indeterminate;
+            node.checked = false;
+            node.indeterminate = false;
+            var children = node.children || node._children;
+            if (children && children.length) {
+                node.childrenChecked = 0;
+                node.childrenIndeterminate = 0;
+                children.forEach(function(child){
+                    selectorChecked(child);
+                });
+            }
+            if (initial) {
+                var n = node.parent;
+                n.childrenChecked += node.checked - checked;
+                n.childrenIndeterminate += node.indeterminate - indeterminate;
+                while (n){
+                    checked = n.checked;
+                    indeterminate = n.indeterminate;
+                    n.checked = n.childrenChecked === n.children.length;
+                    n.indeterminate = !n.checked && n.childrenChecked + n.childrenIndeterminate > 0;
+                    if (n.parent) {
+                        n.parent.childrenChecked += n.checked - checked;
+                        n.parent.childrenIndeterminate += n.indeterminate - indeterminate;
+                    }
+                    n = n.parent;
+                }
+            }
+        };
+
+        var selectorIndeterminate = function (node, initial) {
+            var checked = node.checked;
+            var indeterminate = node.indeterminate;
+            node.checked = true;
+            node.indeterminate = false;
+            var children = node.children || node._children;
+            if (children && children.length) {
+                node.childrenChecked = children.length;
+                node.childrenIndeterminate = 0;
+                children.forEach(function(child){
+                    selectorIndeterminate(child);
+                });
+            }
+            if (initial) {
+                var n = node.parent;
+                n.childrenChecked += node.checked - checked;
+                n.childrenIndeterminate += node.indeterminate - indeterminate;
+                while (n){
+                    checked = n.checked;
+                    indeterminate = n.indeterminate;
+                    n.checked = n.childrenChecked === n.children.length;
+                    n.indeterminate = !n.checked && n.childrenChecked + n.childrenIndeterminate > 0;
+                    if (n.parent) {
+                        n.parent.childrenChecked += n.checked - checked;
+                        n.parent.childrenIndeterminate += n.indeterminate - indeterminate;
+                    }
+                    n = n.parent;
+                }
+            }
+        };
+
+        var selector = function (node) {
+            if (node.indeterminate) {
+                selectorIndeterminate(node, true);
+            } else if (node.checked) {
+                selectorChecked(node, true);
+            } else {
+                selectorUnchecked(node);
             }
         }
 
-        var result = function(d3) {
-            _d3 = d3;
-            return {
-                filter: filter,
-                createFilter: createFilter,
-                getFilter: getFilter
-            }
+        return {
+            filter: filter,
+            createFilter: createFilter,
+            getFilter: getFilter,
+            selector: selector,
+            getSelected: getSelected
         }
-
-        return result
     }
 
 
