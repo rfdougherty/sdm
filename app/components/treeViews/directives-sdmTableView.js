@@ -1,7 +1,5 @@
 'use strict';
 
-var _sdmData, _element;
-
 (function(){
     var d3;
     var sdmCellOnHover;
@@ -10,9 +8,6 @@ var _sdmData, _element;
         ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree'])
     .directive('sdmTableView', ['$compile', 'sdmD3Service', 'sdmFilterTree',
         function($compile, sdmD3Service, sdmFilterTree){
-
-
-            // Runs during compile
             return {
                 // name: '',
                 // priority: 1,
@@ -34,7 +29,7 @@ var _sdmData, _element;
                 // transclude: true,
                 link: {
                     post: function($scope, $element) {
-                        _sdmData = $scope.sdmData;
+                        sdmFilterTree.sdmData = $scope.sdmData;
                         var containerElement = $element[0]
                             .getElementsByClassName('sdm-table-content')[0]
                             .getElementsByClassName('container')[0];
@@ -238,13 +233,15 @@ var _sdmData, _element;
                         .classed(UNDEFINED_PLACEHOLDER, function(){return typeof value === 'undefined';})
                         .append('span')
                         .attr({
-                            'sdm-popover-click': '',
+                            'sdm-popover': '',
                             'sdm-popover-class': 'sdm-info-toolbar',
                             'sdm-popover-template-content': 'components/infoToolbar/infoToolbarPopover.html',
                             'sdm-popover-dynamic-position': 'false',
                             'sdm-popover-style-width': '64px',
                             'sdm-popover-style-height': '28px',
-                            'sdm-popover-style-top': '24px'
+                            'sdm-popover-style-top': '24px',
+                            'sdm-popover-show': 'mouseenter',
+                            'sdm-popover-hide': 'mouseleave'
                         })
                         .on('mouseenter', sdmCellOnHover)
                         .append('span')

@@ -1,0 +1,36 @@
+<sdm-create-collection>
+    <div class="collection-option" ng-if="!sdmCCController.viewCreate && !sdmCCController.viewUpdate">
+        <button type="button" class="btn btn-default" ng-click="sdmCCController.viewCreate=true">
+            Create New Collection
+        </button><br>
+        <button type="button" class="btn btn-default" ng-click="sdmCCController.viewUpdate=true">
+            Update Collection
+        </button>
+    </div>
+    <div class="create-collection" ng-if="sdmCCController.viewCreate">
+        <div>
+            <span class="sdm-input-label">Collection</span>
+            <input type="text" ng-model="sdmCCController.collectionName">
+            </input>
+        </div>
+        <div>
+            <span class="sdm-input-label">Curator</span>
+            <span class="input-placeholder">{{sdmCCController.curator}}</span>
+        </div>
+    </div>
+    <div class="add-to-collection" ng-if="sdmCCController.viewUpdate">
+        <div>
+            <span class="sdm-input-label">Collection</span>
+            <input type="text" ng-model="sdmCCController.collectionName">
+            </input>
+        </div>
+        <div>
+            <span class="sdm-input-label">Curator</span>
+            <span class="input-placeholder">{{sdmCCController.curator}}</span>
+        </div>
+    </div>
+    <div class="collection-confirm-buttons">
+        <div id="user-preferences-cancel" ng-click="sdmCCController.cancel($event)">Cancel</div>
+        <div id="user-preferences-save" ng-click="sdmCCController.save($event)" ng-if="sdmCCController.viewCreate || sdmCCController.viewUpdate">Save</div>
+    </div>
+</sdm-create-collection>

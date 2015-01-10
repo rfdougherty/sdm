@@ -62,6 +62,9 @@
         var depthFirst = function(tree) {
             var element;
             var elements = [tree];
+            if (tree) {
+                tree.rowId = 0;
+            }
             function next() {
                 element = elements.pop();
                 var firstChild;
@@ -84,6 +87,7 @@
                         thisChild = filteredChildren[i];
                         isFirstChild = i === filteredChildren.length - 1;
                         thisChild.isFirstChild = isFirstChild;
+                        thisChild.rowId = element.rowId + i;
                         //console.log(thisChild);
                         elements.push(thisChild);
                     }
@@ -102,18 +106,20 @@
             };
         };
 
-        var depthFirstAction = function (tree, action) {
-            var iterator = depthFirst(tree);
-            function next() {
-                var node = iterator.next();
-                if (!node.done) {
-                    action(node.value);
+        var getSelected = function (tree) {
+            var selected = [];
+            var action = function (node) {
+                if (node.checked && (!node.parent || !node.parent.checked)) {
+                    selected.push(node);
                 }
-                return node;
             }
-            return {
-                next: next
+            var iterator = depthFirst(tree);
+            var node = iterator.next();
+            while (!node.done){
+                action(node.value);
+                node = iterator.next();
             }
+            return selected;
         };
 
         var selectorUnchecked = function (node) {
@@ -242,8 +248,8 @@
             filter: filter,
             createFilter: createFilter,
             getFilter: getFilter,
-            selector: selector
-
+            selector: selector,
+            getSelected: getSelected
         }
     }
 
