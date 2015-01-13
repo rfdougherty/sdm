@@ -34,6 +34,9 @@
             console.log(header);
             filters[header.name] = {
                 filter: function(node) {
+                    if (searchString === '') {
+                        return true
+                    }
                     var match =
                         header.accessor(node)?
                             header.accessor(node)

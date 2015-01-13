@@ -13,26 +13,34 @@ var httpServices = angular.module('sdmHttpServices', ['ngCookies', 'sdm.authenti
 httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', function($http, $cookieStore, sdmUserManager) {
 
     var makeAPICall = {
-        async: function(url, site, iter) {
+        async: function(url, site, method, data, iter) {
             console.log("MAKE API CALL\nwith url="+url+" and site="+site);
             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
+            if (typeof method === 'undefined') {
+                method = 'GET';
+            }
             var accessToken =
                 typeof accessData !== "undefined"?
                 accessData.access_token : undefined;
             if (accessToken != null) console.log(" - accessToken="+accessToken);
-            // $http returns a promise, which has a then function, which also returns a promise
-            var promise = $http({
-                method: 'GET',
+
+            var requestParams = {
+                method: method,
                 url: url,
                 headers: {'Authorization': accessToken},
                 params: {site: site}
-            }).then(function(response) {
+            };
+            if (typeof data !== 'undefined') {
+                requestParams.data = data;
+            }
+            // $http returns a promise, which has a then function, which also returns a promise
+            var promise = $http(requestParams).then(function(response) {
                 // The then function here is an opportunity to modify the response
                 console.log("data returned by API:");
                 console.dir(response);
                 console.log("\n");
                 // The return value gets picked up by the then in the controller.
-                return {data: response.data};
+                return {data: response.data||[]};
             }, function(reason) { //call if the http request fails
                 console.log(reason);
                 if (reason.status == '401' && (typeof iter === 'undefined' || iter < 2)) {
@@ -47,11 +55,15 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                     console.log("there is probably something wrong with the url or the server is unavailable");
                     return {data: []};
                 }
+                console.log('Unhandled problem in the request.');
+                console.log('Status:', reason.status);
+                console.log('Reason', reason);
+                return {data: []};
             }).then(function(value) {
                 if (value.data) {
                     return value.data;
                 } else {
-                    return makeAPICall.async(url, site, iter);
+                    return makeAPICall.async(url, site, method, data, iter);
                 }
             }).then(function(finalResult){
                 return finalResult;
@@ -65,10 +77,8 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
 
 httpServices.factory('callAPI', ['$http', function($http) {
 
-    var postToAPI = {
-        asynchPost: function(url, data, method) {
-            var httpMethod = 'POST';
-            if (method != null) httpMethod = method;
+    var callAPI = {
+        async: function(url, data, method) {
             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
             var accessToken =
                 typeof accessData !== "undefined"?
@@ -101,7 +111,7 @@ httpServices.factory('callAPI', ['$http', function($http) {
             return promise;
         }
     };
-    return postToAPI;
+    return callAPI;
 }]);
 
 angular.module('sdmD3Service', [])

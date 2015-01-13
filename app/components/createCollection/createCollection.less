@@ -2,10 +2,11 @@ div.sdm-create-collection {
     .popover-dialog {
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -100%);
-        -webkit-transform: translate(-50%, -100%);
-        -moz-transform: translate(-50%, -100%);
-
+        transform: translate(-50%, -65%);
+        -webkit-transform: translate(-50%, -65%);
+        -moz-transform: translate(-50%, -65%);
+        width: 0px;
+        height: 0px;
     }
 
     .popover-dialog:before, .popover-dialog:after {
@@ -22,12 +23,10 @@ div.sdm-create-collection {
 
 sdm-create-collection {
     div.collection-option {
-        text-align: center;
-        button {
-            width: 60%;
-            margin: 14px;
-            background-color: lightgray;
+        select {
+
         }
+        text-align: center;
     }
 
     div.collection-confirm-buttons {
@@ -35,19 +34,102 @@ sdm-create-collection {
         bottom: 10px;
         right: 10px;
         text-align: right;
-        div {
-            display: inline;
-            margin-left: 20px;
+    }
+
+    div.collection-title {
+        //background-color: lightgrey;
+        margin-top: 0px;
+        font-size: 24px;
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-variant: small-caps;
+    }
+
+    form.create-collection {
+        &.error {
+            input.ng-invalid {
+                border: 1px solid red;
+                &:focus {
+                    border: 1px solid red;
+                    box-shadow: none;
+                }
+            }
+        }
+        select {
+            margin-bottom: 10px;
+            option.default {
+                color: lightgrey !important;
+            }
+        }
+        div#share {
+            input {
+                width: 287px;
+            }
+            div.tt-dataset-users {
+                padding-left: 10px;
+                border: 1px solid lightgrey;
+                height: 120px;
+                width: 287px;
+                background: white;
+                overflow: scroll;
+            }
+            select {
+                position: relative;
+                top: 11px;
+            }
+             span.glyphicon {
+                position: relative;
+                top: 12px;
+                font-size: 20px;
+                margin-left: 5px;
+
+            }
+        }
+        div#permissions {
+            margin-top: 5px;
+
+            div.permissions-header table {
+                border: 1px solid lightgrey;
+
+                margin-bottom: 0px;
+                td {
+                    width: 200px;
+                }
+            }
+            div.permissions-body {
+                height: 100px;
+                overflow: scroll;
+                border: 1px solid lightgrey;
+
+                border-top: none;
+                table.table {
+                    margin-top: 0px;
+                    margin-bottom: 0px;
+                    td {
+                        border-top: none;
+                        width: 200px;
+                        .glyphicon.disabled {
+                            color: lightgrey;
+                        }
+                    }
+
+                }
+            }
+        }
+        div.collection-confirm-buttons {
+            margin-bottom: 0px;
+            input#user-preferences-delete {
+                background-color: #df3e3e;
+                color: white;
+            }
+        }
+        textarea {
+            max-height: 64px;
+            max-width: 100%;
         }
     }
 
-    div.add-to-collection, div.create-collection {
-        div {
-            margin-top: 10px
-        }
-    }
-
-    span.sdm-input-label {
+    .sdm-input-label {
         float: left;
         width: 100px;
         font-weight: bold;

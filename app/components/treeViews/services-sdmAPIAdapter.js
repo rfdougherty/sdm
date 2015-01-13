@@ -7,7 +7,7 @@
         this.level = level;
         this.site = site;
         this.uniqueId = idDataNode++;
-        this.id = data && data._id ?data._id.$oid : null;
+        this.id = data && data._id ?data._id.$oid || data._id: null;
         if (level) {
             angular.forEach(
                 level.properties,
@@ -264,6 +264,7 @@
         .factory('sdmAPIAdapter', sdmAPIAdapter);
 
     function _get_tree_init_structure(projects, siteId) {
+        console.log('projects', projects);
         var groups = {};
         console.log('tree init site: ', siteId);
 
@@ -295,7 +296,6 @@
                 group_list.push(groups[group]);
             }
         };
-        console.log(group_list);
 
 
 
@@ -320,7 +320,7 @@
         if (group_list[0]) {
             group_list[0].isFirstChild = true;
         }*/
-
+        console.log('groups', group_list);
         return group_list;
     }
 

@@ -1,36 +1,56 @@
 <sdm-create-collection>
-    <div class="collection-option" ng-if="!sdmCCController.viewCreate && !sdmCCController.viewUpdate">
-        <button type="button" class="btn btn-default" ng-click="sdmCCController.viewCreate=true">
-            Create New Collection
-        </button><br>
-        <button type="button" class="btn btn-default" ng-click="sdmCCController.viewUpdate=true">
-            Update Collection
-        </button>
-    </div>
-    <div class="create-collection" ng-if="sdmCCController.viewCreate">
-        <div>
-            <span class="sdm-input-label">Collection</span>
-            <input type="text" ng-model="sdmCCController.collectionName">
+    <div class="collection-title">Create or Update Collection</div>
+    <form name="form" class="create-collection" ng-class="{error: form.hasErrors}">
+            <select class="form-control" ng-options="collection.name for collection in sdmCCController.existingCollections" ng-model="sdmCCController.selectedCollection" ng-change="sdmCCController.selectCollection()">
+                <option class="default" value="">{{sdmCCController.defaultSelectText}}</option>
+            </select>
+            <div class="sdm-input-label">Name</div>
+            <input class="form-control" type="text" ng-model="sdmCCController.collectionName" placeholder="(Create New Collection)" required>
             </input>
+            <div class="sdm-input-label">Notes</div>
+            <textarea class="form-control" ng-model="sdmCCController.collectionNotes">
+            </textarea>
+            <div class="sdm-input-label">Share</div><br>
+            <div id="share" class="form-inline">
+                <input class="typeahead form-control" type="text" placeholder="Enter User ID" ng-model="sdmCCController.selectedUID"></input>
+                <select class="form-control" ng-init="" ng-options="role.name for role in sdmCCController.roles" ng-model="sdmCCController.selectedRole"></select>
+                <span class="glyphicon glyphicon-plus-sign" ng-click="sdmCCController.addUser()"></span>
+            </div>
+
+            <div id="permissions">
+                <div class="sdm-input-label">Permissions</div><br>
+                <div class="permissions-header">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td>User ID</td>
+                                <td>Permissions</td>
+                                <td>Remove</td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="permissions-body">
+                    <table class="table">
+                        <tbody>
+                            <tr class='user-permission' ng-repeat="permission in sdmCCController.addedPermissions">
+                                <td>{{permission.uid}}</td>
+                                <td>{{permission.access}}</td>
+                                <td>
+                                    <span class="glyphicon glyphicon-remove" ng-if="permission.uid!==sdmCCController.curator._id" ng-click="sdmCCController.removeUser($index)"></span>
+                                    <span class="glyphicon glyphicon-remove disabled" ng-if="permission.uid===sdmCCController.curator._id"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+
+        <div class="collection-confirm-buttons">
+            <input type="button" id="user-preferences-cancel" class="btn btn-default btn-xs" ng-click="sdmCCController.cancel($event)" value="Cancel"></input>
+            <input id="user-preferences-delete" type="submit" class="btn btn-default btn-xs" ng-click="sdmCCController.delete($event)" ng-if="sdmCCController.collectionID" value="Delete"></input>
+            <input id="user-preferences-save" type="submit" class="btn btn-default btn-xs" ng-click="sdmCCController.save($event, form)" value="Save"></input>
         </div>
-        <div>
-            <span class="sdm-input-label">Curator</span>
-            <span class="input-placeholder">{{sdmCCController.curator}}</span>
-        </div>
-    </div>
-    <div class="add-to-collection" ng-if="sdmCCController.viewUpdate">
-        <div>
-            <span class="sdm-input-label">Collection</span>
-            <input type="text" ng-model="sdmCCController.collectionName">
-            </input>
-        </div>
-        <div>
-            <span class="sdm-input-label">Curator</span>
-            <span class="input-placeholder">{{sdmCCController.curator}}</span>
-        </div>
-    </div>
-    <div class="collection-confirm-buttons">
-        <div id="user-preferences-cancel" ng-click="sdmCCController.cancel($event)">Cancel</div>
-        <div id="user-preferences-save" ng-click="sdmCCController.save($event)" ng-if="sdmCCController.viewCreate || sdmCCController.viewUpdate">Save</div>
-    </div>
+    </form>
 </sdm-create-collection>
