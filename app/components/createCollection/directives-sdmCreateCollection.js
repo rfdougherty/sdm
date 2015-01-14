@@ -162,7 +162,9 @@ var _sdmCCController;
                                 controller.collectionNotes = controller.selectedCollection.notes;
                                 sdmCollectionInterface.getCollection(controller.collectionID).then(
                                     function(collection){
+                                        console.log(collection);
                                         controller.addedPermissions = collection.permissions;
+                                        console.log(collection.permissions);
                                 });
                                 controller.defaultSelectText = '(Create New Collection)';
                             } else {
@@ -176,7 +178,12 @@ var _sdmCCController;
 
                         sdmCollectionInterface.getCollections().then(
                             function(collections){
-                                controller.existingCollections = collections;
+                                controller.existingCollections =
+                                    controller.curator.root?collections:collections.filter(
+                                        function(collection){
+                                            var access = collection.permissions[0].access;
+                                            return access === 'admin' || access === 'modify';
+                                        });
                             }
                         );
 

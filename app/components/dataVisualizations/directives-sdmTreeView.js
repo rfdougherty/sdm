@@ -4,7 +4,7 @@
 (function(){
 
 
-    angular.module('sdm.treeViews.directives.sdmTreeView',
+    angular.module('sdm.dataVisualizations.directives.sdmTreeView',
         ['sdmD3Service'])
     .directive('sdmTreeView', ['sdmD3Service',
         function(sdmD3Service){

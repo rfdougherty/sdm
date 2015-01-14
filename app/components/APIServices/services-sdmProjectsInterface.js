@@ -13,7 +13,6 @@
                 level.properties,
                 function(accessor, property) {
                     this[property] = accessor(data);
-                    //console.log(this.level.name, property, this[property]);
                 },
                 this
             );
@@ -106,7 +105,7 @@
         }
     })();
 
-    var sdmAPIAdapter = function($q, makeAPICall) {
+    var sdmProjectsInterface = function($q, makeAPICall) {
         var sites_url = BASE_URL + 'sites';
         var projects_url = BASE_URL + 'projects';
 
@@ -252,16 +251,15 @@
         return {
             treeInit: treeInit,
             expandNode: expandNode,
-  //          checkNode: checkNode,
             headers: headers
         };
     }
 
-    sdmAPIAdapter.$inject = ['$q', 'makeAPICall'];
+    sdmProjectsInterface.$inject = ['$q', 'makeAPICall'];
 
-    angular.module('sdm.treeViews.services.sdmAPIAdapter',
+    angular.module('sdm.APIServices.services.sdmProjectsInterface',
         ['sdm.services'])
-        .factory('sdmAPIAdapter', sdmAPIAdapter);
+        .factory('sdmProjectsInterface', sdmProjectsInterface );
 
     function _get_tree_init_structure(projects, siteId) {
         console.log('projects', projects);

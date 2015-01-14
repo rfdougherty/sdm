@@ -4,7 +4,7 @@
     var d3;
     var sdmCellOnHover;
 
-    angular.module('sdm.treeViews.directives.sdmTableView',
+    angular.module('sdm.dataVisualizations.directives.sdmTableView',
         ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree'])
     .directive('sdmTableView', ['$compile', 'sdmD3Service', 'sdmFilterTree',
         function($compile, sdmD3Service, sdmFilterTree){
@@ -23,7 +23,7 @@
                 // controller: TableController,
                 // require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
                 restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
-                templateUrl: 'components/treeViews/tableTemplate.html',
+                templateUrl: 'components/dataVisualizations/tableTemplate.html',
                 // templateUrl: '',
                 replace: true,
                 // transclude: true,

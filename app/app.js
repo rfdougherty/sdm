@@ -2,7 +2,7 @@
 var sdmApp = angular.module('sdm', [
     'ngRoute',
     'sdm.authentication',
-    'sdm.treeViews',
+    'sdm.projectsViews',
     'sdm.buttons',
     'sdm.services',
     'sdm.navigation',
@@ -10,14 +10,15 @@ var sdmApp = angular.module('sdm', [
     'sdm.popovers',
     'sdm.userPreferences',
     'sdm.createCollection',
-    'sdm.APIServices'
+    'sdm.APIServices',
+    'sdm.dataVisualizations'
 ]);
 
 var COMING_SOON = '<div id="tree-view">Coming Soon!!!</div>';
 
 sdmApp.config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/table-view', {templateUrl: 'components/treeViews/table.html'});
-    $routeProvider.when('/tree-view', {templateUrl: 'components/treeViews/tree.html'});
+    $routeProvider.when('/table-view', {templateUrl: 'components/projectsViews/table.html'});
+    $routeProvider.when('/tree-view', {templateUrl: 'components/projectsViews/tree.html'});
     $routeProvider.when('/projects', {templateUrl: 'components/main/main.html'});
     $routeProvider.when('/collections', {'template': COMING_SOON});
     $routeProvider.when('/search', {'template': COMING_SOON});

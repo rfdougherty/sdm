@@ -26,6 +26,6 @@
         }
     }
 
-    angular.module('sdm.treeViews.services.sdmViewManager',[])
+    angular.module('sdm.projectsViews.services.sdmViewManager',[])
         .factory('sdmViewManager', sdmViewManager);
 })();

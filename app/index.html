@@ -35,7 +35,7 @@
              ng-controller="SdmNavigationController as sdmNavigationController"
              ng-include="'components/navigation/navigation.html'">
         </div>
-        <div  ng-controller="SdmViewData as sdmViewData" ng-view>
+        <div  ng-controller="SdmViewData as sdmProjectsViewData" ng-view>
         </div>
         <div class="footer">
             <div id="footer-links">
@@ -67,6 +67,12 @@
     <script src="app.js"></script>
     <script src="services.js"></script>
 
+    <script src="components/APIServices/services-sdmRoles.js"></script>
+    <script src="components/APIServices/services-sdmUsers.js"></script>
+    <script src="components/APIServices/services-sdmCollectionInterface.js"></script>
+    <script src="components/APIServices/services-sdmProjectsInterface.js"></script>
+    <script src="components/APIServices/modules.js"></script>
+
     <!-- Authentication component -->
     <script src="components/authentication/modules.js"></script>
     <script src="components/authentication/angularOauth.js"></script>
@@ -74,12 +80,9 @@
     <script src="components/authentication/nimsAuthController.js"></script>
     <script src="components/authentication/services-sdmUserManager.js"></script>
 
-    <script src="components/treeViews/controllers-sdmViewData.js"></script>
-    <script src="components/treeViews/services-sdmAPIAdapter.js"></script>
-    <script src="components/treeViews/services-sdmViewManager.js"></script>
-    <script src="components/treeViews/directives-sdmTableView.js"></script>
-    <script src="components/treeViews/directives-sdmTreeView.js"></script>
-    <script src="components/treeViews/modules.js"></script>
+    <script src="components/projectsViews/controllers-sdmProjectsViewData.js"></script>
+    <script src="components/projectsViews/services-sdmViewManager.js"></script>
+    <script src="components/projectsViews/modules.js"></script>
 
     <script src="components/buttons/controllers-sdmButtons.js"></script>
     <script src="components/buttons/modules.js"></script>
@@ -99,10 +102,10 @@
     <script src="components/createCollection/directives-sdmCreateCollection.js"></script>
     <script src="components/createCollection/modules.js"></script>
 
-    <script src="components/APIServices/modules.js"></script>
-    <script src="components/APIServices/services-sdmRoles.js"></script>
-    <script src="components/APIServices/services-sdmUsers.js"></script>
-    <script src="components/APIServices/services-sdmCollectionInterface.js"></script>
+    <script src="components/dataVisualizations/directives-sdmTableView.js"></script>
+    <script src="components/dataVisualizations/directives-sdmTreeView.js"></script>
+    <script src="components/dataVisualizations/modules.js"></script>
+
 </body>
 
 </html>

@@ -1,7 +1,7 @@
 'use strict';
 
 (function() {
-    var SdmViewData = function($scope, sdmAPIAdapter, sdmUserManager, sdmViewManager) {
+    var SdmViewData = function($scope, sdmProjectsInterface, sdmUserManager, sdmViewManager) {
         var _this = this;
         _this.trigger = {
             node: null,
@@ -24,7 +24,7 @@
             console.log('new', newValue);
             console.log('old', oldValue);
             if (newValue.logged_in !== oldValue.logged_in || newValue.root !== oldValue.root || newValue === oldValue) {
-                sdmAPIAdapter.treeInit().then(function(result){
+                sdmProjectsInterface.treeInit().then(function(result){
                     _this.sdmData.data = result;
                     _this.trigger = {
                         node: result,
@@ -52,7 +52,7 @@
             return {
                 expandNode: function(node) {
                     console.log('node expanded', node);
-                    sdmAPIAdapter.expandNode(node).then(
+                    sdmProjectsInterface.expandNode(node).then(
                         function() {
                             _this.trigger = {
                                 node: node,
@@ -63,7 +63,7 @@
                 },
                 checkNode: function(node) {
                     console.log('selected', node);
-                    sdmAPIAdapter.checkNode(node, true);
+                    sdmProjectsInterface.checkNode(node, true);
                     $scope.$apply(function(){
                         _this.trigger = {
                             node: node,
@@ -75,14 +75,14 @@
             }
         };
 
-        _this.headers = sdmAPIAdapter.headers();
+        _this.headers = sdmProjectsInterface.headers();
     }
 
-    SdmViewData.$inject = ['$scope', 'sdmAPIAdapter', 'sdmUserManager', 'sdmViewManager'];
+    SdmViewData.$inject = ['$scope', 'sdmProjectsInterface', 'sdmUserManager', 'sdmViewManager'];
 
-    var controller = angular.module('sdm.treeViews.controllers.sdmViewData', [
-        'sdm.treeViews.services.sdmAPIAdapter',
-        'sdm.treeViews.services.sdmViewManager',
+    var controller = angular.module('sdm.projectsViews.controllers.sdmProjectsViewData', [
+        'sdm.APIServices.services.sdmProjectsInterface',
+        'sdm.projectsViews.services.sdmViewManager',
         'sdm.authentication.services.sdmUserManager'
         ])
         .controller('SdmViewData', SdmViewData);

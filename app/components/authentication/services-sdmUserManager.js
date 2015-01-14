@@ -189,7 +189,7 @@
     angular.module('sdm.authentication.services.sdmUserManager', ['sdm.authentication.services.siteOauth', 'ngCookies']).config(function(TokenProvider) {
         /*FIXME: there is probably a more angular way to do this*/
         var baseUrl = window.location.href.split('#')[0];
-        console.log(baseUrl);
+        //console.log(baseUrl);
         TokenProvider.extendConfig({
             clientId: CLIENT_ID,
             redirectUri: baseUrl + 'components/authentication/oauth2callback.html',

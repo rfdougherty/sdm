@@ -15,7 +15,7 @@
     SdmButtonsController.$inject = ['sdmViewManager', 'sdmUserManager'];
 
     angular.module('sdm.buttons.controllers.sdmButtons',
-        ['sdm.treeViews.services.sdmViewManager',
+        ['sdm.projectsViews.services.sdmViewManager',
         'sdm.authentication.services.sdmUserManager'])
         .controller('SdmButtonsController', SdmButtonsController);
 
