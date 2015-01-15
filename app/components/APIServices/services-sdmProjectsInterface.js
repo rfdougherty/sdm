@@ -2,30 +2,6 @@
 
 (function(){
 
-    var idDataNode = 0;
-    var DataNode = function(data, site, level, children) {
-        this.level = level;
-        this.site = site;
-        this.uniqueId = idDataNode++;
-        this.id = data && data._id ?data._id.$oid || data._id: null;
-        if (level) {
-            angular.forEach(
-                level.properties,
-                function(accessor, property) {
-                    this[property] = accessor(data);
-                },
-                this
-            );
-        }
-        this.children = children?children:[];
-        this.isLeaf = true;//by default each node is a leaf
-        this.hasData = true;
-        this.childrenChecked = 0;
-        this.childrenIndeterminate = 0;
-        this.checked = false;
-        this.indeterminate = false;
-    }
-
 
     var levelDescription = (function(){
         function objectAccessor(field){
@@ -54,7 +30,7 @@
             name: 'groups',
             next_level: 'projects',
             properties: {
-                name: objectAccessor('group_name')
+                name: objectAccessor('name')
             },
             headers: ['Group']
         };
@@ -105,6 +81,67 @@
         }
     })();
 
+    function _get_tree_init_structure(projects, siteId) {
+        console.log('projects', projects);
+        var groups = {};
+        console.log('tree init site: ', siteId);
+
+        projects.forEach(function(project){
+            //console.log('project', project);
+            var group = project.group;
+            var group_name = project.group_name || group;
+
+            if (!groups.hasOwnProperty(group)){
+                groups[group] = new DataNode(
+                    {
+                        name: group_name,
+                        group: group
+                    },
+                    siteId,
+                    levelDescription['groups']
+                );
+            }
+            groups[group].children.push(
+                new DataNode(
+                    project,
+                    siteId,
+                    levelDescription['projects']
+                ));
+        });
+        var group_list = [];
+        for (var group in groups) {
+            if (groups.hasOwnProperty(group)) {
+                group_list.push(groups[group]);
+            }
+        };
+
+
+
+        function collapse(d, i) {
+            d.index = i;
+            if (d.children) {
+                d.children.sort(naturalSortByName);
+            }
+
+            if (d.children && d.children.length) {
+                //d.children[0].isFirstChild = true;
+                d._children = d.children;
+                d._children.forEach(collapse);
+                d.children = null;
+            }
+        }
+
+        group_list.sort(naturalSortByName);
+
+        group_list.forEach(collapse);
+        /*
+        if (group_list[0]) {
+            group_list[0].isFirstChild = true;
+        }*/
+        console.log('groups', group_list);
+        return group_list;
+    }
+
     var sdmProjectsInterface = function($q, makeAPICall) {
         var sites_url = BASE_URL + 'sites';
         var projects_url = BASE_URL + 'projects';
@@ -123,7 +160,7 @@
                                 );
 
                                 if (site.onload) {
-                                    makeAPICall.async(projects_url, site._id).then(
+                                    makeAPICall.async(projects_url, {site: site._id}).then(
                                         function(projects) {
                                             var groups = _get_tree_init_structure(projects, site._id);
                                             if (!groups.length) {
@@ -176,12 +213,6 @@
             } else if (node._children){
                 node.children = node._children;
                 node._children = null;
-                /**if (node.checked) {
-                    node.childrenChecked = node.children.length;
-                    node.children.forEach(function(child){
-                        child.checked = true;
-                    });
-                }**/
                 deferred.resolve();
             } else {
                 if (typeof node.level.next_level === 'undefined'){
@@ -189,7 +220,7 @@
                 }
                 if (node.level.name === 'sites'){
                     console.log(node);
-                    makeAPICall.async(projects_url, node.site).then(
+                    makeAPICall.async(projects_url, {site: node.site}).then(
                         function(projects) {
                             var groups = _get_tree_init_structure(projects, node.site);
                             node.children = groups;
@@ -208,7 +239,7 @@
                     return deferred.promise;
                 }
                 var url = BASE_URL + [node.level.name, node.id, node.level.next_level].join('/');
-                var promise = makeAPICall.async(url, node.site);
+                var promise = makeAPICall.async(url, {site: node.site});
                 promise.then(
                     function(result){
                         if (!result.length) {
@@ -261,101 +292,6 @@
         ['sdm.services'])
         .factory('sdmProjectsInterface', sdmProjectsInterface );
 
-    function _get_tree_init_structure(projects, siteId) {
-        console.log('projects', projects);
-        var groups = {};
-        console.log('tree init site: ', siteId);
 
-        projects.forEach(function(project){
-            //console.log('project', project);
-            var group = project.group;
-            var group_name = project.group_name || group;
-
-            if (!groups.hasOwnProperty(group)){
-                groups[group] = new DataNode(
-                    {
-                        group_name: group_name,
-                        group: group
-                    },
-                    siteId,
-                    levelDescription['groups']
-                );
-            }
-            groups[group].children.push(
-                new DataNode(
-                    project,
-                    siteId,
-                    levelDescription['projects']
-                ));
-        });
-        var group_list = [];
-        for (var group in groups) {
-            if (groups.hasOwnProperty(group)) {
-                group_list.push(groups[group]);
-            }
-        };
-
-
-
-        function collapse(d, i) {
-            d.index = i;
-            if (d.children) {
-                d.children.sort(naturalSortByName);
-            }
-
-            if (d.children && d.children.length) {
-                //d.children[0].isFirstChild = true;
-                d._children = d.children;
-                d._children.forEach(collapse);
-                d.children = null;
-            }
-        }
-
-        group_list.sort(naturalSortByName);
-
-        group_list.forEach(collapse);
-        /*
-        if (group_list[0]) {
-            group_list[0].isFirstChild = true;
-        }*/
-        console.log('groups', group_list);
-        return group_list;
-    }
-
-    var naturalSortByName = function(a, b){
-        if (typeof a.name === 'undefined') {
-            return +1;
-        }
-        if (typeof b.name === 'undefined') {
-            return -1;
-        }
-        function chunkify(t) {
-            var tz = new Array();
-            var x = 0, y = -1, n = 0, i, j;
-
-            while (i = (j = t.charAt(x++)).charCodeAt(0)) {
-                var m = ((i >=48 && i <= 57));
-                if (m !== n) {
-                    tz[++y] = "";
-                    n = m;
-                }
-                tz[y] += j;
-            }
-            return tz;
-        }
-
-        var aa = chunkify(a.name.toLowerCase());
-        var bb = chunkify(b.name.toLowerCase());
-
-        for (var x = 0; aa[x] && bb[x]; x++) {
-            if (aa[x] !== bb[x]) {
-                var c = Number(aa[x]), d = Number(bb[x]);
-                if (c == aa[x] && d == bb[x]) {
-                    return c - d;
-                } else return (aa[x] > bb[x]) ? 1 : -1;
-            }
-        }
-        return aa.length - bb.length;
-    };
 
 })();

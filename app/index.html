@@ -35,7 +35,7 @@
              ng-controller="SdmNavigationController as sdmNavigationController"
              ng-include="'components/navigation/navigation.html'">
         </div>
-        <div  ng-controller="SdmViewData as sdmProjectsViewData" ng-view>
+        <div ng-view>
         </div>
         <div class="footer">
             <div id="footer-links">
@@ -69,7 +69,7 @@
 
     <script src="components/APIServices/services-sdmRoles.js"></script>
     <script src="components/APIServices/services-sdmUsers.js"></script>
-    <script src="components/APIServices/services-sdmCollectionInterface.js"></script>
+    <script src="components/APIServices/services-sdmCollectionsInterface.js"></script>
     <script src="components/APIServices/services-sdmProjectsInterface.js"></script>
     <script src="components/APIServices/modules.js"></script>
 
@@ -83,6 +83,9 @@
     <script src="components/projectsViews/controllers-sdmProjectsViewData.js"></script>
     <script src="components/projectsViews/services-sdmViewManager.js"></script>
     <script src="components/projectsViews/modules.js"></script>
+
+    <script src="components/collectionsViews/controllers-sdmCollectionsViewData.js"></script>
+    <script src="components/collectionsViews/modules.js"></script>
 
     <script src="components/buttons/controllers-sdmButtons.js"></script>
     <script src="components/buttons/modules.js"></script>

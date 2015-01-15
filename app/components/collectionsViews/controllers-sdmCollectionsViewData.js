@@ -1,7 +1,7 @@
 'use strict';
 
 (function() {
-    var SdmProjectsViewData = function($scope, sdmProjectsInterface, sdmUserManager, sdmViewManager) {
+    var SdmCollectionsViewData = function($scope, sdmCollectionsInterface, sdmUserManager, sdmViewManager) {
         var _this = this;
         _this.trigger = {
             node: null,
@@ -24,7 +24,7 @@
             console.log('new', newValue);
             console.log('old', oldValue);
             if (newValue.logged_in !== oldValue.logged_in || newValue.root !== oldValue.root || newValue === oldValue) {
-                sdmProjectsInterface.treeInit().then(function(result){
+                sdmCollectionsInterface.treeInit().then(function(result){
                     _this.sdmData.data = result;
                     _this.trigger = {
                         node: result,
@@ -52,7 +52,7 @@
             return {
                 expandNode: function(node) {
                     console.log('node expanded', node);
-                    sdmProjectsInterface.expandNode(node).then(
+                    sdmCollectionsInterface.expandNode(node).then(
                         function() {
                             _this.trigger = {
                                 node: node,
@@ -63,7 +63,7 @@
                 },
                 checkNode: function(node) {
                     console.log('selected', node);
-                    sdmProjectsInterface.checkNode(node, true);
+                    sdmCollectionsInterface.checkNode(node, true);
                     $scope.$apply(function(){
                         _this.trigger = {
                             node: node,
@@ -75,16 +75,16 @@
             }
         };
 
-        _this.headers = sdmProjectsInterface.headers();
+        _this.headers = sdmCollectionsInterface.headers();
     }
 
-    SdmProjectsViewData.$inject = ['$scope', 'sdmProjectsInterface', 'sdmUserManager', 'sdmViewManager'];
+    SdmCollectionsViewData.$inject = ['$scope', 'sdmCollectionsInterface', 'sdmUserManager', 'sdmViewManager'];
 
-    var controller = angular.module('sdm.projectsViews.controllers.sdmProjectsViewData', [
-        'sdm.APIServices.services.sdmProjectsInterface',
+    var controller = angular.module('sdm.collectionsViews.controllers.sdmCollectionsViewData', [
+        'sdm.APIServices.services.sdmCollectionsInterface',
         'sdm.projectsViews.services.sdmViewManager',
         'sdm.authentication.services.sdmUserManager'
         ])
-        .controller('SdmProjectsViewData', SdmProjectsViewData);
+        .controller('SdmCollectionsViewData', SdmCollectionsViewData);
 
 })()

@@ -6,10 +6,10 @@ var _sdmCCController;
         [
             'sdm.dataFiltering.services.sdmFilterTree', 'sdm.authentication.services.sdmUserManager',
             'sdm.APIServices.services.sdmRoles', 'sdm.APIServices.services.sdmUsers',
-            'sdm.APIServices.services.sdmCollectionInterface'])
+            'sdm.APIServices.services.sdmCollectionsInterface'])
         .directive('sdmCreateCollection', [
-            '$q', 'sdmFilterTree', 'sdmUserManager', 'sdmRoles', 'sdmUsers', 'sdmCollectionInterface',
-            function($q, sdmFilterTree, sdmUserManager, sdmRoles, sdmUsers, sdmCollectionInterface) {
+            '$q', 'sdmFilterTree', 'sdmUserManager', 'sdmRoles', 'sdmUsers', 'sdmCollectionsInterface',
+            function($q, sdmFilterTree, sdmUserManager, sdmRoles, sdmUsers, sdmCollectionsInterface) {
 
 
                 var substringMatcher = function(elements, field) {
@@ -47,7 +47,7 @@ var _sdmCCController;
                         _sdmCCController = controller;
                         controller.curator = sdmUserManager.getAuthData();
                         console.log('curator', controller.curator);
-                        controller.addedPermissions = [{'uid': controller.curator._id, 'access': 'admin'}];
+                        controller.addedPermissions = [{'uid': controller.curator.user_uid, 'access': 'admin'}];
                         controller.users = [];
 
                         function initialize() {
@@ -105,7 +105,7 @@ var _sdmCCController;
                             selection.promise.then(function(selection) {
 
                                 function updateCollection(_id) {
-                                    sdmCollectionInterface.updateCollection(
+                                    sdmCollectionsInterface.updateCollection(
                                         _id,
                                         controller.collectionName,
                                         controller.collectionNotes||'',
@@ -118,7 +118,7 @@ var _sdmCCController;
                                 if (controller.collectionID) {
                                     updateCollection(controller.collectionID);
                                 } else {
-                                    sdmCollectionInterface.createCollection(
+                                    sdmCollectionsInterface.createCollection(
                                         controller.collectionName,
                                         controller.collectionNotes||'',
                                         controller.addedPermissions
@@ -134,7 +134,7 @@ var _sdmCCController;
                         controller.delete = function($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
-                            sdmCollectionInterface.deleteCollection(controller.collectionID);
+                            sdmCollectionsInterface.deleteCollection(controller.collectionID);
                             $scope.$parent.enableEvents();
                             $scope.$parent._hidePopover($event, 0);
                         };
@@ -160,7 +160,7 @@ var _sdmCCController;
                                 controller.collectionName = controller.selectedCollection.name;
                                 controller.collectionID = controller.selectedCollection._id;
                                 controller.collectionNotes = controller.selectedCollection.notes;
-                                sdmCollectionInterface.getCollection(controller.collectionID).then(
+                                sdmCollectionsInterface.getCollection(controller.collectionID).then(
                                     function(collection){
                                         console.log(collection);
                                         controller.addedPermissions = collection.permissions;
@@ -171,12 +171,12 @@ var _sdmCCController;
                                 controller.collectionName = '';
                                 controller.collectionID = null;
                                 controller.collectionNotes = '';
-                                controller.addedPermissions = [{'uid': controller.curator._id, 'access': 'admin'}];
+                                controller.addedPermissions = [{'uid': controller.curator.user_uid, 'access': 'admin'}];
                                 controller.defaultSelectText = '(Select Existing Collection)';
                             }
                         };
 
-                        sdmCollectionInterface.getCollections().then(
+                        sdmCollectionsInterface.getCollections().then(
                             function(collections){
                                 controller.existingCollections =
                                     controller.curator.root?collections:collections.filter(

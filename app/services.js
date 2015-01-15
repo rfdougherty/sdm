@@ -13,8 +13,8 @@ var httpServices = angular.module('sdmHttpServices', ['ngCookies', 'sdm.authenti
 httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', function($http, $cookieStore, sdmUserManager) {
 
     var makeAPICall = {
-        async: function(url, site, method, data, iter) {
-            console.log("MAKE API CALL\nwith url="+url+" and site="+site);
+        async: function(url, params, method, data, iter) {
+            console.log("MAKE API CALL\nwith url=", url, " and params=", params);
             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
             if (typeof method === 'undefined') {
                 method = 'GET';
@@ -24,11 +24,15 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 accessData.access_token : undefined;
             if (accessToken != null) console.log(" - accessToken="+accessToken);
 
+            if (!params) {
+                params = {};
+            }
+
             var requestParams = {
                 method: method,
                 url: url,
                 headers: {'Authorization': accessToken},
-                params: {site: site}
+                params: params
             };
             if (typeof data !== 'undefined') {
                 requestParams.data = data;
@@ -73,45 +77,6 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
         }
     };
     return makeAPICall;
-}]);
-
-httpServices.factory('callAPI', ['$http', function($http) {
-
-    var callAPI = {
-        async: function(url, data, method) {
-            var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
-            var accessToken =
-                typeof accessData !== "undefined"?
-                accessData.access_token : undefined;
-            console.log("MAKE HTTP API CALL");
-            console.log(httpMethod+" to API with url="+url+" accessToken="+accessToken+" method="+method+" and data:");
-            console.dir(data);
-
-            var promise = $http({
-                method: httpMethod,
-                url: url,
-                data: data,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': accessToken
-                }
-            }).then(function(response) {
-                console.log("data returned by API:");
-                console.dir(response);
-                console.log("\n");
-            }, function(reason) { //call if the http request fails
-                console.log("the API call returned an error:");
-                console.dir(reason);
-                if (reason.status == '404') {
-                    console.log("there is probably something wrong with the url or the server is unavailable");
-                }
-                console.log("\n");
-            });
-            // Return the promise to the controller
-            return promise;
-        }
-    };
-    return callAPI;
 }]);
 
 angular.module('sdmD3Service', [])
