@@ -80,20 +80,23 @@
     })();
 
     function _get_tree_init_structure(collections, siteId) {
+        console.log(collections);
         var curators = {};
         console.log('tree init site: ', siteId);
 
         collections.forEach(function(collection){
             var curator = collection.curator;
             var curator_name;
+            if (curator.firstname || curator.lastname) {
+                curator_name = (curator.firstname + ' ' + curator.lastname).trim();
+            } else {
+                curator_name = curator._id || 'anonymous';
+            }
+            var curatorID = curator._id || curator_name || 'anonymous';
 
-            if (!curators.hasOwnProperty(curator)){
-                if (curator.firstname || curator.lastname) {
-                    curator_name = (curator.firstname + ' ' + curator.lastname).trim();
-                } else {
-                    curator_name = curator._id || 'anonymous';
-                }
-                curators[curator] = new DataNode(
+            if (!curators.hasOwnProperty(curatorID)){
+
+                curators[curatorID] = new DataNode(
                     {
                         name: curator_name
                     },
@@ -101,7 +104,7 @@
                     levelDescription['curators']
                 );
             }
-            curators[curator].children.push(
+            curators[curatorID].children.push(
                 new DataNode(
                     collection,
                     siteId,
@@ -109,9 +112,9 @@
                 ));
         });
         var curator_list = [];
-        for (var curator in curators) {
-            if (curators.hasOwnProperty(curator)) {
-                curator_list.push(curators[curator]);
+        for (var curatorID in curators) {
+            if (curators.hasOwnProperty(curatorID)) {
+                curator_list.push(curators[curatorID]);
             }
         };
 
@@ -138,6 +141,7 @@
         if (group_list[0]) {
             group_list[0].isFirstChild = true;
         }*/
+        console.log(curator_list);
         return curator_list;
     }
 
@@ -162,12 +166,12 @@
                                     if (site.onload) {
                                         makeAPICall.async(collections_url, {site: site._id}).then(
                                             function(collections) {
-                                                var groups = _get_tree_init_structure(collections, site._id);
-                                                if (!groups.length) {
+                                                var curators = _get_tree_init_structure(collections, site._id);
+                                                if (!curators.length) {
                                                     siteNode.isLeaf = true;
                                                     siteNode.hasData = false;
                                                 } else {
-                                                    siteNode.children = groups;
+                                                    siteNode.children = curators;
                                                 }
                                                 deferredSite.resolve(siteNode);
                                             },

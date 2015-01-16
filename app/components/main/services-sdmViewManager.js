@@ -7,6 +7,11 @@
             'data-layout': 'table'
         };
 
+        var viewData = {
+            'projects': null,
+            'collections': null
+        };
+
         function getViewAppearance() {
             return viewAppearances;
         };
@@ -19,13 +24,23 @@
             angular.extend(viewAppearances, newViewAppearances);
         }
 
+        function setData(viewID, data) {
+            viewData[viewID] = data;
+        }
+
+        function getData(viewID) {
+            return viewData[viewID];
+        }
+
         return {
             getViewAppearance: getViewAppearance,
             updateViewAppearanceKey: updateViewAppearanceKey,
-            updateViewAppearance: updateViewAppearance
+            updateViewAppearance: updateViewAppearance,
+            setData: setData,
+            getData: getData
         }
     }
 
-    angular.module('sdm.projectsViews.services.sdmViewManager',[])
+    angular.module('sdm.main.services.sdmViewManager',[])
         .factory('sdmViewManager', sdmViewManager);
 })();

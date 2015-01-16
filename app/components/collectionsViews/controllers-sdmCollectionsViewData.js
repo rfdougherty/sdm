@@ -24,16 +24,26 @@
         }, function(newValue, oldValue){
             console.log('new', newValue);
             console.log('old', oldValue);
-            if (newValue.logged_in !== oldValue.logged_in || newValue.root !== oldValue.root || newValue === oldValue) {
+            var existingData;
+            if (newValue === oldValue && (existingData = sdmViewManager.getData('collections'))) {
+                _this.sdmData.data = existingData;
+                _this.trigger = {
+                    node: existingData,
+                    sessionKey:  (_this.trigger.sessionKey + 1)%10
+                };
+
+            } else if (newValue.logged_in !== oldValue.logged_in || newValue.root !== oldValue.root || newValue === oldValue) {
+
                 sdmCollectionsInterface.treeInit().then(function(result){
                     _this.sdmData.data = result;
                     _this.trigger = {
                         node: result,
                         sessionKey:  (_this.trigger.sessionKey + 1)%10
                     };
+                    sdmViewManager.setData('collections', result);
                     console.log('tree data initialized');
                 });
-            };
+            }
 
             var isReload = newValue === oldValue;
             var isPreferencesChanged = (
@@ -86,7 +96,7 @@
 
     var controller = angular.module('sdm.collectionsViews.controllers.sdmCollectionsViewData', [
         'sdm.APIServices.services.sdmCollectionsInterface',
-        'sdm.projectsViews.services.sdmViewManager',
+        'sdm.main.services.sdmViewManager',
         'sdm.authentication.services.sdmUserManager'
         ])
         .controller('SdmCollectionsViewData', SdmCollectionsViewData);

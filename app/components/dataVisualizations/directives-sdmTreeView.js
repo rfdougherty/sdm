@@ -108,7 +108,7 @@
 
     var updateView = function(data, source, clickCallback) {
         // Compute the new tree layout.
-        var nodes = tree(data);
+        var nodes = data?tree(data):[];
         //nodes.shift(); //remove the first element (the root of the tree)
 
 
