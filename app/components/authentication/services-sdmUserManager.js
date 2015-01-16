@@ -169,6 +169,7 @@
                 angular.extend(value_auth_data, $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA));
                 initialized = true;
             }
+            //console.log('value_auth_data', value_auth_data);
             return value_auth_data;
         }
 

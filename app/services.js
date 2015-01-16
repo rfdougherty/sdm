@@ -67,7 +67,7 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 if (value.data) {
                     return value.data;
                 } else {
-                    return makeAPICall.async(url, site, method, data, iter);
+                    return makeAPICall.async(url, params, method, data, iter);
                 }
             }).then(function(finalResult){
                 return finalResult;

@@ -28,7 +28,8 @@
                 replace: true,
                 // transclude: true,
                 link: {
-                    post: function($scope, $element) {
+                    post: function($scope, $element, $attrs) {
+                        console.log('table-attrs', $attrs);
                         sdmFilterTree.sdmData = $scope.sdmData;
                         var containerElement = $element[0]
                             .getElementsByClassName('sdm-table-content')[0]

@@ -85,11 +85,17 @@
 
         collections.forEach(function(collection){
             var curator = collection.curator;
+            var curator_name;
 
             if (!curators.hasOwnProperty(curator)){
+                if (curator.firstname || curator.lastname) {
+                    curator_name = (curator.firstname + ' ' + curator.lastname).trim();
+                } else {
+                    curator_name = curator._id || 'anonymous';
+                }
                 curators[curator] = new DataNode(
                     {
-                        name: curator
+                        name: curator_name
                     },
                     siteId,
                     levelDescription['curators']

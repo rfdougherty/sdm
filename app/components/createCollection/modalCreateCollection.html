@@ -34,11 +34,11 @@
                     <table class="table">
                         <tbody>
                             <tr class='user-permission' ng-repeat="permission in sdmCCController.addedPermissions">
-                                <td>{{permission.uid}}</td>
+                                <td>{{permission._id}}</td>
                                 <td>{{permission.access}}</td>
                                 <td>
-                                    <span class="glyphicon glyphicon-remove" ng-if="permission.uid!==sdmCCController.curator._id" ng-click="sdmCCController.removeUser($index)"></span>
-                                    <span class="glyphicon glyphicon-remove disabled" ng-if="permission.uid===sdmCCController.curator._id"></span></td>
+                                    <span class="glyphicon glyphicon-remove" ng-if="permission._id!==sdmCCController.curator._id" ng-click="sdmCCController.removeUser($index)"></span>
+                                    <span class="glyphicon glyphicon-remove disabled" ng-if="permission._id===sdmCCController.curator._id"></span></td>
                             </tr>
                         </tbody>
                     </table>

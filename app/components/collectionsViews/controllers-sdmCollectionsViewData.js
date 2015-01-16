@@ -8,6 +8,7 @@
             sessionKey: 1
         };
         _this.sdmData = {};
+        console.log('controller initialized');
 
         $scope.$watch(function(){
             var userData = sdmUserManager.getAuthData();
@@ -71,6 +72,9 @@
                             all: true
                         };
                     });
+                },
+                deleteCollection: function(collection) {
+                    sdmCollectionsInterface.delete(collection);
                 }
             }
         };

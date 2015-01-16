@@ -20,11 +20,9 @@
                 replace: false, // Replace with the template below
                 transclude: false, // we want to insert custom content inside the directive
                 link: function($scope, $element, $attrs) {
-                    console.log($scope.headersTitles);
                     $scope.dialogStyle = {};
                     var attrKeys = Object.getOwnPropertyNames($attrs);
                     var match;
-                    console.log('sdmAppendToBody', $attrs.sdmAppendToBody);
                     var rootElement = typeof $attrs.sdmAppendToBody ==='undefined'?
                         $element : angular.element(document.getElementsByTagName('body'));
                     for (var i = 0; i < attrKeys.length; i++) {

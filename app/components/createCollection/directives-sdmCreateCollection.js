@@ -47,21 +47,21 @@ var _sdmCCController;
                         _sdmCCController = controller;
                         controller.curator = sdmUserManager.getAuthData();
                         console.log('curator', controller.curator);
-                        controller.addedPermissions = [{'uid': controller.curator.user_uid, 'access': 'admin'}];
-                        controller.users = [];
+                        controller.addedPermissions = [{'_id': controller.curator.user_uid, 'access': 'admin'}];
+                        controller.users = {};
 
                         function initialize() {
                             $scope.$parent.dialogStyle.height = '500px';//100px';
                             $scope.$parent.dialogStyle.width = '600px';//280px';
                             controller.defaultSelectText = '(Select Existing Collection)';
-                            sdmUsers().then(function(data){
+                            sdmUsers.refreshImmediate().then(function(data){
                                 console.log(data);
                                 controller.users = data;
 
                                 $element.find('#share .typeahead').typeahead({
                                         hint: true,
                                         highlight: true,
-                                        minLength: 1
+                                        minLength: 3
                                     },
                                     {
                                         name: 'users',
@@ -144,7 +144,7 @@ var _sdmCCController;
                                 return;
                             }
                             controller.addedPermissions.push({
-                                uid: controller.selectedUID,
+                                _id: controller.selectedUID,
                                 access: controller.selectedRole.rid
                             });
                             controller.selectedUID = '';
@@ -171,7 +171,7 @@ var _sdmCCController;
                                 controller.collectionName = '';
                                 controller.collectionID = null;
                                 controller.collectionNotes = '';
-                                controller.addedPermissions = [{'uid': controller.curator.user_uid, 'access': 'admin'}];
+                                controller.addedPermissions = [{'_id': controller.curator.user_uid, 'access': 'admin'}];
                                 controller.defaultSelectText = '(Select Existing Collection)';
                             }
                         };

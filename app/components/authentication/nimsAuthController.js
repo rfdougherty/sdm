@@ -17,7 +17,7 @@ nimsAuthControllers.controller('LoginController', [
 
         $scope.userData = sdmUserManager.getAuthData();
 
-        if (typeof $scope.userData !== 'undefined') {
+        if (typeof $scope.userData.access_token !== 'undefined') {
             sdmUserManager.login($scope.userData.access_token);
         }
     }]);

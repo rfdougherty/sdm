@@ -3,6 +3,7 @@
 (function(){
 
     var sdmFilterTree = function(){
+        console.log('sdmFilter loaded');
 
         var filterLeaves = function(node) {
             return node.isLeaf;
