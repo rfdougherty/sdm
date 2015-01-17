@@ -9,7 +9,17 @@
             return node.isLeaf;
         };
 
-        var filters = {};
+        var filters;
+
+        var cachedFilters = {
+            'projects': {},
+            'collections': {}
+        };
+
+        var setView = function(viewID) {
+            console.log('viewID', viewID);
+            filters = cachedFilters[viewID] || {};
+        }
 
         var getFilter = function(name) {
             if (filters[name]){
@@ -253,7 +263,9 @@
             createFilter: createFilter,
             getFilter: getFilter,
             selector: selector,
-            getSelected: getSelected
+            getSelected: getSelected,
+            setView: setView,
+            cachedFilters: cachedFilters
         }
     }
 

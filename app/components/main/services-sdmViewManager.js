@@ -12,6 +12,11 @@
             'collections': null
         };
 
+        var viewFilters = {
+            'projects': null,
+            'collections': null
+        }
+
         function getViewAppearance() {
             return viewAppearances;
         };
@@ -30,6 +35,14 @@
 
         function getData(viewID) {
             return viewData[viewID];
+        }
+
+        function setViewFilters(viewID, filters) {
+            viewFilters[viewID] = filters;
+        }
+
+        function getViewFilters(viewID) {
+            return viewFilters[viewID];
         }
 
         return {

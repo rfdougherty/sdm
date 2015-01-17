@@ -6,8 +6,8 @@
 
     angular.module('sdm.dataVisualizations.directives.sdmTableView',
         ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree'])
-    .directive('sdmTableView', ['$compile', 'sdmD3Service', 'sdmFilterTree',
-        function($compile, sdmD3Service, sdmFilterTree){
+    .directive('sdmTableView', ['$compile', '$location','sdmD3Service', 'sdmFilterTree',
+        function($compile, $location, sdmD3Service, sdmFilterTree){
             return {
                 // name: '',
                 // priority: 1,
@@ -16,8 +16,7 @@
                     sdmData: '=',
                     trigger: '=sdmTrigger',
                     sdmActions: '&',
-                    sdmHeaders: '=',
-                    sdmFilter: '='
+                    sdmHeaders: '='
                 }, // {} = isolate, true = child, false/undefined = no change
                 // controllerAs: 'tableController',
                 // controller: TableController,
@@ -29,8 +28,10 @@
                 // transclude: true,
                 link: {
                     post: function($scope, $element, $attrs) {
-                        console.log('table-attrs', $attrs);
                         sdmFilterTree.sdmData = $scope.sdmData;
+                        var currentPath = $location.path();
+                        //console.log(currentPath.substring(1, currentPath.length));
+                        sdmFilterTree.setView(currentPath.substring(1, currentPath.length));
                         var containerElement = $element[0]
                             .getElementsByClassName('sdm-table-content')[0]
                             .getElementsByClassName('container')[0];
