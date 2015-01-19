@@ -145,8 +145,9 @@
         return curator_list;
     }
 
-    angular.module('sdm.APIServices.services.sdmCollectionsInterface', ['sdmHttpServices'])
-        .factory('sdmCollectionsInterface', ['$q', 'makeAPICall', function($q, makeAPICall){
+    angular.module('sdm.APIServices.services.sdmCollectionsInterface',
+        ['sdmHttpServices', 'sdm.dataFiltering.services.sdmFilterTree'])
+        .factory('sdmCollectionsInterface', ['$q', 'makeAPICall', 'sdmFilterTree', function($q, makeAPICall, sdmFilterTree){
             var sites_url = BASE_URL + 'sites';
             var collections_url = BASE_URL + 'collections';
 
@@ -202,9 +203,176 @@
                         })
                     });
                 return deferred.promise;
+            };
+
+            var breadthFirstAsync = function (tree, getChildren) {
+                var queue = [{node: tree}];
+                function next() {
+                    console.log('queue.length', queue.length);
+                    var nextDeferred = $q.defer();
+                    var nodeOrPromise = queue.pop();
+                    console.log('queue.length - 1', queue.length);
+                    console.log('nodeOrpromise', nodeOrPromise);
+                    if (typeof nodeOrPromise === 'undefined') {
+                        return;
+                    }
+                    if (nodeOrPromise.node) {
+                        queue.unshift(
+                            {
+                                promise: getChildren(nodeOrPromise.node),
+                                checked: nodeOrPromise.node.checked,
+                                parent: nodeOrPromise.node
+                            }
+                        );
+                        nextDeferred.resolve(nodeOrPromise.node);
+                    } else if (nodeOrPromise.promise) {
+                        nodeOrPromise.promise.then(function(children){
+                            console.log('children', children);
+                            if (children && children.length) {
+                                children.forEach(function(child, i){
+                                    console.log('index', i);
+                                    child.checked = child.checked || nodeOrPromise.checked;
+                                    if (!child.parent) {
+                                        child.parent = nodeOrPromise.parent;
+                                    }
+                                    if (i !== 0) {
+                                        queue.unshift({node: child});
+                                    }
+                                });
+                                queue.unshift({
+                                    promise: getChildren(children[0]),
+                                    checked: children[0].checked,
+                                    parent: children[0]
+                                });
+                                console.log('queue after next', queue.length);
+                                nextDeferred.resolve(children[0]);
+                            } else {
+                                console.log('queue after next', queue.length);
+                                nextDeferred.resolve();
+                            }
+                        });
+                    } else {
+                        nextDeferred.reject('Error in breadthFirstAsync');
+                    }
+                    return nextDeferred.promise;
+                }
+                return {
+                    next: next
+                }
+            };
+
+            var breadthFirstFull = function(tree) {
+                return breadthFirstAsync(tree, getAllChildren);
+            };
+
+
+
+            var breadthFirstRefresh = function(tree) {
+                return breadthFirstAsync(tree, refreshChildren);
             }
 
-            var expandNode = function(node, triggerChange) {
+            var getAllChildren= function (node) {
+                console.log(node);
+                var deferred = $q.defer();
+                var children = node.children&&node.children.length?node.children:node._children;
+                if (children && children.length) {
+                    deferred.resolve(children);
+                    return deferred.promise;
+                } else {
+                    return getChildrenFromAPI(node, deferred);
+                }
+            };
+
+            var refreshChildren = function (node) {
+                console.log(node);
+                var newNode = angular.copy(node);
+                node.parent.children[node.index] = newNode;
+                node = newNode;
+                if (node.key) node.key++;
+                var deferred = $q.defer();
+                if (node.children) {
+                    var promise = getChildrenFromAPI(node, deferred);
+                    promise.then(function(children){
+                        node.children = node._children;
+                        node._children = null;
+                    });
+                    return promise;
+                } else {
+                    deferred.resolve();
+                    return deferred.promise;
+                }
+            };
+
+            var getChildrenFromAPI = function(node, deferred) {
+                if (typeof node.level.next_level === 'undefined'){
+                    deferred.resolve();
+                    return deferred.promise;
+                }
+                console.log('getChildren', node);
+                if (node.level.name === 'sites'){
+                    makeAPICall.async(collections_url, {site: node.site}).then(
+                        function(collections) {
+                            var curators = _get_tree_init_structure(collections, node.site);
+                            node._children = curators;
+                            if (curators.length){
+                                node.hasData = true;
+                            } else {
+                                node.hasData = false;
+                                console.log('node', node);
+                            }
+                            deferred.resolve(curators);
+                        },
+                        function(reason) {
+                            console.log(reason);
+                            deferred.reject(reason);
+                        });
+                    return deferred.promise;
+                }
+
+                var url, promise;
+                if (node.level.name === 'sessions') {
+                    url = BASE_URL + ['collections', node.parent.id, node.level.next_level].join('/');
+                    promise = makeAPICall.async(url, {site: node.site, session: node.id});
+                } else {
+                    url = BASE_URL + [node.level.name, node.id, node.level.next_level].join('/');
+                    promise = makeAPICall.async(url, {site: node.site});
+                }
+
+                promise.then(
+                    function(result){
+                        if (!result.length) {
+                            node.hasData = false;
+                            console.log('node', node);
+                            deferred.resolve(result);
+                            return;
+                        }
+                        node.hasData = true;
+                        node._children = result.map(
+                            function(childData){
+                                return new DataNode(
+                                    childData,
+                                    node.site,
+                                    levelDescription[node.level.next_level]
+                                    )
+                            });
+                        node._children.sort(naturalSortByName);
+                        node._children.forEach(function (child, i) {
+                            child.index = i;
+                            child.checked = node.checked;
+                        });
+                        node.childrenChecked = node.checked?node._children.length:0;
+                        node.childrenIndeterminate = 0;
+                        deferred.resolve(node._children);
+                    }, function(reason){
+                        console.log(reason);
+                        deferred.reject(reason);
+                    });
+                return deferred.promise;
+
+            };
+
+
+            var expandNode = function(node) {
                 var deferred = $q.defer();
                 var newNode = angular.copy(node);
                 node.parent.children[node.index] = newNode;
@@ -214,75 +382,20 @@
                     node._children = node.children;
                     node.children = null;
                     deferred.resolve();
+                    return deferred.promise;
                 } else if (node._children){
                     node.children = node._children;
                     node._children = null;
                     deferred.resolve();
+                    return deferred.promise
                 } else {
-                    if (typeof node.level.next_level === 'undefined'){
-                        return;
-                    }
-                    if (node.level.name === 'sites'){
-                        console.log(node);
-                        makeAPICall.async(collections_url, {site: node.site}).then(
-                            function(collections) {
-                                var curators = _get_tree_init_structure(collections, node.site);
-                                node.children = curators;
-                                if (curators.length){
-                                    node.hasData = true;
-                                } else {
-                                    node.hasData = false;
-                                    console.log('node', node);
-                                }
-                                deferred.resolve();
-                            },
-                            function(reason) {
-                                console.log(reason);
-                                deferred.reject(reason);
-                            });
-                        return deferred.promise;
-                    }
-
-                    var url, promise;
-                    if (node.level.name === 'sessions') {
-                        url = BASE_URL + ['collections', node.parent.id, node.level.next_level].join('/');
-                        promise = makeAPICall.async(url, {site: node.site, session: node.id});
-                    } else {
-                        url = BASE_URL + [node.level.name, node.id, node.level.next_level].join('/');
-                        promise = makeAPICall.async(url, {site: node.site});
-                    }
-
-                    promise.then(
-                        function(result){
-                            if (!result.length) {
-                                node.hasData = false;
-                                console.log('node', node);
-                                deferred.resolve();
-                                return;
-                            }
-                            node.hasData = true;
-                            node.children = result.map(
-                                function(childData){
-                                    return new DataNode(
-                                        childData,
-                                        node.site,
-                                        levelDescription[node.level.next_level]
-                                        )
-                                });
-                            node.children.sort(naturalSortByName);
-                            node.children.forEach(function(child, i){
-                                child.index = i;
-                                child.checked = node.checked;
-                            });
-                            node.childrenChecked = node.checked?node.children.length:0;
-                            node.childrenIndeterminate = 0;
-                            deferred.resolve();
-                        }, function(reason){
-                            console.log(reason);
-                            deferred.reject(reason);
-                        });
+                    var promise = getChildrenFromAPI(node, deferred);
+                    promise.then(function(children){
+                        node.children = node._children;
+                        node._children = null;
+                    });
+                    return promise;
                 }
-                return deferred.promise;
             };
 
             var headers = function () {
@@ -356,7 +469,7 @@
                     d.resolve(response);
                 });
                 return d.promise;
-            }
+            };
 
             var getCollections = function () {
                 var d = $q.defer();
@@ -403,7 +516,8 @@
                 deleteAllCollections: deleteAllCollections,
                 treeInit: treeInit,
                 expandNode: expandNode,
-                headers: headers
+                headers: headers,
+                breadthFirstFull: breadthFirstFull
             }
         }]);
 

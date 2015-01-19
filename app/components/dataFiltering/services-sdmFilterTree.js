@@ -10,15 +10,17 @@
         };
 
         var filters;
+        var filterService = {};
 
         var cachedFilters = {
             'projects': {},
             'collections': {}
         };
 
-        var setView = function(viewID) {
-            console.log('viewID', viewID);
-            filters = cachedFilters[viewID] || {};
+        var setView = function(_viewID) {
+            filterService.viewID = _viewID;
+            console.log('viewID', filterService.viewID);
+            filters = cachedFilters[filterService.viewID] || {};
         }
 
         var getFilter = function(name) {
@@ -256,17 +258,19 @@
             } else {
                 selectorUnchecked(node);
             }
-        }
-
-        return {
-            filter: filter,
-            createFilter: createFilter,
-            getFilter: getFilter,
-            selector: selector,
-            getSelected: getSelected,
-            setView: setView,
-            cachedFilters: cachedFilters
-        }
+        };
+        angular.extend(
+            filterService,
+            {
+                filter: filter,
+                createFilter: createFilter,
+                getFilter: getFilter,
+                selector: selector,
+                getSelected: getSelected,
+                setView: setView,
+                cachedFilters: cachedFilters
+            });
+        return filterService;
     }
 
 

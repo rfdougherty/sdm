@@ -4,12 +4,12 @@ var _sdmCCController;
 (function() {
     angular.module('sdm.createCollection.directives.sdmCreateCollection',
         [
-            'sdm.dataFiltering.services.sdmFilterTree', 'sdm.authentication.services.sdmUserManager',
+            'sdm.createCollection.services.sdmGetSelection', 'sdm.authentication.services.sdmUserManager',
             'sdm.APIServices.services.sdmRoles', 'sdm.APIServices.services.sdmUsers',
             'sdm.APIServices.services.sdmCollectionsInterface'])
         .directive('sdmCreateCollection', [
-            '$q', 'sdmFilterTree', 'sdmUserManager', 'sdmRoles', 'sdmUsers', 'sdmCollectionsInterface',
-            function($q, sdmFilterTree, sdmUserManager, sdmRoles, sdmUsers, sdmCollectionsInterface) {
+            '$q', '$location', 'sdmGetSelection', 'sdmUserManager', 'sdmRoles', 'sdmUsers', 'sdmCollectionsInterface',
+            function($q, $location, sdmGetSelection, sdmUserManager, sdmRoles, sdmUsers, sdmCollectionsInterface) {
 
 
                 var substringMatcher = function(elements, field) {
@@ -44,6 +44,8 @@ var _sdmCCController;
                     controller: function(){},
                     controllerAs: 'sdmCCController',
                     link: function($scope, $element, $attrs, controller) {
+
+                        var currentPath = $location.path();
                         _sdmCCController = controller;
                         controller.curator = sdmUserManager.getAuthData();
                         console.log('curator', controller.curator);
@@ -74,17 +76,13 @@ var _sdmCCController;
                             });
                         }
                         initialize();
-                        console.log(sdmFilterTree.sdmData.data);
                         sdmRoles().then(function(data){
                             controller.roles = data;
                             controller.selectedRole = controller.roles[0];
                         });
 
                         $scope.$parent.disableEvents();
-                        var selection = $q.defer();
-                        setTimeout(function () {
-                            selection.resolve(sdmFilterTree.getSelected(sdmFilterTree.sdmData.data));
-                        }, 0);
+                        var selection = sdmGetSelection.getSelection();
                         controller.cancel = function ($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
@@ -102,8 +100,8 @@ var _sdmCCController;
                             }
                             $scope.$parent.enableEvents();
 
-                            selection.promise.then(function(selection) {
-
+                            selection.then(function(selection) {
+                                console.log('selection', selection);
                                 function updateCollection(_id) {
                                     sdmCollectionsInterface.updateCollection(
                                         _id,
