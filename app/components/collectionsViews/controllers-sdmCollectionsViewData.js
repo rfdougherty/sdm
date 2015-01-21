@@ -3,11 +3,14 @@
 (function() {
     var SdmCollectionsViewData = function($scope, sdmCollectionsInterface, sdmUserManager, sdmViewManager) {
         var _this = this;
+        var existingData;
         _this.trigger = {
             node: null,
             sessionKey: 1
         };
-        _this.sdmData = {};
+
+        _this.sdmData = (existingData = sdmViewManager.getData('collections'))?{data:existingData}:{};
+        sdmViewManager.setData('collections', _this.sdmData.data, _this);
         console.log('controller initialized');
 
         $scope.$watch(function(){
@@ -40,7 +43,7 @@
                         node: result,
                         sessionKey:  (_this.trigger.sessionKey + 1)%10
                     };
-                    sdmViewManager.setData('collections', result);
+                    sdmViewManager.setData('collections', result, _this);
                     console.log('tree data initialized');
                 });
             }

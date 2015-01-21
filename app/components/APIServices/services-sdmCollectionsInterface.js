@@ -104,6 +104,9 @@
                     levelDescription['curators']
                 );
             }
+            if (typeof curators[curatorID].children === 'undefined') {
+                curators[curatorID].children = [];
+            }
             curators[curatorID].children.push(
                 new DataNode(
                     collection,
@@ -205,13 +208,13 @@
                 return deferred.promise;
             };
 
+
+
             var breadthFirstAsync = function (tree, getChildren) {
                 var queue = [{node: tree}];
                 function next() {
-                    console.log('queue.length', queue.length);
                     var nextDeferred = $q.defer();
                     var nodeOrPromise = queue.pop();
-                    console.log('queue.length - 1', queue.length);
                     console.log('nodeOrpromise', nodeOrPromise);
                     if (typeof nodeOrPromise === 'undefined') {
                         return;
@@ -230,11 +233,8 @@
                             console.log('children', children);
                             if (children && children.length) {
                                 children.forEach(function(child, i){
-                                    console.log('index', i);
                                     child.checked = child.checked || nodeOrPromise.checked;
-                                    if (!child.parent) {
-                                        child.parent = nodeOrPromise.parent;
-                                    }
+                                    child.parent = nodeOrPromise.parent;
                                     if (i !== 0) {
                                         queue.unshift({node: child});
                                     }
@@ -244,15 +244,14 @@
                                     checked: children[0].checked,
                                     parent: children[0]
                                 });
-                                console.log('queue after next', queue.length);
                                 nextDeferred.resolve(children[0]);
                             } else {
-                                console.log('queue after next', queue.length);
                                 nextDeferred.resolve();
                             }
                         });
                     } else {
                         nextDeferred.reject('Error in breadthFirstAsync');
+                        throw 'Error in breadthFirstAsync';
                     }
                     return nextDeferred.promise;
                 }
@@ -265,14 +264,11 @@
                 return breadthFirstAsync(tree, getAllChildren);
             };
 
-
-
             var breadthFirstRefresh = function(tree) {
                 return breadthFirstAsync(tree, refreshChildren);
-            }
+            };
 
             var getAllChildren= function (node) {
-                console.log(node);
                 var deferred = $q.defer();
                 var children = node.children&&node.children.length?node.children:node._children;
                 if (children && children.length) {
@@ -285,21 +281,83 @@
 
             var refreshChildren = function (node) {
                 console.log(node);
-                var newNode = angular.copy(node);
-                node.parent.children[node.index] = newNode;
-                node = newNode;
-                if (node.key) node.key++;
+                node.childrenIndeterminate = 0;
+                node.childrenChecked  = 0;
                 var deferred = $q.defer();
+                if (node.level.name === 'roots'){
+                    deferred.resolve(node.children);
+                    return deferred.promise;
+                }
+
+                if (node.level.name === 'acquisitions'){
+                    console.log('no children', node);
+                    deferred.resolve();
+                    return deferred.promise;
+                }
+
                 if (node.children) {
+                    console.log('node.children', node);
                     var promise = getChildrenFromAPI(node, deferred);
                     promise.then(function(children){
-                        node.children = node._children;
+                        console.log(children);
+                        updateChildrenList(node.children, children);
+                        node.children = children;
                         node._children = null;
+                        node.childrenChecked = node.checked?children.length:0;
+                        return children;
+                    });
+                    return promise;
+                } else if (node._children){
+                    console.log('node._children', node);
+                    promise = getChildrenFromAPI(node, deferred);
+                    promise.then(function(children){
+                        updateChildrenList(node._children, children);
+                        node._children = children;
+                        node.children = null;
+                        node.childrenChecked = node.checked?children.length:0;
+                        return children;
                     });
                     return promise;
                 } else {
+                    console.log('no children', node);
                     deferred.resolve();
                     return deferred.promise;
+                }
+            };
+
+            /**
+             ** modify newList children adding them from existing nodes in oldList
+             **/
+            var updateChildrenList = function(oldList, newList) {
+                var i = 0;
+                var j = 0;
+                while (true) {
+                    if (i >= oldList.length || j >= newList.length) {
+                        return;
+                    }
+                    console.log ('ij', i, j);
+                    var greaterThan = naturalSortByName(oldList[i], newList[j]);
+                    if (greaterThan === 0) {
+                        console.log(oldList[i], newList[j]);
+                        if (!oldList[i].id || oldList[i].id === newList[j].id) {
+                            if (oldList[i].level.name === 'curators') {
+                                if (oldList[i].children) {
+                                    newList[j].children = newList[j]._children;
+                                    updateChildrenList(oldList[i].children, newList[j].children);
+                                }
+                            } else {
+                                newList[j].children = oldList[i].children;
+                                newList[j]._children = oldList[i]._children;
+                            }
+                            newList[j].checked = oldList[i].checked;
+                        }
+                        i++;
+                        j++;
+                    } else if (greaterThan > 0) {
+                        i++;
+                    } else {
+                        j++;
+                    }
                 }
             };
 
@@ -309,23 +367,28 @@
                     return deferred.promise;
                 }
                 console.log('getChildren', node);
+
+                if (node.level.name === 'curators'){
+
+                    deferred.resolve(node.children||node._children);
+                    return deferred.promise;
+                }
                 if (node.level.name === 'sites'){
                     makeAPICall.async(collections_url, {site: node.site}).then(
                         function(collections) {
                             var curators = _get_tree_init_structure(collections, node.site);
-                            node._children = curators;
-                            if (curators.length){
-                                node.hasData = true;
-                            } else {
-                                node.hasData = false;
-                                console.log('node', node);
-                            }
+                            //node._children = curators;
                             deferred.resolve(curators);
                         },
                         function(reason) {
                             console.log(reason);
                             deferred.reject(reason);
                         });
+                    return deferred.promise;
+                }
+
+                if (node.level.name === 'acquisitions') {
+                    deferred.resolve();
                     return deferred.promise;
                 }
 
@@ -341,13 +404,10 @@
                 promise.then(
                     function(result){
                         if (!result.length) {
-                            node.hasData = false;
-                            console.log('node', node);
                             deferred.resolve(result);
                             return;
                         }
-                        node.hasData = true;
-                        node._children = result.map(
+                        var _children = result.map(
                             function(childData){
                                 return new DataNode(
                                     childData,
@@ -355,14 +415,11 @@
                                     levelDescription[node.level.next_level]
                                     )
                             });
-                        node._children.sort(naturalSortByName);
-                        node._children.forEach(function (child, i) {
+                        _children.sort(naturalSortByName);
+                        _children.forEach(function (child, i) {
                             child.index = i;
-                            child.checked = node.checked;
                         });
-                        node.childrenChecked = node.checked?node._children.length:0;
-                        node.childrenIndeterminate = 0;
-                        deferred.resolve(node._children);
+                        deferred.resolve(_children);
                     }, function(reason){
                         console.log(reason);
                         deferred.reject(reason);
@@ -391,8 +448,14 @@
                 } else {
                     var promise = getChildrenFromAPI(node, deferred);
                     promise.then(function(children){
-                        node.children = node._children;
+                        children.forEach(function (child) {
+                            child.checked = node.checked;
+                        });
+                        node.childrenChecked = node.checked?children.length:0;
+                        node.childrenIndeterminate = 0;
+                        node.children = children;
                         node._children = null;
+                        node.hasData = node.children&&node.children.length?true:false;
                     });
                     return promise;
                 }
@@ -517,7 +580,8 @@
                 treeInit: treeInit,
                 expandNode: expandNode,
                 headers: headers,
-                breadthFirstFull: breadthFirstFull
+                breadthFirstFull: breadthFirstFull,
+                breadthFirstRefresh: breadthFirstRefresh
             }
         }]);
 

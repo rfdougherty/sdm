@@ -2,7 +2,7 @@
 
 (function(){
 
-    var sdmViewManager = function() {
+    var sdmViewManager = function(sdmCollectionsInterface) {
         var viewAppearances = {
             'data-layout': 'table'
         };
@@ -12,10 +12,7 @@
             'collections': null
         };
 
-        var viewFilters = {
-            'projects': null,
-            'collections': null
-        }
+        var viewController;
 
         function getViewAppearance() {
             return viewAppearances;
@@ -29,20 +26,21 @@
             angular.extend(viewAppearances, newViewAppearances);
         }
 
-        function setData(viewID, data) {
+        function setData(viewID, data, _controller) {
             viewData[viewID] = data;
+            viewController = _controller;
         }
 
         function getData(viewID) {
             return viewData[viewID];
         }
 
-        function setViewFilters(viewID, filters) {
-            viewFilters[viewID] = filters;
-        }
-
-        function getViewFilters(viewID) {
-            return viewFilters[viewID];
+        function triggerViewChange(node) {
+            viewController.trigger = {
+                node: node,
+                sessionKey:  (viewController.trigger.sessionKey + 1)%10,
+                all: true
+            }
         }
 
         return {
@@ -50,10 +48,13 @@
             updateViewAppearanceKey: updateViewAppearanceKey,
             updateViewAppearance: updateViewAppearance,
             setData: setData,
-            getData: getData
+            getData: getData,
+            triggerViewChange: triggerViewChange
         }
     }
 
-    angular.module('sdm.main.services.sdmViewManager',[])
+    sdmViewManager.$inject = ['sdmCollectionsInterface'];
+
+    angular.module('sdm.main.services.sdmViewManager',['sdm.APIServices.services.sdmCollectionsInterface'])
         .factory('sdmViewManager', sdmViewManager);
 })();

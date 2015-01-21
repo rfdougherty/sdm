@@ -101,6 +101,9 @@
                     levelDescription['groups']
                 );
             }
+            if (typeof groups[group].children === 'undefined') {
+                groups[group].children = [];
+            }
             groups[group].children.push(
                 new DataNode(
                     project,

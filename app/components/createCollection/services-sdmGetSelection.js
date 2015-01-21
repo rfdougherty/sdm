@@ -15,10 +15,8 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
                     selection = [];
                     var iterate = function () {
                         var element = iterator.next();
-                        console.log('iterate', element);
                         if (element) {
                             element.then(function(element){
-                                console.log('element', element);
                                 if (element && element.checked && element.level.name === 'acquisitions') {
                                     selection.push(element);
                                 }

@@ -98,7 +98,7 @@ var DataNode = function(data, site, level, children) {
             this
         );
     }
-    this.children = children?children:[];
+    this.children = children?children:undefined;
     this.isLeaf = true;//by default each node is a leaf
     this.hasData = true;
     this.childrenChecked = 0;

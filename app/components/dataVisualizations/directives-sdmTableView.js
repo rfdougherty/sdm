@@ -190,6 +190,7 @@
     var updateRow = function (actions) {
         return function(leaf) {
             var dataRow = createDataRow(leaf);
+            console.log('dataRow', leaf.name, dataRow);
 
             d3.select(this)
                 .selectAll('span.sdm-cell')
@@ -219,6 +220,8 @@
                 var value = d[p];
                 if (d.show) {
                     if (i === 0){
+                        //console.log('d3', d.name, d);
+                        d.indeterminate = !d.checked && d.childrenChecked + d.childrenIndeterminate > 0;
                         d3Element.append('input').attr({
                             'type': 'checkbox'
                         }).property({
