@@ -43,13 +43,51 @@
             }
         }
 
+        function refreshView(viewID) {
+            var tree = getData(viewID);
+            var iterator = sdmCollectionsInterface.breadthFirstRefresh(tree);
+            var iterate = function() {
+                var element = iterator.next();
+                if (element) {
+                    element.then(function(element){
+                        if (element && element.checked) {
+                            _updateCountersParent(element);
+                        }
+                        iterate();
+                    });
+                } else {
+                    triggerViewChange(tree);
+                }
+            };
+            iterate();
+        };
+
+        var _updateCountersParent = function(node) {
+            var checked = true;
+            while (node.parent) {
+                if (node.parent.checked) {
+                    return;
+                } else if (checked) {
+                    node.parent.childrenChecked += 1;
+                    checked = false;
+                } else {
+                    node.parent.childrenIndeterminate += 1;
+                }
+                // if we have already updated the upper level return
+                if (node.parent.childrenChecked + node.parent.childrenIndeterminate > 1) {
+                    return;
+                }
+                node = node.parent;
+            }
+        }
+
         return {
             getViewAppearance: getViewAppearance,
             updateViewAppearanceKey: updateViewAppearanceKey,
             updateViewAppearance: updateViewAppearance,
             setData: setData,
             getData: getData,
-            triggerViewChange: triggerViewChange
+            refreshView: refreshView
         }
     }
 

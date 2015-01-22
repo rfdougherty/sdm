@@ -3,6 +3,7 @@
 angular.module('sdm.APIServices.services.sdmUsers', ['sdmHttpServices'])
     .factory('sdmUsers', ['$q', 'makeAPICall', function($q, makeAPICall){
         var userData = {};
+        var timestamp;
         var refreshUsers = function () {
             var d = $q.defer();
             userData = {};
@@ -16,25 +17,23 @@ angular.module('sdm.APIServices.services.sdmUsers', ['sdmHttpServices'])
             return d.promise;
         };
 
-        var userUpdater;
+        if (!Date.now) {
+            Date.now = function() { return new Date().getTime(); }
+        }
 
-        var refreshImmediate = function () {
-            if (userUpdater){
-                clearInterval(userUpdater);
+        var getUsers = function () {
+            var newTimestamp = Date.now();
+            if (!timestamp || newTimestamp - timestamp > 60000) {
+                timestamp = newTimestamp;
+                return refreshUsers();
+            } else {
+                var d = $q.defer();
+                d.resolve(userData);
+                return d.promise
             }
-            var userPromise = refreshUsers();
-            userUpdater = setInterval(refreshUsers, 30000);
-            return userPromise;
         };
-
-        var getUsers = function() {
-            return userData;
-        };
-
-
 
         return {
-            refreshImmediate: refreshImmediate,
             getUsers: getUsers
         }
     }]);

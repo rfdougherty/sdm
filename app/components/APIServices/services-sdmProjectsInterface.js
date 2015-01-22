@@ -88,8 +88,8 @@
 
         projects.forEach(function(project){
             //console.log('project', project);
-            var group = project.group;
-            var group_name = project.group_name || group;
+            var group = project.group._id;
+            var group_name = project.group.name || group;
 
             if (!groups.hasOwnProperty(group)){
                 groups[group] = new DataNode(

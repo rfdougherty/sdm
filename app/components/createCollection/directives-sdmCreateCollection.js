@@ -5,11 +5,12 @@ var _sdmCCController;
     angular.module('sdm.createCollection.directives.sdmCreateCollection',
         [
             'sdm.createCollection.services.sdmGetSelection', 'sdm.authentication.services.sdmUserManager',
+            'sdm.main.services.sdmViewManager',
             'sdm.APIServices.services.sdmRoles', 'sdm.APIServices.services.sdmUsers',
             'sdm.APIServices.services.sdmCollectionsInterface'])
         .directive('sdmCreateCollection', [
-            '$q', '$location', 'sdmGetSelection', 'sdmUserManager', 'sdmRoles', 'sdmUsers', 'sdmCollectionsInterface',
-            function($q, $location, sdmGetSelection, sdmUserManager, sdmRoles, sdmUsers, sdmCollectionsInterface) {
+            '$q', '$location', 'sdmGetSelection', 'sdmUserManager', 'sdmViewManager', 'sdmRoles', 'sdmUsers', 'sdmCollectionsInterface',
+            function($q, $location, sdmGetSelection, sdmUserManager, sdmViewManager, sdmRoles, sdmUsers, sdmCollectionsInterface) {
 
 
                 var substringMatcher = function(elements, field) {
@@ -44,8 +45,9 @@ var _sdmCCController;
                     controller: function(){},
                     controllerAs: 'sdmCCController',
                     link: function($scope, $element, $attrs, controller) {
-
+                        console.log('scopeCreateCollection', $scope);
                         var currentPath = $location.path();
+                        var viewID = currentPath.substring(1, currentPath);
                         _sdmCCController = controller;
                         controller.curator = sdmUserManager.getAuthData();
                         console.log('curator', controller.curator);
@@ -56,7 +58,7 @@ var _sdmCCController;
                             $scope.$parent.dialogStyle.height = '500px';//100px';
                             $scope.$parent.dialogStyle.width = '600px';//280px';
                             controller.defaultSelectText = '(Select Existing Collection)';
-                            sdmUsers.refreshImmediate().then(function(data){
+                            sdmUsers.getUsers().then(function(data){
                                 console.log(data);
                                 controller.users = data;
 
@@ -110,7 +112,9 @@ var _sdmCCController;
                                         controller.addedPermissions,
                                         selection,
                                         'add'
-                                    );
+                                    ).then(function(){
+                                        sdmViewManager.refreshView('collections');
+                                    });
 
                                 }
                                 if (controller.collectionID) {
@@ -125,14 +129,19 @@ var _sdmCCController;
                                         updateCollection(response._id);
                                     });
                                 }
+                                sdmViewManager.refreshView('collections');
                             });
+
                             $scope.$parent._hidePopover($event, 0);
                         };
 
                         controller.delete = function($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
-                            sdmCollectionsInterface.deleteCollection(controller.collectionID);
+                            sdmCollectionsInterface.deleteCollection(controller.collectionID).then(
+                                function(){
+                                    sdmViewManager.refreshView('collections');
+                                });
                             $scope.$parent.enableEvents();
                             $scope.$parent._hidePopover($event, 0);
                         };
