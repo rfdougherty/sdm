@@ -300,47 +300,69 @@
             }
         };
 
-        var refreshChildren = function (node) {
-            console.log(node);
-            node.childrenIndeterminate = 0;
-            node.childrenChecked  = 0;
-            var deferred = $q.defer();
+            var refreshChildren = function (node) {
+                console.log(node);
+                var isCheckedOrIndeterminate = node.childrenChecked + node.childrenIndeterminate > 0
+                node.childrenIndeterminate = 0;
+                node.childrenChecked  = 0;
+                var deferred = $q.defer();
 
-            if (node.level.name === 'acquisitions'){
-                console.log('no children', node);
-                deferred.resolve();
-                return deferred.promise;
-            }
+                if (node.level.name === 'acquisitions'){
+                    console.log('no children', node);
+                    deferred.resolve();
+                    return deferred.promise;
+                }
 
-            if (node.children) {
-                console.log('node.children', node);
-                var promise = getChildrenFromAPI(node, deferred);
-                promise.then(function(children){
-                    console.log(children);
-                    updateChildrenList(node.children, children);
-                    node.children = children;
+                if (node.children) {
+                    console.log('node.children', node);
+                    var promise = getChildrenFromAPI(node, deferred);
+                    promise.then(function(children){
+                        console.log(children);
+                        updateChildrenList(node.children, children);
+                        node.children = children;
+                        node._children = null;
+                        node.childrenChecked = node.checked?children.length:0;
+                        node.hasData = !!children.length;
+                        return children;
+                    });
+                    return promise;
+                } else if (node._children && !isCheckedOrIndeterminate) {
+                    console.log('reset', node);
                     node._children = null;
-                    node.childrenChecked = node.checked?children.length:0;
-                    return children;
-                });
-                return promise;
-            } else if (node._children){
-                console.log('node._children', node);
-                promise = getChildrenFromAPI(node, deferred);
-                promise.then(function(children){
-                    updateChildrenList(node._children, children);
-                    node._children = children;
-                    node.children = null;
-                    node.childrenChecked = node.checked?children.length:0;
-                    return children;
-                });
-                return promise;
-            } else {
-                console.log('no children', node);
-                deferred.resolve();
-                return deferred.promise;
-            }
-        };
+                    deferred.resolve();
+                    return deferred.promise;
+                } else if (node._children) {
+                    console.log(node);
+                    promise = getChildrenFromAPI(node, deferred);
+                    promise.then(function(children){
+                        updateChildrenList(node._children, children);
+                        console.log(children);
+                        node._children = children;
+                        node.children = null;
+                        node.childrenChecked = node.checked?children.length:0;
+                        return children;
+                    });
+                    return promise;
+                } else if (!node.hasData) {
+                    var promise = getChildrenFromAPI(node, deferred);
+                    promise.then(function(children){
+                        console.log('node no data', children);
+                        if (node.children) {
+                            updateChildrenList(node.children, children);
+                        }
+                        node.children = children;
+                        node._children = null;
+                        node.childrenChecked = node.checked?children.length:0;
+                        node.hasData = !!children.length;
+                        return children;
+                    });
+                    return promise;
+                } else {
+                    console.log('no children', node);
+                    deferred.resolve();
+                    return deferred.promise;
+                }
+            };
 
         /**
          ** modify newList children adding them from existing nodes in oldList
@@ -361,6 +383,9 @@
                         newList[j].children = oldList[i].children;
                         newList[j]._children = oldList[i]._children;
                         newList[j].checked = oldList[i].checked;
+                        newList[j].hasData = oldList[i].hasData;
+                        newList[j].childrenChecked = oldList[i].childrenChecked;
+                        newList[j].childrenIndeterminate = oldList[i].childrenIndeterminate;
                     }
                     i++;
                     j++;

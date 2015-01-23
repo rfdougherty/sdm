@@ -143,7 +143,6 @@ var _sdmCCController;
                                         updateCollection(response._id);
                                     });
                                 }
-                                sdmViewManager.refreshView('collections');
                             });
 
                             $scope.$parent._hidePopover($event, 0);
