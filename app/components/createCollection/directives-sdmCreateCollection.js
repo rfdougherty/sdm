@@ -53,6 +53,7 @@ var _sdmCCController;
                         console.log('curator', controller.curator);
                         controller.addedPermissions = [{'_id': controller.curator.user_uid, 'access': 'admin'}];
                         controller.users = {};
+                        $scope.form.name = {}
 
                         function initialize() {
                             $scope.$parent.dialogStyle.height = '500px';//100px';
@@ -100,6 +101,19 @@ var _sdmCCController;
                                 form.hasErrors = true;
                                 return;
                             }
+                            console.log(controller.collectionsCurator);
+                            console.log(controller.collectionID );
+                            if (!controller.collectionsCurator) {
+                                throw 'existing collections not initialized yet';
+                            } else {
+                                if (!controller.collectionID &&
+                                    controller.collectionsCurator.indexOf(controller.collectionName) >= 0 ) {
+                                    form.hasErrors = true;
+                                    form.name.hasErrors = true;
+                                    return;
+                                }
+                            }
+
                             $scope.$parent.enableEvents();
 
                             selection.then(function(selection) {
@@ -191,6 +205,12 @@ var _sdmCCController;
                                             var access = collection.permissions[0].access;
                                             return access === 'admin' || access === 'modify';
                                         });
+                                controller.collectionsCurator = controller.existingCollections.filter(
+                                    function (collection) {
+                                        return collection.curator._id = controller.curator.user_uid;
+
+                                    }
+                                ).map(function(collection){return collection.name});
                             }
                         );
 

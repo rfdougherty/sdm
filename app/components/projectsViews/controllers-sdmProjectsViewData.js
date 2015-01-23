@@ -3,11 +3,15 @@
 (function() {
     var SdmProjectsViewData = function($scope, sdmProjectsInterface, sdmUserManager, sdmViewManager) {
         var _this = this;
+        var existingData;
         _this.trigger = {
             node: null,
             sessionKey: 1
         };
-        _this.sdmData = {};
+
+        _this.sdmData = (existingData = sdmViewManager.getData('projects'))?{data:existingData}:{};
+        sdmViewManager.setData('projects', _this.sdmData.data, _this);
+        console.log('controller initialized');
 
         $scope.$watch(function(){
             var userData = sdmUserManager.getAuthData();
@@ -38,7 +42,7 @@
                         node: result,
                         sessionKey:  (_this.trigger.sessionKey + 1)%10
                     };
-                    sdmViewManager.setData('projects', result);
+                    sdmViewManager.setData('projects', result, _this);
                     console.log('tree data initialized');
                 });
             };

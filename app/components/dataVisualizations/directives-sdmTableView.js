@@ -190,7 +190,6 @@
     var updateRow = function (actions) {
         return function(leaf) {
             var dataRow = createDataRow(leaf);
-            console.log('dataRow', leaf.name, dataRow);
 
             d3.select(this)
                 .selectAll('span.sdm-cell')

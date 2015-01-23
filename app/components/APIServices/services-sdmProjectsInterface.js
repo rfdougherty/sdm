@@ -14,6 +14,12 @@
             name: 'roots',
             next_level: 'sites',
             properties: {
+            },
+            urlToExpand: function (node){
+                console.log('site', node);
+                return {
+                    path: 'sites'
+                }
             }
         };
 
@@ -23,16 +29,29 @@
             properties: {
                 name: objectAccessor('name')
             },
-            headers: ['Site']
+            headers: ['Site'],
+            urlToExpand: function (node){
+                return {
+                    path: 'projects/groups'
+                }
+            }
         };
 
         var groups = {
             name: 'groups',
             next_level: 'projects',
             properties: {
-                name: objectAccessor('name')
+                name: function(node){
+                    return node.name || node._id
+                }
             },
-            headers: ['Group']
+            headers: ['Group'],
+            urlToExpand: function (node) {
+                return {
+                    path: 'projects',
+                    params: {group: node.id}
+                }
+            }
         };
 
         var projects = {
@@ -41,7 +60,12 @@
             properties: {
                 name: objectAccessor('name')
             },
-            headers: ['Project']
+            headers: ['Project'],
+            urlToExpand: function (node) {
+                return {
+                    path: 'projects/' + node.id + '/sessions'
+                }
+            }
         };
 
         var sessions = {
@@ -54,7 +78,12 @@
                         return o.subject.code;
                     }
             },
-            headers: ['Session', 'Subject']
+            headers: ['Session', 'Subject'],
+            urlToExpand: function (node) {
+                return {
+                    path: 'sessions/' + node.id + '/acquisitions'
+                }
+            }
         };
 
         var acquisitions = {
@@ -68,7 +97,10 @@
                     }).join(', ');
                 }
             },
-            headers: ['Acquisition', 'Description', 'Data Type']
+            headers: ['Acquisition', 'Description', 'Data Type'],
+            urlToExpand: function (node) {
+                return;
+            }
         }
 
         return {
@@ -147,7 +179,6 @@
 
     var sdmProjectsInterface = function($q, makeAPICall) {
         var sites_url = BASE_URL + 'sites';
-        var projects_url = BASE_URL + 'projects';
 
         var treeInit = function() {
             var deferred = $q.defer();
@@ -163,20 +194,15 @@
                                 );
 
                                 if (site.onload) {
-                                    makeAPICall.async(projects_url, {site: site._id}).then(
-                                        function(projects) {
-                                            var groups = _get_tree_init_structure(projects, site._id);
-                                            if (!groups.length) {
-                                                siteNode.isLeaf = true;
-                                                siteNode.hasData = false;
-                                            } else {
-                                                siteNode.children = groups;
-                                            }
+                                    getChildrenFromAPI(siteNode, $q.defer()).then(
+                                        function(children){
+                                            children.forEach(function (child) {
+                                                child.checked = siteNode.checked;
+                                            });
+                                            siteNode.children = children;
+                                            siteNode._children = null;
+                                            siteNode.hasData = siteNode.children&&siteNode.children.length?true:false;
                                             deferredSite.resolve(siteNode);
-                                        },
-                                        function(reason) {
-                                            console.log(reason);
-                                            deferredSite.reject(reason);
                                         });
                                 } else {
                                     siteNode.isLeaf = true;
@@ -201,9 +227,192 @@
                     })
                 });
             return deferred.promise;
-        }
+        };
 
-        var expandNode = function(node, triggerChange) {
+
+
+        var breadthFirstAsync = function (tree, getChildren) {
+            var queue = [{node: tree}];
+            function next() {
+                var nextDeferred = $q.defer();
+                var nodeOrPromise = queue.pop();
+                console.log('nodeOrpromise', nodeOrPromise);
+                if (typeof nodeOrPromise === 'undefined') {
+                    return;
+                }
+                if (nodeOrPromise.node) {
+                    queue.unshift(
+                        {
+                            promise: getChildren(nodeOrPromise.node),
+                            checked: nodeOrPromise.node.checked,
+                            parent: nodeOrPromise.node
+                        }
+                    );
+                    nextDeferred.resolve(nodeOrPromise.node);
+                } else if (nodeOrPromise.promise) {
+                    nodeOrPromise.promise.then(function(children){
+                        console.log('children', children);
+                        if (children && children.length) {
+                            children.forEach(function(child, i){
+                                child.checked = child.checked || nodeOrPromise.checked;
+                                child.parent = nodeOrPromise.parent;
+                                if (i !== 0) {
+                                    queue.unshift({node: child});
+                                }
+                            });
+                            queue.unshift({
+                                promise: getChildren(children[0]),
+                                checked: children[0].checked,
+                                parent: children[0]
+                            });
+                            nextDeferred.resolve(children[0]);
+                        } else {
+                            nextDeferred.resolve();
+                        }
+                    });
+                } else {
+                    nextDeferred.reject('Error in breadthFirstAsync');
+                    throw 'Error in breadthFirstAsync';
+                }
+                return nextDeferred.promise;
+            }
+            return {
+                next: next
+            }
+        };
+
+        var breadthFirstFull = function(tree) {
+            return breadthFirstAsync(tree, getAllChildren);
+        };
+
+        var breadthFirstRefresh = function(tree) {
+            return breadthFirstAsync(tree, refreshChildren);
+        };
+
+        var getAllChildren= function (node) {
+            var deferred = $q.defer();
+            var children = node.children&&node.children.length?node.children:node._children;
+            if (children && children.length) {
+                deferred.resolve(children);
+                return deferred.promise;
+            } else {
+                return getChildrenFromAPI(node, deferred);
+            }
+        };
+
+        var refreshChildren = function (node) {
+            console.log(node);
+            node.childrenIndeterminate = 0;
+            node.childrenChecked  = 0;
+            var deferred = $q.defer();
+
+            if (node.level.name === 'acquisitions'){
+                console.log('no children', node);
+                deferred.resolve();
+                return deferred.promise;
+            }
+
+            if (node.children) {
+                console.log('node.children', node);
+                var promise = getChildrenFromAPI(node, deferred);
+                promise.then(function(children){
+                    console.log(children);
+                    updateChildrenList(node.children, children);
+                    node.children = children;
+                    node._children = null;
+                    node.childrenChecked = node.checked?children.length:0;
+                    return children;
+                });
+                return promise;
+            } else if (node._children){
+                console.log('node._children', node);
+                promise = getChildrenFromAPI(node, deferred);
+                promise.then(function(children){
+                    updateChildrenList(node._children, children);
+                    node._children = children;
+                    node.children = null;
+                    node.childrenChecked = node.checked?children.length:0;
+                    return children;
+                });
+                return promise;
+            } else {
+                console.log('no children', node);
+                deferred.resolve();
+                return deferred.promise;
+            }
+        };
+
+        /**
+         ** modify newList children adding them from existing nodes in oldList
+         **/
+        var updateChildrenList = function(oldList, newList) {
+            var i = 0;
+            var j = 0;
+            console.log(oldList, newList);
+            while (true) {
+                if (i >= oldList.length || j >= newList.length) {
+                    return;
+                }
+                console.log ('ij', i, j);
+                var greaterThan = naturalSortByName(oldList[i], newList[j]);
+                if (greaterThan === 0) {
+                    console.log(oldList[i], newList[j]);
+                    if (!oldList[i].id || oldList[i].id === newList[j].id) {
+                        newList[j].children = oldList[i].children;
+                        newList[j]._children = oldList[i]._children;
+                        newList[j].checked = oldList[i].checked;
+                    }
+                    i++;
+                    j++;
+                } else if (greaterThan < 0) {
+                    i++;
+                } else {
+                    j++;
+                }
+            }
+        };
+
+        var getChildrenFromAPI = function(node, deferred) {
+            if (typeof node.level.next_level === 'undefined'){
+                deferred.resolve();
+                return deferred.promise;
+            }
+            var urlToExpand = node.level.urlToExpand(node);
+
+            urlToExpand.params = urlToExpand.params || {};
+            urlToExpand.params.site = node.site;
+
+            var promise = makeAPICall.async(BASE_URL + urlToExpand.path, urlToExpand.params);
+
+            promise.then(
+                function(result){
+                    if (!result.length) {
+                        deferred.resolve(result);
+                        return;
+                    }
+                    var _children = result.map(
+                        function(childData){
+                            return new DataNode(
+                                childData,
+                                node.site,
+                                levelDescription[node.level.next_level]
+                                )
+                        });
+                    _children.sort(naturalSortByName);
+                    _children.forEach(function (child, i) {
+                        child.index = i;
+                    });
+                    deferred.resolve(_children);
+                }, function(reason){
+                    console.log(reason);
+                    deferred.reject(reason);
+                });
+            return deferred.promise;
+
+        };
+
+
+        var expandNode = function(node) {
             var deferred = $q.defer();
             var newNode = angular.copy(node);
             node.parent.children[node.index] = newNode;
@@ -213,67 +422,26 @@
                 node._children = node.children;
                 node.children = null;
                 deferred.resolve();
+                return deferred.promise;
             } else if (node._children){
                 node.children = node._children;
                 node._children = null;
                 deferred.resolve();
+                return deferred.promise
             } else {
-                if (typeof node.level.next_level === 'undefined'){
-                    return;
-                }
-                if (node.level.name === 'sites'){
-                    console.log(node);
-                    makeAPICall.async(projects_url, {site: node.site}).then(
-                        function(projects) {
-                            var groups = _get_tree_init_structure(projects, node.site);
-                            node.children = groups;
-                            if (groups.length){
-                                node.hasData = true;
-                            } else {
-                                node.hasData = false;
-                                console.log('node', node);
-                            }
-                            deferred.resolve();
-                        },
-                        function(reason) {
-                            console.log(reason);
-                            deferred.reject(reason);
-                        });
-                    return deferred.promise;
-                }
-                var url = BASE_URL + [node.level.name, node.id, node.level.next_level].join('/');
-                var promise = makeAPICall.async(url, {site: node.site});
-                promise.then(
-                    function(result){
-                        if (!result.length) {
-                            node.hasData = false;
-                            console.log('node', node);
-                            deferred.resolve();
-                            return;
-                        }
-                        node.hasData = true;
-                        node.children = result.map(
-                            function(childData){
-                                return new DataNode(
-                                    childData,
-                                    node.site,
-                                    levelDescription[node.level.next_level]
-                                    )
-                            });
-                        node.children.sort(naturalSortByName);
-                        node.children.forEach(function(child, i){
-                            child.index = i;
-                            child.checked = node.checked;
-                        });
-                        node.childrenChecked = node.checked?node.children.length:0;
-                        node.childrenIndeterminate = 0;
-                        deferred.resolve();
-                    }, function(reason){
-                        console.log(reason);
-                        deferred.reject(reason);
+                var promise = getChildrenFromAPI(node, deferred);
+                promise.then(function(children){
+                    children.forEach(function (child) {
+                        child.checked = node.checked;
                     });
+                    node.childrenChecked = node.checked?children.length:0;
+                    node.childrenIndeterminate = 0;
+                    node.children = children;
+                    node._children = null;
+                    node.hasData = node.children&&node.children.length?true:false;
+                });
+                return promise;
             }
-            return deferred.promise;
         };
 
         var headers = function () {
@@ -285,7 +453,8 @@
         return {
             treeInit: treeInit,
             expandNode: expandNode,
-            headers: headers
+            headers: headers,
+            breadthFirstRefresh: breadthFirstRefresh
         };
     }
 

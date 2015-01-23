@@ -2,7 +2,7 @@
 
 (function(){
 
-    var sdmViewManager = function(sdmCollectionsInterface) {
+    var sdmViewManager = function(sdmCollectionsInterface, sdmProjectsInterface) {
         var viewAppearances = {
             'data-layout': 'table'
         };
@@ -44,8 +44,17 @@
         }
 
         function refreshView(viewID) {
+            var iterator;
             var tree = getData(viewID);
-            var iterator = sdmCollectionsInterface.breadthFirstRefresh(tree);
+            if (!tree) {
+                return;
+            }
+            if (viewID === 'collections') {
+                iterator = sdmCollectionsInterface.breadthFirstRefresh(tree);
+            } else if (viewID === 'projects') {
+                iterator = sdmProjectsInterface.breadthFirstRefresh(tree);
+            }
+
             var iterate = function() {
                 var element = iterator.next();
                 if (element) {
@@ -91,8 +100,10 @@
         }
     }
 
-    sdmViewManager.$inject = ['sdmCollectionsInterface'];
+    sdmViewManager.$inject = ['sdmCollectionsInterface', 'sdmProjectsInterface'];
 
-    angular.module('sdm.main.services.sdmViewManager',['sdm.APIServices.services.sdmCollectionsInterface'])
+    angular.module('sdm.main.services.sdmViewManager',
+        ['sdm.APIServices.services.sdmCollectionsInterface',
+         'sdm.APIServices.services.sdmProjectsInterface'])
         .factory('sdmViewManager', sdmViewManager);
 })();

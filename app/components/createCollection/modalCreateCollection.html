@@ -5,7 +5,7 @@
                 <option class="default" value="">{{sdmCCController.defaultSelectText}}</option>
             </select>
             <div class="sdm-input-label">Name</div>
-            <input class="form-control" type="text" ng-model="sdmCCController.collectionName" placeholder="(Create New Collection)" required>
+            <input class="form-control" type="text" ng-model="sdmCCController.collectionName" placeholder="(Create New Collection)" required ng-class="{'ng-invalid': form.name.hasErrors}">
             </input>
             <div class="sdm-input-label">Notes</div>
             <textarea class="form-control" ng-model="sdmCCController.collectionNotes">
