@@ -3,6 +3,31 @@
 @min-width-table: 1170px;
 @tabs-header-height: 30px;
 
+body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    *:active,
+    *:hover {
+      cursor: default;
+    }
+    a:hover,
+    button:hover,
+    button:active,
+    button span:hover  {
+        cursor: pointer;
+
+    }
+    input[type="text"]:hover,
+    input[type="text"]:active {
+        cursor: text;
+    }
+
+}
+
 li#buttons {
     float: right;
 }

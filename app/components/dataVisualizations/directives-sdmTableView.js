@@ -156,6 +156,7 @@
     var sessionKey;
 
     var refresh;
+    var rowEntered = {leaf: null, element: null};
 
     var updateView = function(rootElement, data, actions, trigger, selector) {
 
@@ -179,6 +180,16 @@
             .insert('div')
             .classed('row', true)
             .classed('d3row', true)
+            .on('mouseenter', function (leaf){
+                if (rowEntered.leaf) {
+                    rowEntered.leaf.fullLine = false;
+                    updateRow(actions).call(rowEntered.element, rowEntered.leaf);
+                }
+                leaf.fullLine = true;
+                updateRow(actions).call(this, leaf);
+                rowEntered.leaf = leaf;
+                rowEntered.element = this;
+            })
             .each(updateRow(actions));
 
         rows.classed('grey', function(d, i){ return (i + 1)%2;});
@@ -189,7 +200,13 @@
 
     var updateRow = function (actions) {
         return function(leaf) {
+            if (leaf.fullLine) {
+                rowEntered.leaf = leaf;
+                rowEntered.element = this;
+            }
             var dataRow = createDataRow(leaf);
+
+            this.style['font-weight'] = leaf.fullLine?'bold':'normal';
 
             d3.select(this)
                 .selectAll('span.sdm-cell')
@@ -246,7 +263,7 @@
                             'sdm-popover-show': 'mouseenter',
                             'sdm-popover-hide': 'mouseleave'
                         })
-                        .on('mouseenter', sdmCellOnHover)
+                        .on('mouseover', sdmCellOnHover, true)
                         .append('span')
                         .classed('text', true)
                         .text(value||UNDEFINED_PLACEHOLDER);
@@ -278,7 +295,7 @@
         var addParentNameToRow = true;
         while (node.parent) {
             addParentNameToRow = node.isFirstChild && addParentNameToRow;
-            node.parent.show = addParentNameToRow;
+            node.parent.show = addParentNameToRow || leaf.fullLine;
             dataRow.unshift(node.parent);
             node = node.parent;
         }
