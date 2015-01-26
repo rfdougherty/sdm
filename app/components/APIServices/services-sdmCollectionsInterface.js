@@ -64,10 +64,17 @@
                 name: objectAccessor('name')
             },
             headers: ['Collection'],
-            urlToExpand: function (node){
+            urlToExpand: function (node) {
                 return {
                     path: 'collections/' + node.id + '/sessions'
                 }
+            },
+            getModalData: function (node, apiData) {
+                return [
+                    ['Name', node.name],
+                    ['Curator', node.parent.name],
+                    ['Notes', apiData.notes]
+                ]
             }
         };
 
@@ -87,6 +94,12 @@
                     path: 'collections/' + node.parent.id + '/acquisitions',
                     params: {session: node.id}
                 }
+            },
+            getModalData: function (node, apiData) {
+                return [
+                    ['Name', node.name],
+                    ['Subject', node.subject]
+                ]
             }
         };
 
@@ -104,6 +117,13 @@
             headers: ['Acquisition', 'Description', 'Data Type'],
             urlToExpand: function (node){
                 return;
+            },
+            getModalData: function (node, apiData) {
+                return [
+                    ['Name', node.name],
+                    ['Description', node.description],
+                    ['Data Type', node['data type']]
+                ]
             }
         }
 
@@ -349,6 +369,7 @@
                 var urlToExpand = node.level.urlToExpand(node);
 
                 urlToExpand.params = urlToExpand.params || {};
+                console.log('getChildren node', node.site, node);
                 urlToExpand.params.site = node.site;
 
                 var promise = makeAPICall.async(BASE_URL + urlToExpand.path, urlToExpand.params);
@@ -359,11 +380,12 @@
                             deferred.resolve(result);
                             return;
                         }
+                        var isRoot = node.level.name ==='roots';
                         var _children = result.map(
                             function(childData){
                                 return new DataNode(
                                     childData,
-                                    node.site,
+                                    isRoot?childData._id:node.site,
                                     levelDescription[node.level.next_level]
                                     )
                             });

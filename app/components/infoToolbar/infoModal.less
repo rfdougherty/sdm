@@ -1,0 +1,59 @@
+div.sdm-info-modal {
+    .popover-dialog {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -65%);
+        -webkit-transform: translate(-50%, -65%);
+        -moz-transform: translate(-50%, -65%);
+        width: 0px;
+        height: 0px;
+    }
+
+    .popover-dialog:before, .popover-dialog:after {
+        top: 0px;
+        left: 95%;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+    }
+    .popover-overlay {
+        background-color: lightgray;
+    }
+    .popover-content {
+        height: 100%;
+    }
+}
+
+sdm-info-modal {
+    .field-name {
+        font-weight: bold;
+    }
+
+    div.info-modal-title{
+        margin-top: 0px;
+        font-size: 24px;
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-variant: small-caps;
+        text-transform: capitalize;
+    }
+
+    div.info-modal-path{
+        margin-top: 0px;
+        //font-size: 24px;
+        margin-bottom: 5px;
+        font-weight: bold;
+        //font-style: italic;
+        border-bottom: solid black 1px;
+        color: gray;
+        //font-variant: small-caps;
+        //text-transform: capitalize;
+    }
+
+    div.info-modal-confirm-buttons {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        text-align: right;
+    }
+}

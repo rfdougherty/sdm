@@ -65,6 +65,12 @@
                 return {
                     path: 'projects/' + node.id + '/sessions'
                 }
+            },
+            getModalData: function (node, apiData) {
+                return [
+                    ['Name', node.name],
+                    ['Group', node.parent.name]
+                ]
             }
         };
 
@@ -83,6 +89,12 @@
                 return {
                     path: 'sessions/' + node.id + '/acquisitions'
                 }
+            },
+            getModalData: function (node, apiData) {
+                return [
+                    ['Name', node.name],
+                    ['Subject', node.subject]
+                ]
             }
         };
 
@@ -100,6 +112,13 @@
             headers: ['Acquisition', 'Description', 'Data Type'],
             urlToExpand: function (node) {
                 return;
+            },
+            getModalData: function (node, apiData) {
+                return [
+                    ['Name', node.name],
+                    ['Description', node.description],
+                    ['Data Type', node['data type']]
+                ]
             }
         }
 
@@ -415,11 +434,12 @@
                         deferred.resolve(result);
                         return;
                     }
+                    var isRoot = node.level.name ==='roots';
                     var _children = result.map(
                         function(childData){
                             return new DataNode(
                                 childData,
-                                node.site,
+                                isRoot?childData._id:node.site,
                                 levelDescription[node.level.next_level]
                                 )
                         });

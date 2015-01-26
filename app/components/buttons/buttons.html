@@ -24,7 +24,9 @@
         </span>
     </button>
     <button type="button" class="refresh disabled btn-xs">
-        <span class="glyphicon glyphicon-trash toolbar-icon">
+        <span class="glyphicon glyphicon-trash toolbar-icon" ng-show="sdmButtonsController.location() === '/projects'">
+        </span>
+        <span class="glyphicon glyphicon-remove-circle toolbar-icon" ng-show="sdmButtonsController.location() === '/collections'">
         </span>
     </button>
     <button type="button" class="refresh disabled btn-xs" sdm-popover sdm-popover-template-content="components/createCollection/modalCreateCollection.html" sdm-popover-class="sdm-create-collection" sdm-popover-show="click" sdm-append-to-body>

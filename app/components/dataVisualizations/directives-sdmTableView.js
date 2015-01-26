@@ -6,8 +6,8 @@
 
     angular.module('sdm.dataVisualizations.directives.sdmTableView',
         ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree'])
-    .directive('sdmTableView', ['$compile', '$location','sdmD3Service', 'sdmFilterTree',
-        function($compile, $location, sdmD3Service, sdmFilterTree){
+    .directive('sdmTableView', ['$compile', '$location', '$rootScope', 'sdmD3Service', 'sdmFilterTree',
+        function($compile, $location, $rootScope, sdmD3Service, sdmFilterTree){
             return {
                 // name: '',
                 // priority: 1,
@@ -38,9 +38,12 @@
 
                         $scope.headersTitles = getHeaderTitles($scope.sdmHeaders);
 
-                        sdmCellOnHover = function() {
+                        sdmCellOnHover = function(data) {
+                            console.log('data', data);
                             if (typeof this.sdmCellCompiled === 'undefined') {
-                                $compile(this.parentElement)($scope);
+                                var newScope = $rootScope.$new();
+                                newScope.data = data;
+                                $compile(this.parentElement)(newScope);
                                 this.sdmCellCompiled = true;
                             }
                         };
@@ -248,25 +251,31 @@
                             refresh(selectAllNodes);
                         });
                     }
-                    d3Element.append('div')
+                    //
+                    var d3Text = d3Element.append('div')
                         .classed('content', true)
                         .classed(UNDEFINED_PLACEHOLDER, function(){return typeof value === 'undefined';})
-                        .append('span')
-                        .attr({
-                            'sdm-popover': '',
-                            'sdm-popover-class': 'sdm-info-toolbar',
-                            'sdm-popover-template-content': 'components/infoToolbar/infoToolbarPopover.html',
-                            'sdm-popover-dynamic-position': 'false',
-                            'sdm-popover-style-width': '64px',
-                            'sdm-popover-style-height': '28px',
-                            'sdm-popover-style-top': '24px',
-                            'sdm-popover-show': 'mouseenter',
-                            'sdm-popover-hide': 'mouseleave'
-                        })
-                        .on('mouseover', sdmCellOnHover, true)
-                        .append('span')
-                        .classed('text', true)
-                        .text(value||UNDEFINED_PLACEHOLDER);
+                        .append('span');
+
+                    if (d.level.name !== 'sites' && d.level.name !== 'groups' && d.level.name !== 'curators'){
+                            d3Text.attr({
+                                'sdm-popover': '',
+                                'sdm-popover-class': 'sdm-info-toolbar',
+                                'sdm-popover-template-content': 'components/infoToolbar/infoToolbarPopover.html',
+                                'sdm-popover-dynamic-position': 'false',
+                                'sdm-popover-style-width': '64px',
+                                'sdm-popover-style-height': '28px',
+                                'sdm-popover-style-top': '24px',
+                                'sdm-popover-show': 'mouseenter',
+                                'sdm-popover-hide': 'mouseleave'
+                            }).on('mouseover', sdmCellOnHover, true);
+                    }
+
+                    d3Text
+                    .append('span')
+                    .classed('text', true)
+                    //.style('color', globalTableTextColor)
+                    .text(value||UNDEFINED_PLACEHOLDER);
 
                     if (i === a.length - 1){
                         d3Element.append('span').attr('class',

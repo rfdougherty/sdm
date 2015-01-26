@@ -16,6 +16,9 @@
             var viewID = currentPath.substring(1, currentPath.length);
             sdmViewManager.refreshView(viewID);
         };
+        this.location = function () {
+            return $location.path();
+        };
     }
 
     SdmButtonsController.$inject = ['$location', 'sdmViewManager', 'sdmUserManager'];

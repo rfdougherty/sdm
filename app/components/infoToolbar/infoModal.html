@@ -1,0 +1,14 @@
+<sdm-info-modal>
+    <div class="info-modal-path">{{sdmIMController.path}}</div>
+    <div class="info-modal-title">{{sdmIMController.title}}</div>
+    <div ng-repeat="field in sdmIMController.data">
+        <span class="field-name">{{field[0]}}:</span> {{field[1]}}</div>
+    <div ng-if="sdmIMController.files.length" class="field-name">File list:</div>
+    <div ng-repeat="file in sdmIMController.files">
+        <a ng-href="{{sdmIMController.base_url}}?name={{file.name}}&ext={{file.ext}}">{{file.name}}</a>
+    </div>
+
+    <div class="info-modal-confirm-buttons">
+        <input type="button" id="info-modal-close" class="btn btn-default btn-xs" ng-click="sdmIMController.close($event)" value="Close"></input>
+    </div>
+</sdm-info-modal>
