@@ -5,7 +5,7 @@
         <span class="field-name">{{field[0]}}:</span> {{field[1]}}</div>
     <div ng-if="sdmIMController.files.length" class="field-name">File list:</div>
     <div ng-repeat="file in sdmIMController.files">
-        <a ng-href="{{sdmIMController.base_url}}?name={{file.name}}&ext={{file.ext}}">{{file.name}}</a>
+        <a href ng-click="sdmIMController.download(file)">{{file.name}}</a>
     </div>
 
     <div class="info-modal-confirm-buttons">

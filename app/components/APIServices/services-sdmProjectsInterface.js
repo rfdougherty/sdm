@@ -203,6 +203,7 @@
             var deferred = $q.defer();
             makeAPICall.async(sites_url).then(
                 function(sites){
+                    console.log(sites);
                     var promises =
                         sites.map(function(site, i){
                                 var deferredSite = $q.defer();

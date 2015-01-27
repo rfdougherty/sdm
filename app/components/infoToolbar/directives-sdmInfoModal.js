@@ -3,8 +3,8 @@
 (function() {
     angular.module('sdm.infoToolbar.directives.sdmInfoModal',
             ['sdm.services'])
-        .directive('sdmInfoModal', ['makeAPICall',
-            function(makeAPICall) {
+        .directive('sdmInfoModal', ['$location', 'makeAPICall',
+            function($location, makeAPICall) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -25,7 +25,7 @@
                             path.unshift(n.parent.level.name==='sessions'?n.parent.name + ' - ' + n.parent.subject:n.parent.name);
                             n = n.parent;
                         }
-                        sdmIMController.base_url = BASE_URL + 'acquisitions/' + node.id + '/file';
+                        sdmIMController.baseUrl = BASE_URL + 'acquisitions/' + node.id + '/file';
                         sdmIMController.path = path.slice(1).join(' : ');
                         sdmIMController.title = level.slice(0, level.length - 1) + ' details';
                         makeAPICall.async(APIUrl, {site: node.site}).then(
@@ -34,6 +34,17 @@
                                 sdmIMController.files = apiData.files||[];
                                 console.log(sdmIMController);
                             });
+
+                        sdmIMController.download = function(file) {
+                            var url = BASE_URL + 'acquisitions/' + node.id + '/file';
+                            var data = {
+                                name: file.name,
+                                ext: file.ext
+                            };
+                            makeAPICall.async(url, {site: node.site,}, 'POST', data).then(function(response){
+                                window.open(response.url, '_self');
+                            })
+                        };
 
                         sdmIMController.close = function ($event) {
                             $scope.$parent.enableEvents();
