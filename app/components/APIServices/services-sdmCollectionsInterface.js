@@ -387,7 +387,7 @@
                                     childData,
                                     isRoot?childData._id:node.site,
                                     levelDescription[node.level.next_level]
-                                    )
+                                )
                             });
                         _children.sort(naturalSortByName);
                         _children.forEach(function (child, i) {

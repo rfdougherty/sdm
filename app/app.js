@@ -87,6 +87,7 @@ var naturalSortByName = function(a, b){
 };
 
 var DataNode = function(data, site, level, children) {
+    console.log(data);
     this.level = level;
     this.site = site;
     this.id = data && data._id ?data._id: null;

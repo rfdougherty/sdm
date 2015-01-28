@@ -237,6 +237,7 @@
                 var d3Element = d3.select(this).append('div')
                     .classed(classed, true);
                 var value = d[p];
+                //console.log('property', p);
                 if (d.show) {
                     if (i === 0){
                         //console.log('d3', d.name, d);
@@ -257,7 +258,7 @@
                         .classed(UNDEFINED_PLACEHOLDER, function(){return typeof value === 'undefined';})
                         .append('span');
 
-                    if (d.level.name !== 'sites' && d.level.name !== 'groups' && d.level.name !== 'curators'){
+                    if (d.level.name.search(/^(sessions|projects|collections|acquisitions)$/) >= 0 && p === 'name'){
                             d3Text.attr({
                                 'sdm-popover': '',
                                 'sdm-popover-class': 'sdm-info-toolbar',
