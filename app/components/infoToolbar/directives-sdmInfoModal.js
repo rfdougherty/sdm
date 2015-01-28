@@ -26,12 +26,16 @@
                             n = n.parent;
                         }
                         sdmIMController.baseUrl = BASE_URL + 'acquisitions/' + node.id + '/file';
-                        sdmIMController.path = path.slice(1).join(' : ');
-                        sdmIMController.title = level.slice(0, level.length - 1) + ' details';
+                        console.log(path);
+                        sdmIMController.path = path.slice(1);
+                        sdmIMController.title = level.slice(0, level.length - 1) + ' ' + node.name;
                         makeAPICall.async(APIUrl, {site: node.site}).then(
                             function (apiData) {
                                 sdmIMController.data = node.level.getModalData(node, apiData);
+                                apiData.files.sort(function(file, file1){
+                                    return file.type===file1.type?0:file.type>file1.type?1:-1 });
                                 sdmIMController.files = apiData.files||[];
+
                                 console.log(sdmIMController);
                             });
 

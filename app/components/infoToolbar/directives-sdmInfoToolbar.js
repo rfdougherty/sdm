@@ -12,13 +12,10 @@
                     transclude: false,// we want to insert custom content inside the directive
                     controller: function(){},
                     controllerAs: 'sdmTBController',
-                    link: function($scope, $element, $attrs, controller){
+                    link: function($scope, $element, $attrs, sdmTBController){
                         $scope.data = $scope.$parent.$parent.data;
                         console.log($scope);
-                        controller.showinfo = function() {
-                            console.log($scope.$parent.$parent.data);
-                        }
-                        controller.location = $location.path();
+                        sdmTBController.location = $location.path();
                     }
                 }
             }

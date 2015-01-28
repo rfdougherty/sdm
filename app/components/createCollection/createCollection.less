@@ -1,3 +1,5 @@
+@import (less) "../../active_config/variables.less";
+
 div.sdm-create-collection {
     .popover-dialog {
         top: 50%;
@@ -7,6 +9,7 @@ div.sdm-create-collection {
         -moz-transform: translate(-50%, -65%);
         width: 0px;
         height: 0px;
+        padding: 0px;
     }
 
     .popover-dialog:before, .popover-dialog:after {
@@ -25,17 +28,29 @@ sdm-create-collection {
     div.collection-option {
         text-align: center;
     }
+    div.collection-header {
+        background-color: @bgcol1;
+        color: @fgcol1;
+        border-bottom: solid white 1px;
+        height: 21px;
+    }
 
     div.collection-title {
         //background-color: lightgrey;
+        padding-left: 10px;
+        padding-right:10px;
         margin-top: 0px;
         font-size: 24px;
         margin-bottom: 10px;
         font-weight: bold;
         font-variant: small-caps;
+        background-color: @bgcol2;
+        color: @fgcol2;
     }
 
     form.create-collection {
+        padding-left: 10px;
+        padding-right:10px;
         &.error {
             input.ng-invalid {
                 border: 1px solid red;
@@ -108,7 +123,7 @@ sdm-create-collection {
         }
         div.collection-confirm-buttons {
             position: absolute;
-            bottom: 10px;
+            bottom: 6px;
             right: 10px;
             text-align: right;
             input#user-preferences-delete {

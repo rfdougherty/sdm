@@ -41,7 +41,7 @@ sdmApp.config(['$routeProvider', function($routeProvider) {
 }]);
 
 var GRAVATAR_IMG_URL = 'https://www.gravatar.com/avatar/';
-var CLIENT_ID = '272442376012-isksnpojf1qra8mjoctkaigvoti6aang.apps.googleusercontent.com';
+var CLIENT_ID = '1052740023071-ilsnog03s885vmjeb9l9ppsplsadnfa1.apps.googleusercontent.com';
 var SAVE = 'Save';
 var CLOSE = 'Close';
 var OK = 'Ok';

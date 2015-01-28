@@ -1,4 +1,5 @@
 <sdm-create-collection>
+<div class="collection-header"></div>
     <div class="collection-title">Create or Update Collection</div>
     <form name="form" class="create-collection" ng-class="{error: form.hasErrors}">
             <select class="form-control" ng-options="collection.name for collection in sdmCCController.existingCollections" ng-model="sdmCCController.selectedCollection" ng-change="sdmCCController.selectCollection()">

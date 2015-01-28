@@ -1,11 +1,16 @@
 <sdm-info-modal>
-    <div class="info-modal-path">{{sdmIMController.path}}</div>
+    <div class="info-modal-path" >
+        <span ng-repeat="element in sdmIMController.path"> <span class="glyphicon glyphicon-chevron-right" ng-if="$index!==0"></span> {{element}}</span>
+    </div>
     <div class="info-modal-title">{{sdmIMController.title}}</div>
-    <div ng-repeat="field in sdmIMController.data">
-        <span class="field-name">{{field[0]}}:</span> {{field[1]}}</div>
-    <div ng-if="sdmIMController.files.length" class="field-name">File list:</div>
-    <div ng-repeat="file in sdmIMController.files">
-        <a href ng-click="sdmIMController.download(file)">{{file.name}}</a>
+    <div class="info-modal-body">
+        <div ng-repeat="field in sdmIMController.data">
+            <span class="field-name">{{field[0]}}:</span> {{field[1]}}</div>
+        <div ng-if="sdmIMController.files.length" class="field-name">File list:</div>
+
+        <div ng-repeat="file in sdmIMController.files">
+            <a href ng-click="sdmIMController.download(file)">{{file.type}}: {{file.kinds.join(', ')}}</a> ({{file.size}} Bytes)
+        </div>
     </div>
 
     <div class="info-modal-confirm-buttons">
