@@ -2,9 +2,9 @@
 
 (function() {
     angular.module('sdm.infoToolbar.directives.sdmInfoModal',
-            ['sdm.services'])
-        .directive('sdmInfoModal', ['$location', 'makeAPICall',
-            function($location, makeAPICall) {
+            ['sdm.services', 'sdm.download.services.sdmDownloadInterface'])
+        .directive('sdmInfoModal', ['$location', 'makeAPICall', 'sdmDownloadInterface',
+            function($location, makeAPICall, sdmDownloadInterface) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -35,19 +35,20 @@
                                 apiData.files.sort(function(file, file1){
                                     return file.type===file1.type?0:file.type>file1.type?1:-1 });
                                 sdmIMController.files = apiData.files||[];
+                                console.log(apiData.permissions);
 
                                 console.log(sdmIMController);
                             });
 
                         sdmIMController.download = function(file) {
-                            var url = BASE_URL + 'acquisitions/' + node.id + '/file';
-                            var data = {
-                                name: file.name,
-                                ext: file.ext
+                            node = {
+                                level: level.slice(0, level.length - 1),
+                                _id: node.id,
+                                file: file
                             };
-                            makeAPICall.async(url, {site: node.site,}, 'POST', data).then(function(response){
-                                window.open(response.url, '_self');
-                            })
+                            sdmDownloadInterface.getDownloadURL(node, true).then(function(url){
+                                window.open(url, '_self');
+                            });
                         };
 
                         sdmIMController.close = function ($event) {

@@ -13,7 +13,8 @@ var sdmApp = angular.module('sdm', [
     'sdm.createCollection',
     'sdm.APIServices',
     'sdm.dataVisualizations',
-    'sdm.infoToolbar'
+    'sdm.infoToolbar',
+    'sdm.download'
 ]);
 
 var COMING_SOON = '<div id="tree-view">Coming Soon!!!</div>';

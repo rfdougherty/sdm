@@ -1,5 +1,5 @@
 <sdm-create-collection>
-<div class="collection-header"></div>
+    <div class="collection-header"></div>
     <div class="collection-title">Create or Update Collection</div>
     <form name="form" class="create-collection" ng-class="{error: form.hasErrors}">
             <select class="form-control" ng-options="collection.name for collection in sdmCCController.existingCollections" ng-model="sdmCCController.selectedCollection" ng-change="sdmCCController.selectCollection()">
@@ -49,9 +49,9 @@
 
 
         <div class="collection-confirm-buttons">
-            <input type="button" id="user-preferences-cancel" class="btn btn-default btn-xs" ng-click="sdmCCController.cancel($event)" value="Cancel"></input>
-            <input id="user-preferences-delete" type="submit" class="btn btn-default btn-xs" ng-click="sdmCCController.delete($event)" ng-if="sdmCCController.collectionID" value="Delete"></input>
-            <input id="user-preferences-save" type="submit" class="btn btn-default btn-xs" ng-click="sdmCCController.save($event, form)" value="Save"></input>
+            <input type="button" id="collection-cancel" class="btn btn-default btn-xs" ng-click="sdmCCController.cancel($event)" value="Cancel"></input>
+            <input id="collection-delete" type="button" class="btn btn-default btn-xs" ng-click="sdmCCController.delete($event)" ng-if="sdmCCController.collectionID" value="Delete"></input>
+            <input id="collection-save" type="button" class="btn btn-default btn-xs" ng-click="sdmCCController.save($event, form)" value="Save"></input>
         </div>
     </form>
 </sdm-create-collection>
