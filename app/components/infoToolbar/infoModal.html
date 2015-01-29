@@ -12,8 +12,46 @@
             <a href ng-click="sdmIMController.download(file)">{{file.type}}: {{file.kinds.join(', ')}}</a> ({{file.size}} Bytes)
         </div>
     </div>
+    <form name="form" ng-class="{error: form.hasErrors}">
+        <div id="info-permissions" ng-show="sdmIMController.apiData.permissions && sdmIMController.apiData.permissions.length">
 
-    <div class="info-modal-confirm-buttons">
-        <input type="button" id="info-modal-close" class="btn btn-default btn-xs" ng-click="sdmIMController.close($event)" value="Close"></input>
-    </div>
+            <div id="permissions-title" class="sdm-input-label">Change permissions</div><br>
+            <div id="info-change-permissions" class="form-inline">
+                <input class="typeahead form-control" type="text" placeholder="{{sdmIMController.permissionPlaceholder}}" ng-model="sdmIMController.selectedUID" name="newPermission" ng-class="{'ng-invalid': form.newPermission.hasErrors}"></input>
+                <select class="form-control" ng-init="" ng-options="role.name for role in sdmIMController.roles" ng-model="sdmIMController.selectedRole"></select>
+                <span class="glyphicon glyphicon-plus-sign" ng-click="sdmIMController.addUser($event, form)"></span>
+            </div>
+
+            <div class="sdm-input-label">Permissions</div><br>
+            <div class="permissions-header">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>User ID</td>
+                            <td>Permissions</td>
+                            <td>Remove</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="permissions-body">
+                <table class="table">
+                    <tbody>
+                        <tr class='user-permission' ng-repeat="permission in sdmIMController.apiData.permissions">
+                            <td>{{permission._id}}</td>
+                            <td>{{permission.access}}</td>
+                            <td>
+                                <span class="glyphicon glyphicon-remove" ng-if="permission._id!==sdmIMController.user.user_uid" ng-click="sdmIMController.removeUser($index)"></span>
+                                <span class="glyphicon glyphicon-remove disabled" ng-if="permission._id===sdmIMController.user.user_uid"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="info-modal-confirm-buttons">
+            <input type="button" id="info-modal-close" class="btn btn-default btn-xs" ng-click="sdmIMController.close($event)" value="Close"></input>
+            <input type="button" id="info-modal-save" class="btn btn-default btn-xs" ng-click="sdmIMController.savePermissions($event)" value="Save Permissions"></input>
+        </div>
+    </form>
 </sdm-info-modal>

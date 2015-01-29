@@ -138,7 +138,6 @@
         console.log('tree init site: ', siteId);
 
         projects.forEach(function(project){
-            //console.log('project', project);
             var group = project.group._id;
             var group_name = project.group.name || group;
 
@@ -178,7 +177,6 @@
             }
 
             if (d.children && d.children.length) {
-                //d.children[0].isFirstChild = true;
                 d._children = d.children;
                 d._children.forEach(collapse);
                 d.children = null;
@@ -188,10 +186,6 @@
         group_list.sort(naturalSortByName);
 
         group_list.forEach(collapse);
-        /*
-        if (group_list[0]) {
-            group_list[0].isFirstChild = true;
-        }*/
         console.log('groups', group_list);
         return group_list;
     }

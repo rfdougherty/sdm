@@ -258,7 +258,7 @@
                         .classed(UNDEFINED_PLACEHOLDER, function(){return typeof value === 'undefined';})
                         .append('span');
 
-                    if (d.level.name.search(/^(sessions|projects|collections|acquisitions)$/) >= 0 && p === 'name'){
+                    if (d.level.name.search(/^(sessions|projects|collections|acquisitions)$/) >= 0){
                             d3Text.attr({
                                 'sdm-popover': '',
                                 'sdm-popover-class': 'sdm-info-toolbar',

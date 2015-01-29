@@ -19,6 +19,10 @@
             </span>
         </button>
     </div>
+    <button type="button" class="refresh disabled btn-xs" sdm-popover sdm-popover-template-content="components/createCollection/modalCreateCollection.html" sdm-popover-class="sdm-create-collection" sdm-popover-show="click" sdm-append-to-body>
+        <span class="glyphicon glyphicon-briefcase toolbar-icon">
+        </span>
+    </button>
     <button type="button" class="refresh disabled btn-xs" sdm-popover sdm-popover-template-content="components/download/modalDownload.html" sdm-popover-class="sdm-download" sdm-popover-show="click" sdm-append-to-body>
         <span class="glyphicon glyphicon-cloud-download toolbar-icon">
         </span>
@@ -27,10 +31,6 @@
         <span class="glyphicon glyphicon-trash toolbar-icon" ng-show="sdmButtonsController.location() === '/projects'">
         </span>
         <span class="glyphicon glyphicon-remove-circle toolbar-icon" ng-show="sdmButtonsController.location() === '/collections'">
-        </span>
-    </button>
-    <button type="button" class="refresh disabled btn-xs" sdm-popover sdm-popover-template-content="components/createCollection/modalCreateCollection.html" sdm-popover-class="sdm-create-collection" sdm-popover-show="click" sdm-append-to-body>
-        <span class="glyphicon glyphicon-briefcase toolbar-icon">
         </span>
     </button>
 </div>

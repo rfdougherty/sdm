@@ -6,19 +6,19 @@
                 <option class="default" value="">{{sdmCCController.defaultSelectText}}</option>
             </select>
             <div class="sdm-input-label">Name</div>
-            <input class="form-control" type="text" ng-model="sdmCCController.collectionName" placeholder="(Create New Collection)" required ng-class="{'ng-invalid': form.name.hasErrors}">
+            <input class="form-control" type="text" ng-model="sdmCCController.collectionName" placeholder="{{sdmCCController.collectionPlaceholder}}" required ng-class="{'ng-invalid': form.collectionName.hasErrors}" name="collectionName">
             </input>
             <div class="sdm-input-label">Notes</div>
             <textarea class="form-control" ng-model="sdmCCController.collectionNotes">
             </textarea>
             <div class="sdm-input-label">Share</div><br>
             <div id="share" class="form-inline">
-                <input class="typeahead form-control" type="text" placeholder="Enter User ID" ng-model="sdmCCController.selectedUID"></input>
+                <input class="typeahead form-control" type="text" placeholder="{{sdmCCController.permissionPlaceholder}}" ng-model="sdmCCController.selectedUID" name="newPermission" ng-class="{'ng-invalid': form.newPermission.hasErrors}" ></input>
                 <select class="form-control" ng-init="" ng-options="role.name for role in sdmCCController.roles" ng-model="sdmCCController.selectedRole"></select>
-                <span class="glyphicon glyphicon-plus-sign" ng-click="sdmCCController.addUser()"></span>
+                <span class="glyphicon glyphicon-plus-sign" ng-click="sdmCCController.addUser($event, form)"></span>
             </div>
 
-            <div id="permissions">
+            <div id="collection-permissions">
                 <div class="sdm-input-label">Permissions</div><br>
                 <div class="permissions-header">
                     <table class="table">
@@ -38,14 +38,15 @@
                                 <td>{{permission._id}}</td>
                                 <td>{{permission.access}}</td>
                                 <td>
-                                    <span class="glyphicon glyphicon-remove" ng-if="permission._id!==sdmCCController.curator._id" ng-click="sdmCCController.removeUser($index)"></span>
-                                    <span class="glyphicon glyphicon-remove disabled" ng-if="permission._id===sdmCCController.curator._id"></span></td>
+                                    <span class="glyphicon glyphicon-remove" ng-if="permission._id!==sdmCCController.curator.user_uid" ng-click="sdmCCController.removeUser($index)"></span>
+                                    <span class="glyphicon glyphicon-remove disabled" ng-if="permission._id===sdmCCController.curator.user_uid"></span></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
+        <div
 
 
         <div class="collection-confirm-buttons">

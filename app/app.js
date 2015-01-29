@@ -88,7 +88,6 @@ var naturalSortByName = function(a, b){
 };
 
 var DataNode = function(data, site, level, children) {
-    console.log(data);
     this.level = level;
     this.site = site;
     this.id = data && data._id ?data._id: null;
@@ -109,3 +108,27 @@ var DataNode = function(data, site, level, children) {
     this.checked = false;
     this.indeterminate = false;
 }
+
+var substringMatcher = function(elements, field) {
+  return function findMatches(q, cb) {
+    var matches, substrRegex;
+
+    // an array that will be populated with substring matches
+    matches = [];
+
+    // regex used to determine if a string contains the substring `q`
+    substrRegex = new RegExp(q, 'i');
+
+    // iterate through the pool of strings and for any string that
+    // contains the substring `q`, add it to the `matches` array
+    $.each(elements, function(i, element) {
+      if (substrRegex.test(element[field])) {
+        // the typeahead jQuery plugin expects suggestions to a
+        // JavaScript object, refer to typeahead docs for more info
+        matches.push({ value: element[field] });
+      }
+    });
+
+    cb(matches);
+  };
+};

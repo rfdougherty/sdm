@@ -14,6 +14,7 @@
                     controllerAs: 'sdmTBController',
                     link: function($scope, $element, $attrs, sdmTBController){
                         $scope.data = $scope.$parent.$parent.data;
+                        $scope.hideToolbar = $scope.$parent.hidePopover;
                         console.log($scope);
                         sdmTBController.location = $location.path();
                     }

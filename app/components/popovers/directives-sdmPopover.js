@@ -47,7 +47,8 @@
                     else
                         throw 'Error in popover popup: missing template.';
 
-                    $scope.showPopover = function($event){
+                    $scope.showPopover = function($event, timeout){
+                        timeout = typeof timeout === 'undefined' ? 600 : timeout;
                         if ($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
@@ -64,7 +65,7 @@
                                 $scope.popover = $compile(templatePopover)($scope);
                                 rootElement.append($scope.popover);
                             });
-                        }, 600);
+                        }, timeout);
                     };
 
                     $scope._hidePopover = function($event, timeout){

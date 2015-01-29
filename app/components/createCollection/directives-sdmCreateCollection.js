@@ -1,6 +1,5 @@
 'use strict';
 
-var _sdmCCController;
 (function() {
     angular.module('sdm.createCollection.directives.sdmCreateCollection',
         [
@@ -12,31 +11,6 @@ var _sdmCCController;
             '$q', '$location', 'sdmGetSelection', 'sdmUserManager', 'sdmViewManager', 'sdmRoles', 'sdmUsers', 'sdmCollectionsInterface',
             function($q, $location, sdmGetSelection, sdmUserManager, sdmViewManager, sdmRoles, sdmUsers, sdmCollectionsInterface) {
 
-
-                var substringMatcher = function(elements, field) {
-                  return function findMatches(q, cb) {
-                    var matches, substrRegex;
-
-                    // an array that will be populated with substring matches
-                    matches = [];
-
-                    // regex used to determine if a string contains the substring `q`
-                    substrRegex = new RegExp(q, 'i');
-
-                    // iterate through the pool of strings and for any string that
-                    // contains the substring `q`, add it to the `matches` array
-                    $.each(elements, function(i, element) {
-                      if (substrRegex.test(element[field])) {
-                        // the typeahead jQuery plugin expects suggestions to a
-                        // JavaScript object, refer to typeahead docs for more info
-                        matches.push({ value: element[field] });
-                      }
-                    });
-
-                    cb(matches);
-                  };
-                };
-
                 return {
                     restrict: 'E',
                     scope: false,
@@ -44,24 +18,24 @@ var _sdmCCController;
                     transclude: false,// we want to insert custom content inside the directive
                     controller: function(){},
                     controllerAs: 'sdmCCController',
-                    link: function($scope, $element, $attrs, controller) {
+                    link: function($scope, $element, $attrs, sdmCCController) {
                         console.log('scopeCreateCollection', $scope);
                         var currentPath = $location.path();
                         var viewID = currentPath.substring(1, currentPath);
-                        _sdmCCController = controller;
-                        controller.curator = sdmUserManager.getAuthData();
-                        console.log('curator', controller.curator);
-                        controller.addedPermissions = [{'_id': controller.curator.user_uid, 'access': 'admin'}];
-                        controller.users = {};
-                        $scope.form.name = {}
+                        sdmCCController.curator = sdmUserManager.getAuthData();
+                        console.log('curator', sdmCCController.curator);
+                        sdmCCController.addedPermissions = [{'_id': sdmCCController.curator.user_uid, 'access': 'admin'}];
+                        sdmCCController.users = {};
+                        sdmCCController.permissionPlaceholder = 'Enter User ID';
+                        sdmCCController.collectionPlaceholder = 'Create New Collection';
 
                         function initialize() {
                             $scope.$parent.dialogStyle.height = '500px';//100px';
                             $scope.$parent.dialogStyle.width = '600px';//280px';
-                            controller.defaultSelectText = '(Select Existing Collection)';
+                            sdmCCController.defaultSelectText = '(Select Existing Collection)';
                             sdmUsers.getUsers().then(function(data){
                                 console.log(data);
-                                controller.users = data;
+                                sdmCCController.users = data;
 
                                 $element.find('#share .typeahead').typeahead({
                                         hint: true,
@@ -71,45 +45,49 @@ var _sdmCCController;
                                     {
                                         name: 'users',
                                         displayKey: 'value',
-                                        source: substringMatcher(controller.users, '_id')
+                                        source: substringMatcher(sdmCCController.users, '_id')
                                     });
                                 $element.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
-                                    controller.selectedUID = selectedUID.value;
+                                    sdmCCController.selectedUID = selectedUID.value;
                                 });
                             });
                         }
                         initialize();
                         sdmRoles().then(function(data){
-                            controller.roles = data;
-                            controller.selectedRole = controller.roles[0];
+                            sdmCCController.roles = data;
+                            sdmCCController.selectedRole = sdmCCController.roles[0];
                         });
 
                         $scope.$parent.disableEvents();
                         var selection = sdmGetSelection.getSelection();
-                        controller.cancel = function ($event) {
+                        sdmCCController.cancel = function ($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
                             $scope.$parent.enableEvents();
                             $scope.$parent._hidePopover($event, 0);
                         };
 
-                        controller.save = function ($event, form) {
+                        sdmCCController.save = function ($event, form) {
                             $event.stopPropagation();
                             $event.preventDefault();
                             if (!form.$valid) {
                                 console.log('form', form);
                                 form.hasErrors = true;
+                                sdmCCController.collectionPlaceholder = 'Please enter a name for the collection';
                                 return;
                             }
-                            console.log(controller.collectionsCurator);
-                            console.log(controller.collectionID );
-                            if (!controller.collectionsCurator) {
+                            console.log(sdmCCController.collectionsCurator);
+                            console.log(sdmCCController.collectionID );
+                            if (!sdmCCController.collectionsCurator) {
                                 throw 'existing collections not initialized yet';
                             } else {
-                                if (!controller.collectionID &&
-                                    controller.collectionsCurator.indexOf(controller.collectionName) >= 0 ) {
+                                if (!sdmCCController.collectionID &&
+                                    sdmCCController.collectionsCurator.indexOf(sdmCCController.collectionName) >= 0 ) {
                                     form.hasErrors = true;
-                                    form.name.hasErrors = true;
+                                    form.collectionName.hasErrors = true;
+                                    sdmCCController.collectionPlaceholder =
+                                        'Collection "' + sdmCCController.collectionName + '" already exists';
+                                    sdmCCController.collectionName = null;
                                     return;
                                 }
                             }
@@ -121,9 +99,9 @@ var _sdmCCController;
                                 function updateCollection(_id) {
                                     sdmCollectionsInterface.updateCollection(
                                         _id,
-                                        controller.collectionName,
-                                        controller.collectionNotes||'',
-                                        controller.addedPermissions,
+                                        sdmCCController.collectionName,
+                                        sdmCCController.collectionNotes||'',
+                                        sdmCCController.addedPermissions,
                                         selection,
                                         'add'
                                     ).then(function(){
@@ -131,13 +109,13 @@ var _sdmCCController;
                                     });
 
                                 }
-                                if (controller.collectionID) {
-                                    updateCollection(controller.collectionID);
+                                if (sdmCCController.collectionID) {
+                                    updateCollection(sdmCCController.collectionID);
                                 } else {
                                     sdmCollectionsInterface.createCollection(
-                                        controller.collectionName,
-                                        controller.collectionNotes||'',
-                                        controller.addedPermissions
+                                        sdmCCController.collectionName,
+                                        sdmCCController.collectionNotes||'',
+                                        sdmCCController.addedPermissions
                                     ).then(function(response){
                                         console.log('collection created', response);
                                         updateCollection(response._id);
@@ -148,10 +126,10 @@ var _sdmCCController;
                             $scope.$parent._hidePopover($event, 0);
                         };
 
-                        controller.delete = function($event) {
+                        sdmCCController.delete = function($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
-                            sdmCollectionsInterface.deleteCollection(controller.collectionID).then(
+                            sdmCollectionsInterface.deleteCollection(sdmCCController.collectionID).then(
                                 function(){
                                     sdmViewManager.refreshView('collections');
                                 });
@@ -159,54 +137,70 @@ var _sdmCCController;
                             $scope.$parent._hidePopover($event, 0);
                         };
 
-                        controller.addUser = function () {
-                            if (!controller.selectedUID) {
+                        sdmCCController.addUser = function ($event, form) {
+                            if (!sdmCCController.selectedUID) {
+                                form.hasErrors = true;
+                                form.newPermission.hasErrors = true;
+                                sdmCCController.selectedUID = null;
+                                sdmCCController.permissionPlaceholder = "User UID is missing";
                                 return;
+                            } else {
+                                if (sdmCCController.addedPermissions.map(
+                                        function(permission){
+                                            return permission._id;
+                                        }).indexOf(sdmCCController.selectedUID) >= 0 ) {
+                                    form.hasErrors = true;
+                                    form.newPermission.hasErrors = true;
+                                    sdmCCController.selectedUID = null;
+                                    sdmCCController.permissionPlaceholder = "User already has a permission";
+                                    return;
+                                }
                             }
-                            controller.addedPermissions.push({
-                                _id: controller.selectedUID,
-                                access: controller.selectedRole.rid
+                            sdmCCController.addedPermissions.push({
+                                _id: sdmCCController.selectedUID,
+                                access: sdmCCController.selectedRole.rid
                             });
-                            controller.selectedUID = '';
+                            sdmCCController.selectedUID = '';
+                            sdmIMController.permissionPlaceholder = 'Permission added. Save to confirm.';
                         };
 
-                        controller.removeUser = function ($index) {
-                            controller.addedPermissions.splice($index, 1);
+                        sdmCCController.removeUser = function ($index) {
+                            sdmCCController.addedPermissions.splice($index, 1);
                         };
 
-                        controller.selectCollection = function() {
-                            if (controller.selectedCollection) {
-                                console.log(controller.selectedCollection);
-                                controller.collectionName = controller.selectedCollection.name;
-                                controller.collectionID = controller.selectedCollection._id;
-                                controller.collectionNotes = controller.selectedCollection.notes;
-                                sdmCollectionsInterface.getCollection(controller.collectionID).then(
+                        sdmCCController.selectCollection = function() {
+                            if (sdmCCController.selectedCollection) {
+                                console.log(sdmCCController.selectedCollection);
+                                sdmCCController.collectionName = sdmCCController.selectedCollection.name;
+                                sdmCCController.collectionID = sdmCCController.selectedCollection._id;
+                                sdmCCController.collectionNotes = sdmCCController.selectedCollection.notes;
+                                sdmCollectionsInterface.getCollection(sdmCCController.collectionID).then(
                                     function(collection){
                                         console.log(collection);
-                                        controller.addedPermissions = collection.permissions;
+                                        sdmCCController.addedPermissions = collection.permissions;
                                         console.log(collection.permissions);
                                 });
-                                controller.defaultSelectText = '(Create New Collection)';
+                                sdmCCController.defaultSelectText = '(Create New Collection)';
                             } else {
-                                controller.collectionName = '';
-                                controller.collectionID = null;
-                                controller.collectionNotes = '';
-                                controller.addedPermissions = [{'_id': controller.curator.user_uid, 'access': 'admin'}];
-                                controller.defaultSelectText = '(Select Existing Collection)';
+                                sdmCCController.collectionName = '';
+                                sdmCCController.collectionID = null;
+                                sdmCCController.collectionNotes = '';
+                                sdmCCController.addedPermissions = [{'_id': sdmCCController.curator.user_uid, 'access': 'admin'}];
+                                sdmCCController.defaultSelectText = '(Select Existing Collection)';
                             }
                         };
 
                         sdmCollectionsInterface.getCollections().then(
                             function(collections){
-                                controller.existingCollections =
-                                    controller.curator.root?collections:collections.filter(
+                                sdmCCController.existingCollections =
+                                    sdmCCController.curator.root?collections:collections.filter(
                                         function(collection){
                                             var access = collection.permissions[0].access;
                                             return access === 'admin' || access === 'modify';
                                         });
-                                controller.collectionsCurator = controller.existingCollections.filter(
+                                sdmCCController.collectionsCurator = sdmCCController.existingCollections.filter(
                                     function (collection) {
-                                        return collection.curator._id = controller.curator.user_uid;
+                                        return collection.curator._id = sdmCCController.curator.user_uid;
 
                                     }
                                 ).map(function(collection){return collection.name});
