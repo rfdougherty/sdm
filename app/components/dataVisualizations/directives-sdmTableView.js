@@ -268,7 +268,8 @@
                                 'sdm-popover-style-height': '28px',
                                 'sdm-popover-style-top': '24px',
                                 'sdm-popover-show': 'mouseenter',
-                                'sdm-popover-hide': 'mouseleave'
+                                'sdm-popover-hide': 'mouseleave',
+                                'sdm-popover-show-timeout': '400'
                             }).on('mouseover', sdmCellOnHover, true);
                     }
 
