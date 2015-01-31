@@ -13,7 +13,7 @@ var httpServices = angular.module('sdmHttpServices', ['ngCookies', 'sdm.authenti
 httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', function($http, $cookieStore, sdmUserManager) {
 
     var makeAPICall = {
-        async: function(url, params, method, data, iter) {
+        async: function(url, params, method, data) {
             console.log("MAKE API CALL\nwith url=", url, " and params=", params);
             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
             if (typeof method === 'undefined') {
@@ -47,13 +47,8 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 return {data: response.data||[]};
             }, function(reason) { //call if the http request fails
                 console.log(reason);
-                if (reason.status == '401' && (typeof iter === 'undefined' || iter < 2)) {
-                    iter = typeof iter === 'undefined'?1:iter + 1;
-                    return sdmUserManager.authenticate();
-                }
-                if (reason.status == '401' && typeof iter !== 'undefined') {
-                    console.log('authentication: reached maximum number of iterations');
-                    return {data: []};
+                if (reason.status == '401') {
+                    return sdmUserManager.refreshToken();
                 }
                 if (reason.status == '404') {
                     console.log("there is probably something wrong with the url or the server is unavailable");
@@ -67,7 +62,8 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 if (value.data) {
                     return value.data;
                 } else {
-                    return makeAPICall.async(url, params, method, data, iter);
+                    console.log(value);
+                    return makeAPICall.async(url, params, method, data);
                 }
             }).then(function(finalResult){
                 return finalResult;

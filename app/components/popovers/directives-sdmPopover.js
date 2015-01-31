@@ -20,6 +20,7 @@
                 replace: false, // Replace with the template below
                 transclude: false, // we want to insert custom content inside the directive
                 link: function($scope, $element, $attrs) {
+                    console.log($attrs);
                     $scope.dialogStyle = {};
                     var attrKeys = Object.getOwnPropertyNames($attrs);
                     var match;
@@ -102,6 +103,9 @@
                         $element.off();
                     }
                     $scope.enableEvents();
+                    if (typeof $attrs.sdmPopoverShowImmediately !== 'undefined') {
+                        $scope.showPopover(null, 0);
+                    }
                 }
             };
         }]

@@ -10,7 +10,11 @@ nimsAuthControllers.controller('LoginController', [
     function($scope, sdmUserManager) {
         $scope.gravatarURL = GRAVATAR_IMG_URL;
 
-        $scope.authenticate = sdmUserManager.authenticate;
+        $scope.authenticate = function(){
+            sdmUserManager.authenticate().catch(function(status){
+                console.log(status);
+            });
+        };
         $scope.toggleSuperUser = sdmUserManager.toggleSuperUser;
         $scope.logout = sdmUserManager.logout;
         $scope.getAuthData= sdmUserManager.getAuthData;

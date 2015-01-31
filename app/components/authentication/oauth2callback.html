@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>Receiving authentication</title>
   <script type="text/javascript">
-    var oauthParams = {};
+    window.oauthParams = {};
 
     // parse the query string
     var params = {}, queryString = location.hash.substring(1),
@@ -13,8 +13,8 @@
     while (m = regex.exec(queryString)) {
       oauthParams[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
     }
-
-    window.opener.setOauthParams(oauthParams);
+    console.log('using setOauthParams');
+    window.opener?window.opener.setOauthParams(oauthParams):window.setOauthParams(oauthParams);
     window.close();
   </script>
 </head>

@@ -57,7 +57,6 @@
         </div>
     </div>
     <script>
-        console.log(navigator.userAgent);
         if (navigator.userAgent.search(/Chrome\/|Safari\//i) < 0 || navigator.userAgent.search(/OPR\//) >= 0) {
             alert("Only Chrome and Safari are currently supported. Some of the functionalities may not be working in your current browser.")
         }
@@ -88,6 +87,7 @@
     <script src="components/authentication/siteOauth.js"></script>
     <script src="components/authentication/nimsAuthController.js"></script>
     <script src="components/authentication/services-sdmUserManager.js"></script>
+        <script src="components/authentication/directives-sdmLoginModal.js"></script>
 
     <script src="components/projectsViews/controllers-sdmProjectsViewData.js"></script>
     <script src="components/projectsViews/modules.js"></script>

@@ -6,78 +6,79 @@
         var value_auth_data = {};
         var initialized = false;
 
-        var login = function(access_token) {
-            var deferred = $q.defer();
-            $http({
-                method: 'GET',
-                url: BASE_URL + 'users/self',
-                headers: {
-                    'Authorization': access_token
-                }
-            }).
-            success(function(data, status, headers, config) {
-                //parse and return info
-                console.log('data', data);
-                angular.extend(value_auth_data, {
-                    access_token: access_token,
-                    user_uid: data['_id'],
-                    firstname: data['firstname'],
-                    lastname: data['lastname'],
-                    root: data['root'],
-                    wheel: data['wheel'],
-                    logged_in: true,
-                    email_hash: data['email_hash'],
-                    preferences: data['preferences']
-                });
-                $cookieStore.put(SDM_KEY_CACHED_ACCESS_DATA, value_auth_data);
+        var login = function(access_token, deferred) {
+            deferred = deferred||$q.defer();
 
-                deferred.resolve(value_auth_data);
-            }).
-            error(function(data, status, headers, config) {
+            Token.verifyAsync(access_token).
+            then(function(data) {
                 console.log(data);
-                console.log(status);
-                console.log(headers);
-                console.log(config);
-                deferred.reject(status);
+
+                $http({
+                    method: 'GET',
+                    url: BASE_URL + 'users/self',
+                    headers: {
+                        'Authorization': access_token
+                    }
+                }).
+                success(function(data, status, headers, config) {
+                    //parse and return info
+                    console.log('data', data);
+                    angular.extend(value_auth_data, {
+                        access_token: access_token,
+                        user_uid: data['_id'],
+                        firstname: data['firstname'],
+                        lastname: data['lastname'],
+                        root: data['root'],
+                        wheel: data['wheel'],
+                        logged_in: true,
+                        email_hash: data['email_hash'],
+                        preferences: data['preferences']
+                    });
+                    $cookieStore.put(SDM_KEY_CACHED_ACCESS_DATA, value_auth_data);
+
+                    deferred.resolve(value_auth_data);
+                }).
+                error(function(data, status, headers, config) {
+                    console.log(data);
+                    console.log(status);
+                    console.log(headers);
+                    console.log(config);
+                    deferred.reject(status);
+                });
+            }, function(reason) {
+                console.log("Failed to verify token.");
+                deferred.reject(reason);
+
             });
             return deferred.promise;
         };
+
+        var refreshToken = function() {
+            var deferred = $q.defer();
+            Token.refreshToken({}).then(
+                function(params) {
+                    console.log('refreshed token');
+                    login(params.access_token, deferred);
+                }, function(reason) {
+                    console.log("Failed to refresh token.");
+                    deferred.reject(reason);
+                });
+            return deferred.promise;
+        }
 
         var authenticate = function() {
             console.log('attempting to login');
             //console.log('old token:' + value_auth_data.accessToken);
             var deferred = $q.defer();
             var extraParams = {};
-            Token.getTokenByPopup(extraParams)
+            try {
+                var popupOptions = POPUP_OPTIONS;
+            } catch(err) {}
+            Token.getTokenByPopup(extraParams, popupOptions)
                 .then(function(params) {
                     console.log('got new token from popup');
-                    // Verify the token before setting it, to avoid the confused deputy problem.
-                    Token.verifyAsync(params.access_token).
-                    then(function(data) {
-                        //$rootScope.$apply(function() {
-                            // set access token
-
-                            // if token verifies, set login to true
-                            console.log(params);
-
-                            // save the token for later
-                            //Token.set(params.access_token);
-
-                            // send token in authorization header
-                            //TODO use makeAPICall service
-                            login(params.access_token).then(
-                                function(value_auth_data){
-                                    deferred.resolve(value_auth_data);
-                                });
-                        //});
-                    }, function(reason) {
-                        console.log("Failed to verify token.");
-                        deferred.reject(reason);
-
-                    });
-
+                    login(params.access_token, deferred);
                 }, function(reason) {
-                    // Failure getting token from popup.
                     console.log("Failed to get token from popup.");
                     deferred.reject(reason);
                 });
@@ -181,7 +182,8 @@
             getAuthData: getAuthData,
             login: login,
             updateUserData: updateUserData,
-            getUserDataFromAPI: getUserDataFromAPI
+            getUserDataFromAPI: getUserDataFromAPI,
+            refreshToken: refreshToken
         }
     }
 
