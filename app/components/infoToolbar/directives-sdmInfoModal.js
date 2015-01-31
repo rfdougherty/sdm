@@ -77,7 +77,7 @@
 
                         sdmIMController.download = function(file) {
                             var _node = {
-                                level: level.slice(0, level.length - 1),
+                                level: level,
                                 _id: node.id,
                                 file: file
                             };

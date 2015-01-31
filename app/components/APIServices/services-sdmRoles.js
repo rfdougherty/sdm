@@ -3,7 +3,7 @@
 angular.module('sdm.APIServices.services.sdmRoles', ['sdmHttpServices'])
     .factory('sdmRoles', ['$q', 'makeAPICall', function($q, makeAPICall){
         var d = $q.defer();
-        var url = BASE_URL + 'roles';
+        var url = BASE_URL + 'users/roles';
         makeAPICall.async(url).then(function(response){
             d.resolve(response);
         });
