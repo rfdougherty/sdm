@@ -13,6 +13,7 @@
                 controllerAs: 'sdmLMController',
                 link: function($scope, $element, $attrs, sdmLMController) {
                     $scope.$parent.enableEvents();
+                    sdmLMController.authProvider = AUTHENTICATION_PROVIDER;
                     sdmLMController.authenticate = function($event) {
                         return sdmUserManger.authenticate().then(function(){
                             $scope.$parent._hidePopover($event, 0);
@@ -20,6 +21,7 @@
                     };
 
                     sdmLMController.cancel = function($event) {
+                        sdmUserManger.logout();
                         $scope.$parent._hidePopover($event, 0);
                     }
                 }

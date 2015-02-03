@@ -2,7 +2,7 @@
 
 (function(){
 
-    var sdmUserManager = function ($http, $cookieStore, $q, Token) {
+    var sdmUserManager = function ($http, $cookieStore, $q, $rootScope, $compile, Token) {
         var value_auth_data = {};
         var initialized = false;
 
@@ -39,6 +39,19 @@
                     deferred.resolve(value_auth_data);
                 }).
                 error(function(data, status, headers, config) {
+                    if (status === 403) {
+                        var trampoline =
+                            '<div sdm-popover ' +
+                                        'sdm-popover-class="sdm-new-user" ' +
+                                        'sdm-popover-dynamic-position="false" ' +
+                                        'sdm-popover-template-content="components/authentication/newUserModal.html" ' +
+                                        'sdm-popover-show-immediately ' +
+                                        'sdm-append-to-body ' +
+                            '></div>';
+                        var scope = $rootScope.$new(true);
+                        scope.username = data.uid;
+                        $compile(trampoline)(scope);
+                    }
                     console.log(data);
                     console.log(status);
                     console.log(headers);
@@ -187,7 +200,7 @@
         }
     }
 
-    sdmUserManager.$inject = ['$http', '$cookieStore', '$q', 'Token'];
+    sdmUserManager.$inject = ['$http', '$cookieStore', '$q', '$rootScope', '$compile', 'Token'];
 
     angular.module('sdm.authentication.services.sdmUserManager', ['sdm.authentication.services.siteOauth', 'ngCookies']).config(function(TokenProvider) {
         /*FIXME: there is probably a more angular way to do this*/

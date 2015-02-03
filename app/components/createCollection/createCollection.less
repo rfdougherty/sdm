@@ -3,15 +3,6 @@
 div.sdm-create-collection {
 
     .popover-dialog {
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -65%);
-        -webkit-transform: translate(-50%, -65%);
-        -moz-transform: translate(-50%, -65%);
-        width: 0px;
-        height: 0px;
-        padding: 0px;
-
     }
 
     .popover-dialog:before, .popover-dialog:after {
@@ -26,125 +17,126 @@ div.sdm-create-collection {
     .popover-overlay {
         background-color: lightgray;
     }
-}
 
-sdm-create-collection {
-    div.collection-option {
-        text-align: center;
-    }
-    div.collection-header {
-        background-color: @bgcol1;
-        color: @fgcol1;
-        border-bottom: solid white 1px;
-        height: 21px;
-    }
 
-    div.collection-title {
-        //background-color: lightgrey;
-        padding-left: 10px;
-        padding-right:10px;
-        margin-top: 0px;
-        font-size: 24px;
-        margin-bottom: 10px;
-        font-weight: bold;
-        font-variant: small-caps;
-        background-color: @bgcol2;
-        color: @fgcol2;
-    }
-
-    form.create-collection {
-        padding-left: 10px;
-        padding-right:10px;
-        &.error {
-            input.ng-invalid {
-                border: 1px solid red;
-                &:focus {
-                    border: 1px solid red;
-                    box-shadow: none;
-                }
-            }
+    sdm-create-collection {
+        div.collection-option {
+            text-align: center;
         }
-        select {
+        div.collection-header {
+            background-color: @bgcol1;
+            color: @fgcol1;
+            border-bottom: solid white 1px;
+            height: 21px;
+        }
+
+        div.collection-title {
+            //background-color: lightgrey;
+            padding-left: 10px;
+            padding-right:10px;
+            margin-top: 0px;
+            font-size: 24px;
             margin-bottom: 10px;
-            option.default {
-                color: lightgrey !important;
-            }
+            font-weight: bold;
+            font-variant: small-caps;
+            background-color: @bgcol2;
+            color: @fgcol2;
         }
-        div#share {
-            input {
-                width: 287px;
-            }
-            div.tt-dataset-users {
-                padding-left: 10px;
-                border: 1px solid lightgrey;
-                height: 120px;
-                width: 287px;
-                background: white;
-                overflow: scroll;
+
+        form.create-collection {
+            padding-left: 10px;
+            padding-right:10px;
+            &.error {
+                input.ng-invalid {
+                    border: 1px solid red;
+                    &:focus {
+                        border: 1px solid red;
+                        box-shadow: none;
+                    }
+                }
             }
             select {
-                position: relative;
-                top: 11px;
-            }
-             span.glyphicon {
-                position: relative;
-                top: 12px;
-                font-size: 20px;
-                margin-left: 5px;
-
-            }
-        }
-        div#collection-permissions {
-            margin-top: 5px;
-
-            div.permissions-header table {
-                border: 1px solid lightgrey;
-
-                margin-bottom: 0px;
-                td {
-                    width: 200px;
+                margin-bottom: 10px;
+                option.default {
+                    color: lightgrey !important;
                 }
             }
-            div.permissions-body {
-                height: 100px;
-                overflow: scroll;
-                border: 1px solid lightgrey;
+            div#share {
+                input {
+                    width: 287px;
+                }
+                div.tt-dataset-users {
+                    padding-left: 10px;
+                    border: 1px solid lightgrey;
+                    height: 120px;
+                    width: 287px;
+                    background: white;
+                    overflow: scroll;
+                }
+                select {
+                    position: relative;
+                    top: 11px;
+                }
+                 span.glyphicon {
+                    position: relative;
+                    top: 12px;
+                    font-size: 20px;
+                    margin-left: 5px;
 
-                border-top: none;
-                table.table {
-                    margin-top: 0px;
+                }
+            }
+            div#collection-permissions {
+                margin-top: 5px;
+
+                div.permissions-header table {
+                    border: 1px solid lightgrey;
+
                     margin-bottom: 0px;
                     td {
-                        border-top: none;
                         width: 200px;
-                        .glyphicon.disabled {
-                            color: lightgrey;
-                        }
                     }
+                }
+                div.permissions-body {
+                    height: 100px;
+                    overflow: scroll;
+                    border: 1px solid lightgrey;
 
+                    border-top: none;
+                    table.table {
+                        margin-top: 0px;
+                        margin-bottom: 0px;
+                        td {
+                            border-top: none;
+                            width: 200px;
+                            .glyphicon.disabled {
+                                color: lightgrey;
+                            }
+                        }
+
+                    }
                 }
             }
-        }
-        div.collection-confirm-buttons {
-            position: absolute;
-            bottom: 6px;
-            right: 10px;
-            text-align: right;
-            input#collection-delete {
-                background-color: #df3e3e;
-                color: white;
+            div.collection-confirm-buttons {
+                position: absolute;
+                bottom: 6px;
+                right: 10px;
+                text-align: right;
+                input#collection-delete {
+                    background-color: #df3e3e;
+                    color: white;
+                }
+            }
+            textarea {
+                max-height: 64px;
+                max-width: 100%;
             }
         }
-        textarea {
-            max-height: 64px;
-            max-width: 100%;
+
+        .sdm-input-label {
+            float: left;
+            width: 100px;
+            font-weight: bold;
         }
-    }
 
-    .sdm-input-label {
-        float: left;
-        width: 100px;
-        font-weight: bold;
     }
-
 }

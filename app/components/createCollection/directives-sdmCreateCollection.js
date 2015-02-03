@@ -30,8 +30,6 @@
                         sdmCCController.collectionPlaceholder = 'Create New Collection';
 
                         function initialize() {
-                            $scope.$parent.dialogStyle.height = '500px';//100px';
-                            $scope.$parent.dialogStyle.width = '600px';//280px';
                             sdmCCController.defaultSelectText = '(Select Existing Collection)';
                             sdmUsers.getUsers().then(function(data){
                                 console.log(data);

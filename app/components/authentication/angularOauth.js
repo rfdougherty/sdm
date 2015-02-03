@@ -180,14 +180,17 @@ angular.module('sdm.authentication.services.angularOauth', []).
                     var deferred = $q.defer(),
                         params = angular.extend(getParams(), extraParams),
                         url = config.authorizationEndpoint + '?' + objectToQueryString(params);
+
                     angular.element('<iframe>', {
                         src: url,
                         id: 'AuthIframe',
                         style: 'display:none;'})
                         .appendTo('body');
+                    var iframe = document.getElementById('AuthIframe');
+
                     //console.log('afterAppend', afterAppend);
                     var success;
-                    var iframe = document.getElementById('AuthIframe');
+
 
                     iframe.contentWindow.setOauthParams = function(params) {
                         if(params.state == $rootScope.oauth_state){
@@ -197,7 +200,6 @@ angular.module('sdm.authentication.services.angularOauth', []).
                                 } else {
                                     deferred.reject(params)
                                 }
-                                iframe.parentNode.removeChild(iframe);
                             });
                         }
                     };
@@ -210,7 +212,6 @@ angular.module('sdm.authentication.services.angularOauth', []).
                         }
 
                         if (!success){
-                            iframe.parentNode.removeChild(iframe);
                             var trampoline =
                                 '<div sdm-popover ' +
                                             'sdm-popover-class="sdm-login-modal" ' +
@@ -219,12 +220,13 @@ angular.module('sdm.authentication.services.angularOauth', []).
                                             'sdm-popover-show-immediately ' +
                                             'sdm-append-to-body ' +
                                 '></div>';
-                            $compile(trampoline)($rootScope.$new());
-                            //angular.element(document.getElementsByTagName('body')).append(trampoline);
+                            $compile(trampoline)($rootScope.$new(true));
                             deferred.reject('open modal to login');
                         }
                     };
-
+                    deferred.promise.finally(function(){
+                        iframe.parentNode.removeChild(iframe);
+                    });
                     return deferred.promise;
                 }
             }

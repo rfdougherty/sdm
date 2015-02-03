@@ -4,5 +4,6 @@ angular.module('sdm.authentication',
     [
         'sdm.authentication.controllers',
         'sdm.authentication.services.sdmUserManager',
-        'sdm.authentication.directives.sdmLoginModal'
+        'sdm.authentication.directives.sdmLoginModal',
+        'sdm.authentication.directives.sdmNewUser',
     ]);
