@@ -66,13 +66,15 @@
             var nodes = [];
             var iterator = depthFirst(tree);
             var n = iterator.next();
+            var counts = {};
             while (!n.done) {
+                counts[n.value.level.name] = counts[n.value.level.name]?counts[n.value.level.name] + 1:1;
                 if (n.value.isLeaf) {
                     nodes.push(n.value);
                 }
                 n = iterator.next();
             }
-            return nodes;
+            return {leaves: nodes, counts: counts};
         };
 
         var depthFirst = function(tree) {

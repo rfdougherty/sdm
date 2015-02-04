@@ -77,9 +77,6 @@
                                 });
 
                                 $scope.setFilter = function(header){
-                                    //var refreshData = angular.copy($scope.sdmData.data);
-                                    //$scope.sdmData.data = refreshData;
-                                    //$scope.trigger.sessionKey;
                                     console.log(header);
                                     if (header.filter){
                                         if (!header.filter.string) {
@@ -131,8 +128,10 @@
         return true;
     };
 
+    var headerTitles;
+
     var getHeaderTitles = function(headers) {
-        var titles = [];
+        headerTitles = [];
         angular.forEach(headers, function(value, key){
             if (value.headers) {
                 console.log('header properties', value.properties);
@@ -141,6 +140,7 @@
                         title: header,
                         name: header.toLowerCase() + 's',
                         nospace: i !== a.length - 1,
+                        showcount: i === 0,
                         excluded: false
                     };
                     if (result.name === value.name) {
@@ -152,8 +152,8 @@
                 });
                 this.push.apply(this, newTitles);
             }
-        }, titles);
-        return titles;
+        }, headerTitles);
+        return headerTitles;
     };
 
     var sessionKey;
@@ -168,7 +168,13 @@
         };
 
         sessionKey = trigger.sessionKey?trigger.sessionKey:-1;
-        var leaves = actions.getLeaves(data);
+        var parsedData = actions.getLeaves(data);
+        var leaves = parsedData.leaves;
+        headerTitles.forEach(function(header){
+            if (header.showcount) {
+                header.count = parsedData.counts[header.name]||0;
+            }
+        });
 
         var rows = d3.select(rootElement)
             .selectAll('div.d3row')
