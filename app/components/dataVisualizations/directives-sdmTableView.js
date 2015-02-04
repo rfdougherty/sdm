@@ -282,6 +282,7 @@
                     d3Text
                     .append('span')
                     .classed('text', true)
+                    .classed('grey', function(d){return !d.userHasPermissions})
                     //.style('color', globalTableTextColor)
                     .text(value||UNDEFINED_PLACEHOLDER);
 

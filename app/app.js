@@ -107,6 +107,7 @@ var DataNode = function(data, site, level, children) {
     this.checked = false;
     this.indeterminate = false;
     this.notes = data.notes;
+    this.userHasPermissions = data.permissions&&data.permissions.length;
 }
 
 var substringMatcher = function(elements, field) {
