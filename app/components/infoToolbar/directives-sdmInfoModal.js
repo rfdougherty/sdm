@@ -67,6 +67,10 @@
                                 sdmIMController.files = apiData.files||[];
                                 sdmIMController.files.sort(function(file, file1){
                                     return file.type===file1.type?0:file.type>file1.type?1:-1 });
+                                console.log(apiData.permissions, node.level.name);
+                                apiData.permissions =
+                                    node.level.name.search(/collections|projects/) === 0 ?
+                                        apiData.permissions : null;
                                 sdmIMController.apiData = apiData;
 
                                 console.log(sdmIMController);

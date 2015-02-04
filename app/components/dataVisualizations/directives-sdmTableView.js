@@ -265,18 +265,18 @@
                         .append('span');
 
                     if (d.level.name.search(/^(sessions|projects|collections|acquisitions)$/) >= 0){
-                            d3Text.attr({
-                                'sdm-popover': '',
-                                'sdm-popover-class': 'sdm-info-toolbar',
-                                'sdm-popover-template-content': 'components/infoToolbar/infoToolbarPopover.html',
-                                'sdm-popover-dynamic-position': 'false',
-                                'sdm-popover-style-width': '64px',
-                                'sdm-popover-style-height': '28px',
-                                'sdm-popover-style-top': '24px',
-                                'sdm-popover-show': 'mouseenter',
-                                'sdm-popover-hide': 'mouseleave',
-                                'sdm-popover-show-timeout': '400'
-                            }).on('mouseover', sdmCellOnHover, true);
+                        d3Text.attr({
+                            'sdm-popover': '',
+                            'sdm-popover-class': 'sdm-info-toolbar',
+                            'sdm-popover-template-content': 'components/infoToolbar/infoToolbarPopover.html',
+                            'sdm-popover-dynamic-position': 'false',
+                            'sdm-popover-style-width': '64px',
+                            'sdm-popover-style-height': '28px',
+                            'sdm-popover-style-top': '24px',
+                            'sdm-popover-show': 'mouseenter',
+                            'sdm-popover-hide': 'mouseleave',
+                            'sdm-popover-show-timeout': '400'
+                        }).on('mouseover', sdmCellOnHover, true);
                     }
 
                     d3Text
