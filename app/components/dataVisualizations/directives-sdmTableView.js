@@ -259,9 +259,10 @@
                         });
                     }
                     //
-                    var d3Text = d3Element.append('div')
+                    var d3DivContent = d3Element.append('div')
                         .classed('content', true)
-                        .classed(UNDEFINED_PLACEHOLDER, function(){return typeof value === 'undefined';})
+                        .classed(UNDEFINED_PLACEHOLDER, function(){return typeof value === 'undefined';});
+                    var d3Text = d3DivContent
                         .append('span');
 
                     if (d.level.name.search(/^(sessions|projects|collections|acquisitions)$/) >= 0){
@@ -301,16 +302,17 @@
                             }).on('click', actions.expandNode);
                     }
                     if (i === 0 && d.notes) {
+                        d3DivContent.style({'width':'70%'});
                         d3Element.append('div').append('span').attr({
                             'class': 'glyphicon nav-glyph expander glyphicon-comment',
                             'sdm-popover': '',
-                            'sdm-popover-class': 'sdm-info-toolbar',
+                            'sdm-popover-class': 'sdm-info-toolbar sdm-note-tooltip',
                             'sdm-popover-template-content': 'components/infoToolbar/notesTooltip.html',
                             'sdm-popover-dynamic-position': 'false',
-                            'sdm-popover-style-width': '200px',
-                            'sdm-popover-style-height': '100px',
+                            'sdm-popover-style-width': '250px',
+                            'sdm-popover-style-height': '13ex',
                             'sdm-popover-style-top': '8px',
-                            'sdm-popover-style-left': '-24px',
+                            'sdm-popover-style-left': '-32px',
                             'sdm-popover-show': 'mouseenter',
                             'sdm-popover-hide': 'mouseleave',
                             'sdm-popover-show-timeout': '400',

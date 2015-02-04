@@ -65,8 +65,11 @@
             });
             return deferred.promise;
         };
-
+        var isRefreshing = null;
         var refreshToken = function() {
+            if (isRefreshing) {
+                return isRefreshing;
+            }
             var deferred = $q.defer();
             Token.refreshToken({}).then(
                 function(params) {
@@ -76,6 +79,10 @@
                     console.log("Failed to refresh token.");
                     deferred.reject(reason);
                 });
+            isRefreshing = deferred.promise;
+            deferred.promise.finally(function(){
+                isRefreshing = null;
+            })
             return deferred.promise;
         }
 

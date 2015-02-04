@@ -107,7 +107,12 @@ var DataNode = function(data, site, level, children) {
     this.checked = false;
     this.indeterminate = false;
     this.notes = data.notes;
-    this.userHasPermissions = data.permissions&&data.permissions.length;
+    if (level.name.search(/projects|collections|sessions|acquisitions/) === 0){
+       this.userHasPermissions = data.permissions&&data.permissions.length;
+    } else {
+        this.userHasPermissions = true;
+    }
+
 }
 
 var substringMatcher = function(elements, field) {
