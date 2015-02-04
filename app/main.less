@@ -246,7 +246,7 @@ div#tree-view>div {
             div.content {
                 display: inline;
                 position: absolute;
-                width: 78%;
+                width: 74%;
                 height: 100%;
                 margin-left: 20px;
 
@@ -372,12 +372,19 @@ div#tree-view>div {
     }
 }
 
-span.expander.glyphicon{
+span.expander.glyphicon {
     font-size: 11px;
     top: 5px;
     &:hover {
         color: @bgcol1;
         cursor: pointer; cursor: hand;
+    }
+    &.glyphicon-comment {
+        color: lightgray;
+        z-index: 100;
+        &:hover {
+            color: @bgcol1;
+        }
     }
 }
 

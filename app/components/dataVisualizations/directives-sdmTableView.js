@@ -299,6 +299,24 @@
                                 return 'glyphicon nav-glyph expander ' + icon;
                             }).on('click', actions.expandNode);
                     }
+                    if (i === 0 && d.notes) {
+                        d3Element.append('div').append('span').attr({
+                            'class': 'glyphicon nav-glyph expander glyphicon-comment',
+                            'sdm-popover': '',
+                            'sdm-popover-class': 'sdm-info-toolbar',
+                            'sdm-popover-template-content': 'components/infoToolbar/notesTooltip.html',
+                            'sdm-popover-dynamic-position': 'false',
+                            'sdm-popover-style-width': '200px',
+                            'sdm-popover-style-height': '100px',
+                            'sdm-popover-style-top': '8px',
+                            'sdm-popover-style-left': '-24px',
+                            'sdm-popover-show': 'mouseenter',
+                            'sdm-popover-hide': 'mouseleave',
+                            'sdm-popover-show-timeout': '400',
+                        }).on('mouseenter', sdmCellOnHover, true);;
+                    }
+
+
                 }
             }, this);
         });

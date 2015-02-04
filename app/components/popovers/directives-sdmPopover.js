@@ -21,6 +21,7 @@
                 transclude: false, // we want to insert custom content inside the directive
                 link: function($scope, $element, $attrs) {
                     console.log($attrs);
+                    console.log($scope);
                     $scope.dialogStyle = {};
                     var attrKeys = Object.getOwnPropertyNames($attrs);
                     var match;
@@ -50,6 +51,7 @@
 
 
                     $scope.showPopover = function($event, timeout){
+                        console.log($event);
                         timeout = typeof timeout === 'undefined' ? 600 : timeout;
                         if ($event) {
                             $event.stopPropagation();

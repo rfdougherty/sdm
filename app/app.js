@@ -87,6 +87,7 @@ var naturalSortByName = function(a, b){
 };
 
 var DataNode = function(data, site, level, children) {
+    console.log('datanode', data);
     this.level = level;
     this.site = site;
     this.id = data && data._id ?data._id: null;
@@ -106,6 +107,7 @@ var DataNode = function(data, site, level, children) {
     this.childrenIndeterminate = 0;
     this.checked = false;
     this.indeterminate = false;
+    this.notes = data.notes;
 }
 
 var substringMatcher = function(elements, field) {
