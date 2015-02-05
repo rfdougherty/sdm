@@ -3,11 +3,11 @@
 (function() {
     angular.module('sdm.infoToolbar.directives.sdmInfoModal',
             ['sdm.services', 'sdm.download.services.sdmDownloadInterface',
-             'sdm.authentication.services.sdmUserManager',
+             'sdm.authentication.services.sdmUserManager', 'sdm.main.services.sdmViewManager',
              'sdm.APIServices.services.sdmRoles',
              'sdm.APIServices.services.sdmUsers'])
-        .directive('sdmInfoModal', ['$location', 'makeAPICall', 'sdmDownloadInterface', 'sdmUserManager', 'sdmRoles', 'sdmUsers',
-            function($location, makeAPICall, sdmDownloadInterface, sdmUserManager, sdmRoles, sdmUsers) {
+        .directive('sdmInfoModal', ['$location', 'makeAPICall', 'sdmDownloadInterface', 'sdmUserManager', 'sdmViewManager', 'sdmRoles', 'sdmUsers',
+            function($location, makeAPICall, sdmDownloadInterface, sdmUserManager, sdmViewManager, sdmRoles, sdmUsers) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -29,10 +29,12 @@
                             path.unshift(n.parent.level.name==='sessions'?n.parent.name + ' - ' + n.parent.subject:n.parent.name);
                             n = n.parent;
                         }
+                        sdmIMController.loadingState = 0;
                         sdmIMController.permissionPlaceholder = 'Enter User ID';
                         sdmRoles().then(function(data){
                             sdmIMController.roles = data;
                             sdmIMController.selectedRole = sdmIMController.roles[0];
+                            sdmIMController.loadingState++;
                         });
                         sdmUsers.getUsers().then(function(data){
                             console.log(data);
@@ -51,6 +53,7 @@
                             $element.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
                                 sdmIMController.selectedUID = selectedUID.value;
                             });
+                            sdmIMController.loadingState++;
                         });
 
 
@@ -58,7 +61,10 @@
                         sdmIMController.baseUrl = BASE_URL + 'acquisitions/' + node.id + '/file';
                         console.log(path);
                         sdmIMController.path = path.slice(1);
-                        sdmIMController.title = level.slice(0, level.length - 1) + ' ' + node.name;
+                        sdmIMController.title = level.slice(0, level.length - 1) + ': ';
+                        sdmIMController.name = node.name;
+                        sdmIMController.user = sdmUserManager.getAuthData();
+                        console.log(sdmIMController.user);
                         makeAPICall.async(APIUrl, {site: node.site}).then(
                             function (apiData) {
                                 console.log('apiData', apiData);
@@ -68,16 +74,31 @@
                                 sdmIMController.files.sort(function(file, file1){
                                     return file.type===file1.type?0:file.type>file1.type?1:-1 });
                                 console.log(apiData.permissions, node.level.name);
+                                if (apiData.permissions) {
+                                    apiData.permissions.forEach(function(permission){
+                                        if (permission._id === sdmIMController.user.user_uid) {
+                                            sdmIMController.userPermission = permission.access;
+                                        }
+                                    });
+                                }
+
+                                sdmIMController.isAdmin = sdmIMController.canModify = false;
+                                if (sdmIMController.userPermission) {
+                                    console.log(sdmIMController.userPermission);
+                                    sdmIMController.isAdmin = sdmIMController.userPermission === 'admin';
+                                    sdmIMController.canModify = sdmIMController.userPermission.search(/modify$|admin$/) === 0;
+                                }
+                                if (sdmIMController.user.root) {
+                                    sdmIMController.isAdmin = sdmIMController.canModify = true;
+                                }
+
                                 apiData.permissions =
                                     node.level.name.search(/collections|projects/) === 0 ?
                                         apiData.permissions : null;
                                 sdmIMController.apiData = apiData;
-
+                                sdmIMController.loadingState++;
                                 console.log(sdmIMController);
                             });
-
-                        sdmIMController.user = sdmUserManager.getAuthData();
-                        console.log('user', sdmIMController.user);
 
                         sdmIMController.download = function(file) {
                             var _node = {
@@ -126,10 +147,16 @@
                             sdmIMController.permissionPlaceholder = 'Permission added. Save to confirm.';
                         };
 
-                        sdmIMController.savePermissions = function ($event) {
+                        sdmIMController.save = function ($event) {
                             var url = BASE_URL + node.level.name + '/' + node.id;
-                            makeAPICall.async(url, {site: node.site}, 'PUT',
-                                {permissions: sdmIMController.apiData.permissions}).then(function(){
+                            var payload = {notes: sdmIMController.apiData.notes};
+                            if (sdmIMController.apiData.permissions) {
+                                payload.permissions = sdmIMController.apiData.permissions;
+                            }
+                            makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(function(){
+                                    var currentPath = $location.path();
+                                    currentPath = currentPath.substring(1, currentPath.length);
+                                    sdmViewManager.refreshView(currentPath);
                                     $scope.$parent.enableEvents();
                                     $scope.$parent._hidePopover($event, 0);
                                 });

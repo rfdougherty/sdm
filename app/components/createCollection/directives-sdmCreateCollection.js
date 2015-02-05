@@ -28,6 +28,7 @@
                         sdmCCController.users = {};
                         sdmCCController.permissionPlaceholder = 'Enter User ID';
                         sdmCCController.collectionPlaceholder = 'Create New Collection';
+                        sdmCCController.loadingState = 0;
 
                         function initialize() {
                             sdmCCController.defaultSelectText = '(Select Existing Collection)';
@@ -48,12 +49,14 @@
                                 $element.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
                                     sdmCCController.selectedUID = selectedUID.value;
                                 });
+                                sdmCCController.loadingState++;
                             });
                         }
                         initialize();
                         sdmRoles().then(function(data){
                             sdmCCController.roles = data;
                             sdmCCController.selectedRole = sdmCCController.roles[0];
+                            sdmCCController.loadingState++;
                         });
 
                         $scope.$parent.disableEvents();
@@ -190,16 +193,22 @@
 
                         sdmCollectionsInterface.getCollections().then(
                             function(collections){
+                                console.log(collections);
                                 sdmCCController.existingCollections =
                                     sdmCCController.curator.root?collections:collections.filter(
                                         function(collection){
-                                            var access = collection.permissions[0].access;
-                                            return access === 'admin' || access === 'modify';
+                                            console.log(collection.permissions);
+                                            for (var i = 0; i < collection.permissions.length; i++) {
+                                                if (collection.permissions[i]._id === sdmCCController.curator.user_uid) {
+                                                    collection.userAccess = collection.permissions[i].access;
+                                                    return collection.userAccess.search(/modify$|admin$/) === 0;
+                                                }
+                                            }
+                                            return false;
                                         });
                                 sdmCCController.collectionsCurator = sdmCCController.existingCollections.filter(
                                     function (collection) {
-                                        return collection.curator._id = sdmCCController.curator.user_uid;
-
+                                        return collection.curator._id === sdmCCController.curator.user_uid;
                                     }
                                 ).map(function(collection){return collection.name});
                             }

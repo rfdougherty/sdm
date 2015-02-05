@@ -72,8 +72,7 @@
             getModalData: function (node, apiData) {
                 return [
                     ['Name', node.name],
-                    ['Curator', node.parent.name],
-                    ['Notes', apiData.notes]
+                    ['Curator', node.parent.name]
                 ]
             }
         };

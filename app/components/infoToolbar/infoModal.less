@@ -28,7 +28,6 @@ sdm-info-modal {
         padding-bottom: 10px;
         font-size: 18px;
         font-variant: small-caps;
-
         //border-top: solid 1px black;
     }
 
@@ -43,10 +42,16 @@ sdm-info-modal {
             font-size: 11px;
             top: 0px;
         }
+        span.glyphicon.glyphicon-remove {
+            float: right;
+            padding-right: 5px;
+            padding-top: 4px;
+        }
     }
 
     div.info-modal-title{
         padding-left: 10px;
+        padding-right:10px;
         margin-top: 0px;
         font-size: 24px;
         margin-bottom: 10px;
@@ -56,10 +61,16 @@ sdm-info-modal {
         text-transform: capitalize;
         background-color: @bgcol2;
         color: @fgcol2;
+        span {
+            text-transform: none;
+            font-variant: normal;
+            font-size: 20px;
+        }
     }
 
     div.info-modal-body {
         padding-left: 10px;
+        padding-right: 10px;
     }
 
 
@@ -137,15 +148,11 @@ sdm-info-modal {
             }
         }
 
-        .sdm-input-label {
-            padding-left:  0px;
-            padding-right: 0px;
-        }
     }
 
     .sdm-input-label {
-        padding-left: 10px;
-        padding-right:10px;
+        padding-left: 0px;
+        padding-right: 0px;
         float: left;
         width: 100%;
         font-weight: bold;
