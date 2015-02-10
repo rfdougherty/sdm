@@ -5,18 +5,19 @@
     var sdmCellOnHover;
 
     angular.module('sdm.dataVisualizations.directives.sdmTableView',
-        ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree'])
-    .directive('sdmTableView', ['$compile', '$location', '$rootScope', 'sdmD3Service', 'sdmFilterTree',
-        function($compile, $location, $rootScope, sdmD3Service, sdmFilterTree){
+        ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree',
+        'sdm.main.services.sdmViewManager'])
+    .directive('sdmTableView',
+        ['$compile', '$location', '$rootScope',
+        'sdmD3Service', 'sdmFilterTree', 'sdmViewManager',
+        function($compile, $location, $rootScope, sdmD3Service, sdmFilterTree, sdmViewManager){
             return {
                 // name: '',
                 // priority: 1,
                 // terminal: true,
                 scope: {
                     sdmData: '=',
-                    trigger: '=sdmTrigger',
-                    sdmActions: '&',
-                    sdmHeaders: '='
+                    trigger: '=sdmTrigger'
                 }, // {} = isolate, true = child, false/undefined = no change
                 // controllerAs: 'tableController',
                 // controller: TableController,
@@ -28,7 +29,7 @@
                 // transclude: true,
                 link: {
                     post: function($scope, $element, $attrs) {
-                        sdmFilterTree.sdmData = $scope.sdmData;
+                        console.log($scope);
                         var currentPath = $location.path();
                         //console.log(currentPath.substring(1, currentPath.length));
                         sdmFilterTree.setView(currentPath.substring(1, currentPath.length));
@@ -36,7 +37,7 @@
                             .getElementsByClassName('sdm-table-content')[0]
                             .getElementsByClassName('container')[0];
 
-                        $scope.headersTitles = getHeaderTitles($scope.sdmHeaders);
+                        $scope.headersTitles = getHeaderTitles(sdmViewManager.headers());
 
                         sdmCellOnHover = function(data) {
                             console.log('data', data);
@@ -48,75 +49,75 @@
                             }
                         };
 
-                        var actions = $scope.sdmActions();
-                        actions.getLeaves = sdmFilterTree.filter;
-                        actions.selector = sdmFilterTree.selector;
+                        var actions = {
+                            expandNode: sdmViewManager.expandNode,
+                            getLeaves: sdmFilterTree.filter,
+                            selector: sdmFilterTree.selector
+                        };
 
-                        sdmD3Service.d3().then(function(_d3) {
-                            d3 = _d3;
-                            $scope.$watch('trigger', function(){
-                                console.log('scope.data', $scope.sdmData);
-                                console.log('scope.trigger', $scope.trigger);
+                        d3 = sdmD3Service.d3();
+                        $scope.$watch('trigger', function(){
+                            console.log('scope.data', $scope.sdmData);
+                            console.log('scope.trigger', $scope.trigger);
+                            if (typeof $scope.sdmData !== 'undefined'){
+                                updateView(
+                                    containerElement,
+                                    $scope.sdmData.data,
+                                    actions,
+                                    $scope.trigger,
+                                    $scope.trigger.all?selectAllNodes:null);
+                            }
+
+                            var getFilter = sdmFilterTree.getFilter;
+                            $scope.headersTitles.forEach(function(header){
+                                var searchString = getFilter(header.name).searchString;
+                                if (searchString) {
+                                    header.filter = {
+                                        string: searchString
+                                    };
+                                }
+                            });
+
+                            $scope.setFilter = function(header){
+                                console.log(header);
+                                if (header.filter){
+                                    if (!header.filter.string) {
+                                        header.filter.excluded = false;
+                                    }
+                                    sdmFilterTree.createFilter(
+                                        header,
+                                        header.filter.string,
+                                        header.filter.excluded);
+                                }
                                 if (typeof $scope.sdmData !== 'undefined'){
                                     updateView(
                                         containerElement,
                                         $scope.sdmData.data,
                                         actions,
                                         $scope.trigger,
-                                        $scope.trigger.all?selectAllNodes:null);
+                                        selectAllNodes);
                                 }
+                            };
 
-                                var getFilter = sdmFilterTree.getFilter;
-                                $scope.headersTitles.forEach(function(header){
-                                    var searchString = getFilter(header.name).searchString;
-                                    if (searchString) {
-                                        header.filter = {
-                                            string: searchString
-                                        };
-                                    }
-                                });
+                            $scope.clearFilter = function(header) {
+                                header.filter.string = '';
+                                header.filter.excluded = false;
+                                $scope.setFilter(header);
+                            };
 
-                                $scope.setFilter = function(header){
-                                    console.log(header);
-                                    if (header.filter){
-                                        if (!header.filter.string) {
-                                            header.filter.excluded = false;
-                                        }
-                                        sdmFilterTree.createFilter(
-                                            header,
-                                            header.filter.string,
-                                            header.filter.excluded);
-                                    }
-                                    if (typeof $scope.sdmData !== 'undefined'){
-                                        updateView(
-                                            containerElement,
-                                            $scope.sdmData.data,
-                                            actions,
-                                            $scope.trigger,
-                                            selectAllNodes);
-                                    }
-                                };
-
-                                $scope.clearFilter = function(header) {
+                            $scope.clearESC = function(event, header) {
+                                console.log('event', event);
+                                if (event.keyCode === 27) {
                                     header.filter.string = '';
                                     header.filter.excluded = false;
                                     $scope.setFilter(header);
-                                };
+                                }
+                            };
 
-                                $scope.clearESC = function(event, header) {
-                                    console.log('event', event);
-                                    if (event.keyCode === 27) {
-                                        header.filter.string = '';
-                                        header.filter.excluded = false;
-                                        $scope.setFilter(header);
-                                    }
-                                };
-
-                                $scope.filterExclude = function(header) {
-                                    header.filter.excluded = !header.filter.excluded;
-                                    $scope.setFilter(header);
-                                };
-                            });
+                            $scope.filterExclude = function(header) {
+                                header.filter.excluded = !header.filter.excluded;
+                                $scope.setFilter(header);
+                            };
                         });
                     }
                 }

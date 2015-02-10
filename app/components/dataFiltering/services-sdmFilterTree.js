@@ -86,6 +86,7 @@
             function next() {
                 element = elements.pop();
                 var firstChild;
+                var isLeaf;
                 if (typeof element === 'undefined') {
                     return {done: true};
                 } else if (element.children && element.children.length) {
@@ -98,7 +99,7 @@
                             filteredChildren.push(thisChild);
                         }
                     }
-                    //console.log(filteredChildren);
+
                     var isFirstChild;
                     var temp;
                     for (i = 0; i < filteredChildren.length; i++) {
@@ -109,14 +110,15 @@
                         //console.log(thisChild);
                         elements.push(thisChild);
                     }
-                    element.isLeaf = filteredChildren.length?false:true;
+                    isLeaf = element.isLeaf = filteredChildren.length?false:true;
                 } else {
                     element.children = undefined;
-                    element.isLeaf = true;
+                    isLeaf = element.isLeaf = true;
                 }
                 return {
                     value: element,
-                    done: false
+                    done: false,
+                    isLeaf: isLeaf
                 }
             }
             return {
@@ -261,6 +263,7 @@
                 selectorUnchecked(node);
             }
         };
+
         angular.extend(
             filterService,
             {

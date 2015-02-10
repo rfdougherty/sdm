@@ -1,25 +1,34 @@
 'use strict';
 
 var nimsAuthControllers = angular.module('sdm.authentication.controllers',
-    ['sdm.authentication.services.sdmUserManager']);
+    ['sdm.authentication.services.sdmUserManager',
+    'sdm.main.services.sdmViewManager']);
 var _auth_data;
 var _user_manager;
 
 nimsAuthControllers.controller('LoginController', [
-    '$scope', 'sdmUserManager',
-    function($scope, sdmUserManager) {
+    '$scope', 'sdmUserManager', 'sdmViewManager',
+    function($scope, sdmUserManager, sdmViewManager) {
         $scope.gravatarURL = GRAVATAR_IMG_URL;
+        $scope.userData = sdmUserManager.getAuthData();
 
         $scope.authenticate = function(){
-            sdmUserManager.authenticate().catch(function(status){
-                console.log(status);
+            sdmUserManager.authenticate().then(function(){
+                $scope.userData = sdmUserManager.getAuthData();
+                sdmViewManager.initialize();
+                sdmViewManager.updateViewAppearance($scope.userData.preferences)
             });
         };
-        $scope.toggleSuperUser = sdmUserManager.toggleSuperUser;
-        $scope.logout = sdmUserManager.logout;
-        $scope.getAuthData= sdmUserManager.getAuthData;
+        $scope.toggleSuperUser = function(){
+            sdmUserManager.toggleSuperUser().then(function(){
+                sdmViewManager.initialize();
+            });
+        }
+        $scope.logout = function(){
+            sdmUserManager.logout();
+            sdmViewManager.initialize();
+        }
 
-        $scope.userData = sdmUserManager.getAuthData();
 
         if (typeof $scope.userData.access_token !== 'undefined') {
             sdmUserManager.login($scope.userData.access_token);

@@ -12,10 +12,9 @@
         };
 
         this.refreshView = function() {
-            var currentPath = $location.path();
-            var viewID = currentPath.substring(1, currentPath.length);
-            sdmViewManager.refreshView(viewID);
+            sdmViewManager.refreshView();
         };
+
         this.location = function () {
             return $location.path();
         };

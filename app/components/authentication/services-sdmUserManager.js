@@ -61,7 +61,6 @@
             }, function(reason) {
                 console.log("Failed to verify token.");
                 deferred.reject(reason);
-
             });
             return deferred.promise;
         };
@@ -209,7 +208,9 @@
 
     sdmUserManager.$inject = ['$http', '$cookieStore', '$q', '$rootScope', '$compile', 'Token'];
 
-    angular.module('sdm.authentication.services.sdmUserManager', ['sdm.authentication.services.siteOauth', 'ngCookies']).config(function(TokenProvider) {
+    angular.module('sdm.authentication.services.sdmUserManager', [
+        'sdm.authentication.services.siteOauth', 'ngCookies'])
+        .config(function(TokenProvider) {
         /*FIXME: there is probably a more angular way to do this*/
         var baseUrl = window.location.href.split('#')[0];
         //console.log(baseUrl);

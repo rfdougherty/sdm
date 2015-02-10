@@ -127,7 +127,6 @@ angular.module('sdm.authentication.services.angularOauth', []).
                             "configure the following options using " +
                             "TokenProvider.extendConfig: " + requiredAndMissing.join(", "))
                     }
-                    var width = 306;
 
                     popupOptions = angular.extend({
                         name: 'AuthPopup',

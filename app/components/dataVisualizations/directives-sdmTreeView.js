@@ -5,9 +5,9 @@
 
 
     angular.module('sdm.dataVisualizations.directives.sdmTreeView',
-        ['sdmD3Service'])
-    .directive('sdmTreeView', ['sdmD3Service',
-        function(sdmD3Service){
+        ['sdmD3Service', 'sdm.main.services.sdmViewManager'])
+    .directive('sdmTreeView', ['sdmD3Service', 'sdmViewManager',
+        function(sdmD3Service, sdmViewManager){
 
             // Runs during compile
             return {
@@ -16,8 +16,7 @@
                 // terminal: true,
                 scope: {
                     sdmData: '=',
-                    trigger: '=',
-                    sdmActions: '&'
+                    trigger: '='
                 }, // {} = isolate, true = child, false/undefined = no change
                 // controllerAs: 'tableController',
                 // controller: TableController,
@@ -32,13 +31,13 @@
                 link: {
                     post: function($scope, $element, $attr) {
                         $scope.headers = $attr.sdmTableHeader.split(':');
-                        sdmD3Service.d3().then(function() {
+                        sdmD3Service.init().then(function() {
                             initView();
                             createHeader($scope.headers);
                             $scope.$watch('trigger', function(newValue, oldValue){
                                 var source = (newValue === oldValue)?null:newValue.node;
                                 if (typeof source !== 'undefined' && typeof $scope.sdmData !== 'undefined'){
-                                    updateView($scope.sdmData.data, source, $scope.sdmActions().expandNode);
+                                    updateView($scope.sdmData.data, source, sdmViewManager.expandNode);
                                 }
                             });
                         });

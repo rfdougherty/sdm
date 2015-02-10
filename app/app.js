@@ -2,8 +2,6 @@
 var sdmApp = angular.module('sdm', [
     'ngRoute',
     'sdm.authentication',
-    'sdm.projectsViews',
-    'sdm.collectionsViews',
     'sdm.buttons',
     'sdm.services',
     'sdm.navigation',
@@ -15,7 +13,16 @@ var sdmApp = angular.module('sdm', [
     'sdm.dataVisualizations',
     'sdm.infoToolbar',
     'sdm.download'
-]);
+]).run(['sdmD3Service', 'sdmViewManager', 'sdmUserManager',
+    function(sdmD3Service, sdmViewManager, sdmUserManager){
+        console.log(sdmUserManager, sdmViewManager);
+        sdmD3Service.init().then(function(d3){
+            var userData = sdmUserManager.getAuthData();
+            sdmViewManager.updateViewAppearance(userData.preferences);
+            sdmViewManager.initialize();
+        });
+
+    }]);
 
 var COMING_SOON = '<div id="tree-view">Coming Soon!!!</div>';
 
@@ -25,15 +32,15 @@ sdmApp.config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/projects',
         {
             templateUrl: 'components/main/main.html',
-            controller: 'SdmProjectsViewData',
-            controllerAs: 'sdmProjectsViewData'
+            controller: 'SdmTableViewData',
+            controllerAs: 'sdmTableViewData'
         }
     );
     $routeProvider.when('/collections',
         {
             templateUrl: 'components/main/collections.html',
-            controller: 'SdmCollectionsViewData',
-            controllerAs: 'sdmCollectionsViewData'
+            controller: 'SdmTableViewData',
+            controllerAs: 'sdmTableViewData'
         }
     );
     $routeProvider.when('/search', {'template': COMING_SOON});

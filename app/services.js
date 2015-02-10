@@ -79,9 +79,10 @@ angular.module('sdmD3Service', [])
     .factory('sdmD3Service', ['$document', '$q', '$rootScope',
         function($document, $q, $rootScope) {
             var d = $q.defer();
+            var d3;
             function onScriptLoad() {
                 // Load client in the browser
-                $rootScope.$apply(function() { d.resolve(window.d3); });
+                $rootScope.$apply(function() { d3 = window.d3; d.resolve(window.d3); });
             }
             // Create a script tag with d3 as the source
             // and call our onScriptLoad callback when it
@@ -99,6 +100,7 @@ angular.module('sdmD3Service', [])
             s.appendChild(scriptTag);
 
             return {
-                d3: function() { return d.promise; }
+                init: function() { return d.promise },
+                d3: function(){ return d3}
             };
         }]);

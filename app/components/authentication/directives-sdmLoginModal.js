@@ -2,8 +2,8 @@
 
 (function() {
     angular.module('sdm.authentication.directives.sdmLoginModal',
-        ['sdm.authentication.services.sdmUserManager']).directive('sdmLoginModal',
-        ['sdmUserManager', function(sdmUserManger){
+        ['sdm.authentication.services.sdmUserManager', 'sdm.main.services.sdmViewManager']).directive('sdmLoginModal',
+        ['sdmUserManager', 'sdmViewManager', function(sdmUserManager, sdmViewManager){
             return {
                 restrict: 'E',
                 scope: false,
@@ -15,13 +15,14 @@
                     $scope.$parent.enableEvents();
                     sdmLMController.authProvider = AUTHENTICATION_PROVIDER;
                     sdmLMController.authenticate = function($event) {
-                        return sdmUserManger.authenticate().then(function(){
+                        return sdmUserManager.authenticate().then(function(){
                             $scope.$parent._hidePopover($event, 0);
                         });
                     };
 
                     sdmLMController.cancel = function($event) {
-                        sdmUserManger.logout();
+                        sdmUserManager.logout();
+                        sdmViewManager.initialize();
                         $scope.$parent._hidePopover($event, 0);
                     }
                 }

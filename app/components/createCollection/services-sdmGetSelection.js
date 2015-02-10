@@ -2,16 +2,18 @@
 
 angular.module('sdm.createCollection.services.sdmGetSelection', [
     'sdm.dataFiltering.services.sdmFilterTree',
-    'sdm.APIServices.services.sdmCollectionsInterface'])
-    .factory('sdmGetSelection', ['$q', 'sdmCollectionsInterface', 'sdmFilterTree',
-        function($q, sdmCollectionsInterface, sdmFilterTree) {
+    'sdm.main.services.sdmViewManager'])
+    .factory('sdmGetSelection', ['$q', 'sdmViewManager', 'sdmFilterTree',
+        function($q, sdmViewManager, sdmFilterTree) {
 
             var getSelection = function () {
                 console.log('getSelection called. viewID:', sdmFilterTree.viewID);
                 var deferred = $q.defer();
                 var iterator, element, selection;
+                var data = sdmViewManager.getCurrentViewData();
+                console.log('getSelected', data);
                 if (sdmFilterTree.viewID === 'collections') {
-                    iterator = sdmCollectionsInterface.breadthFirstFull(sdmFilterTree.sdmData.data);
+                    iterator = sdmViewManager.breadthFirstFull(data);
                     selection = [];
                     var iterate = function () {
                         var element = iterator.next();
@@ -29,7 +31,7 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
                     };
                     iterate();
                 } else {
-                    selection = sdmFilterTree.getSelected(sdmFilterTree.sdmData.data);
+                    selection = sdmFilterTree.getSelected(data);
                     deferred.resolve(selection);
                 }
                 return deferred.promise;
