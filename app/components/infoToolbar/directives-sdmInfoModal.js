@@ -5,9 +5,10 @@
             ['sdm.services', 'sdm.download.services.sdmDownloadInterface',
              'sdm.authentication.services.sdmUserManager', 'sdm.main.services.sdmViewManager',
              'sdm.APIServices.services.sdmRoles',
-             'sdm.APIServices.services.sdmUsers'])
-        .directive('sdmInfoModal', ['$location', '$compile', 'makeAPICall', 'sdmDownloadInterface', 'sdmUserManager', 'sdmViewManager', 'sdmRoles', 'sdmUsers',
-            function($location, $compile, makeAPICall, sdmDownloadInterface, sdmUserManager, sdmViewManager, sdmRoles, sdmUsers) {
+             'sdm.APIServices.services.sdmUsers',
+             'sdm.popovers.services.sdmPopoverTrampoline'])
+        .directive('sdmInfoModal', ['$location', 'sdmPopoverTrampoline', 'makeAPICall', 'sdmDownloadInterface', 'sdmUserManager', 'sdmViewManager', 'sdmRoles', 'sdmUsers',
+            function($location, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface, sdmUserManager, sdmViewManager, sdmRoles, sdmUsers) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -56,7 +57,7 @@
                             });
                             sdmIMController.loadingState++;
                         });
-                        $scope.refreshUsers = function() {
+                        var refreshUsers = function() {
                             sdmUsers.getUsers().then(function(data){
                                 sdmIMController.users = data;
                                 var typeahead
@@ -170,11 +171,11 @@
                         sdmIMController.createUserInModal = function ($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
-                            var trampoline = '<div sdm-popover' +
-                                ' sdm-popover-template-content="components/admin/userCreationModal.html"' +
-                                ' sdm-popover-class="sdm-create-user" sdm-popover-show-immediately' +
-                                ' sdm-append-to-body></div>';
-                            $compile(trampoline)($scope);
+                            sdmPopoverTrampoline.trigger(
+                                'sdm-create-user',
+                                'components/admin/userCreationModal.html',
+                                {refreshUsers: refreshUsers}
+                            );
                         }
 
                         sdmIMController.save = function ($event) {

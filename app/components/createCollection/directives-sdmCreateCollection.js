@@ -6,11 +6,12 @@
             'sdm.createCollection.services.sdmGetSelection', 'sdm.authentication.services.sdmUserManager',
             'sdm.main.services.sdmViewManager',
             'sdm.APIServices.services.sdmRoles', 'sdm.APIServices.services.sdmUsers',
-            'sdm.APIServices.services.sdmCollectionsInterface'])
+            'sdm.APIServices.services.sdmCollectionsInterface',
+            'sdm.popovers.services.sdmPopoverTrampoline'])
         .directive('sdmCreateCollection', [
-            '$q', '$location', '$compile', 'sdmGetSelection', 'sdmUserManager',
+            '$q', '$location', 'sdmPopoverTrampoline', 'sdmGetSelection', 'sdmUserManager',
             'sdmViewManager', 'sdmRoles', 'sdmUsers', 'sdmCollectionsInterface',
-            function($q, $location, $compile, sdmGetSelection, sdmUserManager,
+            function($q, $location, sdmPopoverTrampoline, sdmGetSelection, sdmUserManager,
                      sdmViewManager, sdmRoles, sdmUsers, sdmCollectionsInterface) {
 
                 return {
@@ -54,7 +55,7 @@
                                 sdmCCController.loadingState++;
                             });
                         }
-                        $scope.refreshUsers = function() {
+                        var refreshUsers = function() {
                             sdmUsers.getUsers().then(function(data){
                                 sdmCCController.users = data;
                                 var typeahead
@@ -193,11 +194,11 @@
                         sdmCCController.createUserInModal = function ($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
-                            var trampoline = '<div sdm-popover' +
-                                ' sdm-popover-template-content="components/admin/userCreationModal.html"' +
-                                ' sdm-popover-class="sdm-create-user" sdm-popover-show-immediately' +
-                                ' sdm-append-to-body></div>';
-                            $compile(trampoline)($scope);
+                            sdmPopoverTrampoline.trigger(
+                                'sdm-create-user',
+                                'components/admin/userCreationModal.html',
+                                {refreshUsers: refreshUsers}
+                            );
                         }
 
                         sdmCCController.selectCollection = function() {
