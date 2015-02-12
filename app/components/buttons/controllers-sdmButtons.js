@@ -11,8 +11,12 @@
             return sdmViewManager.getViewAppearance()['data-layout'] === value;
         };
 
-        this.refreshView = function() {
-            sdmViewManager.refreshView();
+        this.refreshView = function($event) {
+            var element = angular.element($event.currentTarget);
+            element.addClass('loading');
+            sdmViewManager.refreshView().then(function(){
+                element.removeClass('loading');
+            });
         };
 
         this.location = function () {

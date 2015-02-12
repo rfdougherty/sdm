@@ -339,8 +339,10 @@
         function refreshView(viewID) {
             var iterator;
             var tree = viewID?getData(viewID):getCurrentViewData();
+            var deferred = $q.defer();
             if (!tree) {
-                return;
+                deferred.resolve();
+                return deferred.promise;
             }
             iterator = breadthFirstRefresh(tree);
 
@@ -355,9 +357,11 @@
                     });
                 } else {
                     triggerViewChange(tree);
+                    deferred.resolve();
                 }
             };
             iterate();
+            return deferred.promise;
         };
 
         var _updateCountersParent = function(node) {

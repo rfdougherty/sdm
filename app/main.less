@@ -443,6 +443,16 @@ ul > li#buttons > div.toolbar {
         border: 1px solid transparent;
         background-color: @bgcol2;
         color: white;
+        &:focus {
+            outline-color: white;
+        }
+        &:hover {
+            background-color: @bgcol1;
+        }
+        &.loading span{
+            -webkit-animation:spinner 1s linear infinite;
+            animation:spinner 1s linear infinite;
+        }
     }
 
     .btn-group-xs > button.btn.active,  .btn-group-xs > button.btn:hover {
