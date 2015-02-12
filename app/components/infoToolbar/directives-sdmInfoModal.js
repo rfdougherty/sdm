@@ -6,8 +6,8 @@
              'sdm.authentication.services.sdmUserManager', 'sdm.main.services.sdmViewManager',
              'sdm.APIServices.services.sdmRoles',
              'sdm.APIServices.services.sdmUsers'])
-        .directive('sdmInfoModal', ['$location', 'makeAPICall', 'sdmDownloadInterface', 'sdmUserManager', 'sdmViewManager', 'sdmRoles', 'sdmUsers',
-            function($location, makeAPICall, sdmDownloadInterface, sdmUserManager, sdmViewManager, sdmRoles, sdmUsers) {
+        .directive('sdmInfoModal', ['$location', '$compile', 'makeAPICall', 'sdmDownloadInterface', 'sdmUserManager', 'sdmViewManager', 'sdmRoles', 'sdmUsers',
+            function($location, $compile, makeAPICall, sdmDownloadInterface, sdmUserManager, sdmViewManager, sdmRoles, sdmUsers) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -36,11 +36,11 @@
                             sdmIMController.selectedRole = sdmIMController.roles[0];
                             sdmIMController.loadingState++;
                         });
+                        var typeaheadElement = $element.find('#info-change-permissions .typeahead');
                         sdmUsers.getUsers().then(function(data){
                             console.log(data);
                             sdmIMController.users = data;
-
-                            $element.find('#info-change-permissions .typeahead').typeahead({
+                            typeaheadElement.typeahead({
                                     hint: true,
                                     highlight: true,
                                     minLength: 3
@@ -49,12 +49,32 @@
                                     name: 'users',
                                     displayKey: 'value',
                                     source: substringMatcher(sdmIMController.users, '_id')
-                                });
+                                }
+                            );
                             $element.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
                                 sdmIMController.selectedUID = selectedUID.value;
                             });
                             sdmIMController.loadingState++;
                         });
+                        $scope.refreshUsers = function() {
+                            sdmUsers.getUsers().then(function(data){
+                                sdmIMController.users = data;
+                                var typeahead
+
+                                typeaheadElement.typeahead('destroy');
+                                typeaheadElement.typeahead({
+                                        hint: true,
+                                        highlight: true,
+                                        minLength: 3
+                                    },
+                                    {
+                                        name: 'users',
+                                        displayKey: 'value',
+                                        source: substringMatcher(sdmIMController.users, '_id')
+                                    }
+                                );
+                            });
+                        };
 
 
 
@@ -146,6 +166,16 @@
                             sdmIMController.selectedUID = '';
                             sdmIMController.permissionPlaceholder = 'Permission added. Save to confirm.';
                         };
+
+                        sdmIMController.createUserInModal = function ($event) {
+                            $event.stopPropagation();
+                            $event.preventDefault();
+                            var trampoline = '<div sdm-popover' +
+                                ' sdm-popover-template-content="components/admin/userCreationModal.html"' +
+                                ' sdm-popover-class="sdm-create-user" sdm-popover-show-immediately' +
+                                ' sdm-append-to-body></div>';
+                            $compile(trampoline)($scope);
+                        }
 
                         sdmIMController.save = function ($event) {
                             var url = BASE_URL + node.level.name + '/' + node.id;

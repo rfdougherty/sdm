@@ -8,8 +8,10 @@
             'sdm.APIServices.services.sdmRoles', 'sdm.APIServices.services.sdmUsers',
             'sdm.APIServices.services.sdmCollectionsInterface'])
         .directive('sdmCreateCollection', [
-            '$q', '$location', 'sdmGetSelection', 'sdmUserManager', 'sdmViewManager', 'sdmRoles', 'sdmUsers', 'sdmCollectionsInterface',
-            function($q, $location, sdmGetSelection, sdmUserManager, sdmViewManager, sdmRoles, sdmUsers, sdmCollectionsInterface) {
+            '$q', '$location', '$compile', 'sdmGetSelection', 'sdmUserManager',
+            'sdmViewManager', 'sdmRoles', 'sdmUsers', 'sdmCollectionsInterface',
+            function($q, $location, $compile, sdmGetSelection, sdmUserManager,
+                     sdmViewManager, sdmRoles, sdmUsers, sdmCollectionsInterface) {
 
                 return {
                     restrict: 'E',
@@ -29,14 +31,14 @@
                         sdmCCController.permissionPlaceholder = 'Enter User ID';
                         sdmCCController.collectionPlaceholder = 'Create New Collection';
                         sdmCCController.loadingState = 0;
-
+                        var typeaheadElement = $element.find('#share .typeahead');
                         function initialize() {
                             sdmCCController.defaultSelectText = '(Select Existing Collection)';
                             sdmUsers.getUsers().then(function(data){
                                 console.log(data);
                                 sdmCCController.users = data;
 
-                                $element.find('#share .typeahead').typeahead({
+                                typeaheadElement.typeahead({
                                         hint: true,
                                         highlight: true,
                                         minLength: 3
@@ -52,6 +54,25 @@
                                 sdmCCController.loadingState++;
                             });
                         }
+                        $scope.refreshUsers = function() {
+                            sdmUsers.getUsers().then(function(data){
+                                sdmCCController.users = data;
+                                var typeahead
+
+                                typeaheadElement.typeahead('destroy');
+                                typeaheadElement.typeahead({
+                                        hint: true,
+                                        highlight: true,
+                                        minLength: 3
+                                    },
+                                    {
+                                        name: 'users',
+                                        displayKey: 'value',
+                                        source: substringMatcher(sdmCCController.users, '_id')
+                                    }
+                                );
+                            });
+                        };
                         initialize();
                         sdmRoles().then(function(data){
                             sdmCCController.roles = data;
@@ -168,6 +189,16 @@
                         sdmCCController.removeUser = function ($index) {
                             sdmCCController.addedPermissions.splice($index, 1);
                         };
+
+                        sdmCCController.createUserInModal = function ($event) {
+                            $event.stopPropagation();
+                            $event.preventDefault();
+                            var trampoline = '<div sdm-popover' +
+                                ' sdm-popover-template-content="components/admin/userCreationModal.html"' +
+                                ' sdm-popover-class="sdm-create-user" sdm-popover-show-immediately' +
+                                ' sdm-append-to-body></div>';
+                            $compile(trampoline)($scope);
+                        }
 
                         sdmCCController.selectCollection = function() {
                             if (sdmCCController.selectedCollection) {

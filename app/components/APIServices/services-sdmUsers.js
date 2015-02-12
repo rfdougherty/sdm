@@ -12,6 +12,7 @@ angular.module('sdm.APIServices.services.sdmUsers', ['sdmHttpServices'])
                 users.forEach(function(user){
                     userData[user._id] = user;
                 });
+                timestamp = Date.now();
                 d.resolve(userData);
             });
             return d.promise;
@@ -34,6 +35,7 @@ angular.module('sdm.APIServices.services.sdmUsers', ['sdmHttpServices'])
         };
 
         return {
-            getUsers: getUsers
+            getUsers: getUsers,
+            refreshUsers: refreshUsers
         }
     }]);

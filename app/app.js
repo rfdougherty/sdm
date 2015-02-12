@@ -12,7 +12,8 @@ var sdmApp = angular.module('sdm', [
     'sdm.APIServices',
     'sdm.dataVisualizations',
     'sdm.infoToolbar',
-    'sdm.download'
+    'sdm.download',
+    'sdm.admin'
 ]).run(['sdmD3Service', 'sdmViewManager', 'sdmUserManager',
     function(sdmD3Service, sdmViewManager, sdmUserManager){
         console.log(sdmUserManager, sdmViewManager);
@@ -27,8 +28,6 @@ var sdmApp = angular.module('sdm', [
 var COMING_SOON = '<div id="tree-view">Coming Soon!!!</div>';
 
 sdmApp.config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/table-view', {templateUrl: 'components/projectsViews/table.html'});
-    $routeProvider.when('/tree-view', {templateUrl: 'components/projectsViews/tree.html'});
     $routeProvider.when('/projects',
         {
             templateUrl: 'components/main/main.html',
