@@ -329,6 +329,7 @@
 
         function headers (viewID) {
             console.log('headers called');
+            console.log(viewID);
             if (viewID) {
                 return viewData.views[viewID].viewDescription;
             } else {
@@ -337,6 +338,7 @@
         };
 
         function refreshView(viewID) {
+            console.log('refreshView', viewID);
             var iterator;
             var tree = viewID?getData(viewID):getCurrentViewData();
             var deferred = $q.defer();
@@ -344,7 +346,7 @@
                 deferred.resolve();
                 return deferred.promise;
             }
-            iterator = breadthFirstRefresh(tree);
+            iterator = breadthFirstRefresh(tree, viewID);
 
             var iterate = function() {
                 var element = iterator.next();
@@ -509,33 +511,39 @@
             }
         };
 
-        var breadthFirstFull = function(tree) {
+        var breadthFirstFull = function(tree, viewID) {
             /*
             ** performs an asynchronous breadth first traversal expanding all the nodes
             */
-            return breadthFirstAsync(tree, getAllChildren);
+            var getChildren = function (node){
+                return getAllChildren(node, viewID);
+            };
+            return breadthFirstAsync(tree, getChildren);
         };
 
-        var breadthFirstRefresh = function(tree) {
+        var breadthFirstRefresh = function(tree, viewID) {
             /*
             ** performs an asynchronous breadth first traversal refreshing all the children
             ** the expanded nodes
             */
-            return breadthFirstAsync(tree, refreshChildren);
+            var getChildren = function (node){
+                return refreshChildren(node, viewID);
+            };
+            return breadthFirstAsync(tree, getChildren);
         };
 
-        var getAllChildren= function (node) {
+        var getAllChildren = function (node, viewID) {
             var deferred = $q.defer();
             var children = node.children&&node.children.length?node.children:node._children;
             if (children && children.length) {
                 deferred.resolve(children);
                 return deferred.promise;
             } else {
-                return getChildrenFromAPI(node, deferred);
+                return getChildrenFromAPI(node, deferred, viewID);
             }
         };
 
-        var refreshChildren = function (node) {
+        var refreshChildren = function (node, viewID) {
             console.log(node);
             var isCheckedOrIndeterminate = node.childrenChecked + node.childrenIndeterminate > 0
             node.childrenIndeterminate = 0;
@@ -550,7 +558,7 @@
 
             if (node.children) {
                 console.log('node.children', node);
-                var promise = getChildrenFromAPI(node, deferred);
+                var promise = getChildrenFromAPI(node, deferred, viewID);
                 promise.then(function(children){
                     console.log(children);
                     updateChildrenList(node.children, children);
@@ -568,7 +576,7 @@
                 return deferred.promise;
             } else if (node._children) {
                 console.log(node);
-                promise = getChildrenFromAPI(node, deferred);
+                promise = getChildrenFromAPI(node, deferred, viewID);
                 promise.then(function(children){
                     updateChildrenList(node._children, children);
                     console.log(children);
@@ -579,7 +587,7 @@
                 });
                 return promise;
             } else if (!node.hasData) {
-                var promise = getChildrenFromAPI(node, deferred);
+                var promise = getChildrenFromAPI(node, deferred, viewID);
                 promise.then(function(children){
                     console.log('node no data', children);
                     if (node.children) {
