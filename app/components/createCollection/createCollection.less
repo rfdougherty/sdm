@@ -63,8 +63,25 @@ div.sdm-create-collection {
             }
             select {
                 margin-bottom: 10px;
-                option.default {
-                    color: lightgrey !important;
+                &.form-control.default {
+                    font-style: italic;
+                    color: grey;
+                }
+            }
+            input.form-control.name {
+                &::-webkit-input-placeholder {
+                   color: grey;
+                   font-style: italic;
+                }
+
+                &:-moz-placeholder { /* Firefox 18- */
+                   color: grey;
+                   font-style: italic;
+                }
+
+                &::-moz-placeholder {  /* Firefox 19+ */
+                   color: grey;
+                   font-style: italic;
                 }
             }
             div#share {

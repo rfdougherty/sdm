@@ -26,7 +26,7 @@
             <div id="info-change-permissions" class="form-inline" ng-show="sdmIMController.isAdmin">
                 <div id="permissions-title" class="sdm-input-label">Change permissions</div><br>
                 <input class="typeahead form-control" type="text" placeholder="{{sdmIMController.permissionPlaceholder}}" ng-model="sdmIMController.selectedUID" name="newPermission" ng-class="{'ng-invalid': form.newPermission.hasErrors}"></input>
-                <select class="form-control" ng-init="" ng-options="role.name for role in sdmIMController.roles" ng-model="sdmIMController.selectedRole"></select>
+                <select class="form-control" ng-options="role.name for role in sdmIMController.roles" ng-model="sdmIMController.selectedRole"></select>
                 <span class="glyphicon glyphicon-plus-sign" ng-click="sdmIMController.addUser($event, form)"></span>
                 <input type="button" class="create-user btn btn-default" value="Create New User" ng-click="sdmIMController.createUserInModal($event)">
             </div>

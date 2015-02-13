@@ -20,7 +20,7 @@
                         console.log($scope);
                         sdmTBController.location = $location.path();
                         var appended;
-                        sdmTBController.createDeleteButton = function(){
+                        sdmTBController.toggleDeleteButton = function(){
                             if ($scope.data.level.name === 'collections') {
                                 if (appended) {
                                     appended.remove();

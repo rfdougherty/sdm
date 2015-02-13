@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sdm.download.services.sdmDownloadInterface',
-    ['sdm.createCollection.services.sdmGetSelection', 'sdm.services'])
+    ['sdm.services'])
     .factory('sdmDownloadInterface', ['$q', 'makeAPICall',
         function($q, makeAPICall) {
 

@@ -3,6 +3,7 @@
 (function(){
     var d3;
     var sdmCellOnHover;
+    var scope;
 
     angular.module('sdm.dataVisualizations.directives.sdmTableView',
         ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree',
@@ -29,9 +30,8 @@
                 // transclude: true,
                 link: {
                     post: function($scope, $element, $attrs) {
-                        console.log($scope);
+                        scope = $scope;
                         var currentPath = $location.path();
-                        //console.log(currentPath.substring(1, currentPath.length));
                         sdmFilterTree.setView(currentPath.substring(1, currentPath.length));
                         var containerElement = $element[0]
                             .getElementsByClassName('sdm-table-content')[0]
@@ -40,7 +40,6 @@
                         $scope.headersTitles = getHeaderTitles(sdmViewManager.headers());
 
                         sdmCellOnHover = function(data) {
-                            console.log('data', data);
                             if (typeof this.sdmCellCompiled === 'undefined') {
                                 var newScope = $rootScope.$new();
                                 newScope.data = data;
@@ -55,69 +54,69 @@
                             selector: sdmFilterTree.selector
                         };
 
-                        d3 = sdmD3Service.d3();
-                        $scope.$watch('trigger', function(){
-                            console.log('scope.data', $scope.sdmData);
-                            console.log('scope.trigger', $scope.trigger);
-                            if (typeof $scope.sdmData !== 'undefined'){
-                                updateView(
-                                    containerElement,
-                                    $scope.sdmData.data,
-                                    actions,
-                                    $scope.trigger,
-                                    $scope.trigger.all?selectAllNodes:null);
-                            }
-
-                            var getFilter = sdmFilterTree.getFilter;
-                            $scope.headersTitles.forEach(function(header){
-                                var searchString = getFilter(header.name).searchString;
-                                if (searchString) {
-                                    header.filter = {
-                                        string: searchString
-                                    };
-                                }
-                            });
-
-                            $scope.setFilter = function(header){
-                                console.log(header);
-                                if (header.filter){
-                                    if (!header.filter.string) {
-                                        header.filter.excluded = false;
-                                    }
-                                    sdmFilterTree.createFilter(
-                                        header,
-                                        header.filter.string,
-                                        header.filter.excluded);
-                                }
+                        sdmD3Service.init().then(function(_d3){
+                            d3 = _d3;
+                            $scope.$watch('trigger', function(){
+                                console.log('scope.data', $scope.sdmData);
+                                console.log('scope.trigger', $scope.trigger);
                                 if (typeof $scope.sdmData !== 'undefined'){
                                     updateView(
                                         containerElement,
                                         $scope.sdmData.data,
                                         actions,
                                         $scope.trigger,
-                                        selectAllNodes);
+                                        $scope.trigger.all?selectAllNodes:null);
                                 }
-                            };
 
-                            $scope.clearFilter = function(header) {
-                                header.filter.string = '';
-                                header.filter.excluded = false;
-                                $scope.setFilter(header);
-                            };
+                                var getFilter = sdmFilterTree.getFilter;
+                                $scope.headersTitles.forEach(function(header){
+                                    var searchString = getFilter(header.name).searchString;
+                                    if (searchString) {
+                                        header.filter = {
+                                            string: searchString
+                                        };
+                                    }
+                                });
 
-                            $scope.clearESC = function(event, header) {
-                                console.log('event', event);
-                                if (event.keyCode === 27) {
+                                $scope.setFilter = function(header){
+                                    if (header.filter){
+                                        if (!header.filter.string) {
+                                            header.filter.excluded = false;
+                                        }
+                                        sdmFilterTree.createFilter(
+                                            header,
+                                            header.filter.string,
+                                            header.filter.excluded);
+                                    }
+                                    if (typeof $scope.sdmData !== 'undefined'){
+                                        updateView(
+                                            containerElement,
+                                            $scope.sdmData.data,
+                                            actions,
+                                            $scope.trigger,
+                                            selectAllNodes);
+                                    }
+                                };
+
+                                $scope.clearFilter = function(header) {
                                     header.filter.string = '';
                                     header.filter.excluded = false;
                                     $scope.setFilter(header);
-                                }
-                            };
+                                };
 
-                            $scope.filterExclude = function(header) {
-                                header.filter.excluded = !header.filter.excluded;
-                                $scope.setFilter(header);
-                            };
+                                $scope.clearESC = function(event, header) {
+                                    if (event.keyCode === 27) {
+                                        header.filter.string = '';
+                                        header.filter.excluded = false;
+                                        $scope.setFilter(header);
+                                    }
+                                };
+
+                                $scope.filterExclude = function(header) {
+                                    header.filter.excluded = !header.filter.excluded;
+                                    $scope.setFilter(header);
+                                };
+                            });
                         });
                     }
                 }
@@ -135,7 +134,6 @@
         headerTitles = [];
         angular.forEach(headers, function(value, key){
             if (value.headers) {
-                console.log('header properties', value.properties);
                 var newTitles = value.headers.map(function(header, i, a){
                     var result = {
                         title: header,
@@ -207,6 +205,9 @@
         return rows;
     };
 
+    var _addClass = function(element) {
+    };
+
 
     var updateRow = function (actions) {
         return function(leaf) {
@@ -216,7 +217,11 @@
             }
             var dataRow = createDataRow(leaf);
 
-            this.style['font-weight'] = leaf.fullLine?'bold':'normal';
+            if (leaf.fullLine) {
+                this.classList.add('full-line');
+            } else {
+                this.classList.remove('full-line');
+            };
 
             d3.select(this)
                 .selectAll('span.sdm-cell')
@@ -244,10 +249,8 @@
                 var d3Element = d3.select(this).append('div')
                     .classed(classed, true);
                 var value = d[p];
-                //console.log('property', p);
                 if (d.show) {
                     if (i === 0){
-                        //console.log('d3', d.name, d);
                         d.indeterminate = !d.checked && d.childrenChecked + d.childrenIndeterminate > 0;
                         d3Element.append('input').attr({
                             'type': 'checkbox'
@@ -257,12 +260,12 @@
                         }).on('click', function(d){
                             actions.selector(d);
                             refresh(selectAllNodes);
+                            scope.$apply();
                         });
                     }
                     //
                     var d3DivContent = d3Element.append('div')
-                        .classed('content', true)
-                        .classed(UNDEFINED_PLACEHOLDER, function(){return typeof value === 'undefined';});
+                        .classed('content', true);
                     var d3Text = d3DivContent
                         .append('span');
 
@@ -282,11 +285,13 @@
                     }
 
                     d3Text
-                    .append('span')
-                    .classed('text', true)
-                    .classed('grey', function(d){return !d.userHasPermissions})
-                    //.style('color', globalTableTextColor)
-                    .text(value||UNDEFINED_PLACEHOLDER);
+                        .append('span')
+                        .classed('text', true)
+                        .classed('no-access', function(d){return !d.userHasPermissions})
+                        .classed('modify', function(d){
+                            return d.userCanModify;
+                        })
+                        .text(value||UNDEFINED_PLACEHOLDER);
 
                     if (i === a.length - 1){
                         d3Element.append('span').attr('class',

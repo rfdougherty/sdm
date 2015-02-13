@@ -16,6 +16,7 @@
     <link rel="stylesheet/less" href="components/download/modalDownload.less" />
     <link rel="stylesheet/less" href="components/authentication/authModals.less" />
     <link rel="stylesheet/less" href="components/admin/createUserModal.less" />
+    <link rel="stylesheet/less" href="components/moveSessions/moveSessionsPopover.less" />
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.0.0/less.min.js"></script>
 
 
@@ -32,7 +33,7 @@
             <div id="header-text" ng-include="'active_config/header-main-text.html'">
             </div>
 
-            <div id="header-toolbar" ng-include src="'components/authentication/_login-box.html'" ng-controller="LoginController">
+            <div id="header-toolbar" ng-include src="'components/authentication/login-box.html'" ng-controller="LoginController">
             </div>
         </div>
         <div id="navigation"
@@ -128,6 +129,9 @@
     <script src="components/admin/modules.js"></script>
     <script src="components/admin/services-sdmAdminInterface.js"></script>
     <script src="components/admin/directives-sdmCreateUser.js"></script>
+
+    <script src="components/moveSessions/modules.js"></script>
+    <script src="components/moveSessions/directives-sdmMoveSessions.js"></script>
 
 
 </body>

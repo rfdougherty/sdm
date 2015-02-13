@@ -80,6 +80,9 @@
                 name: objectAccessor(['label']),
                 subject:
                     function(o){
+                        if (!o.subject) {
+                            return '';
+                        }
                         return o.subject.code;
                     }
             },
@@ -103,6 +106,9 @@
                 name: objectAccessor('label'),
                 description: objectAccessor('description'),
                 'data type': function (o){
+                    if (!o.types) {
+                        return '';
+                    }
                     return o.types.map(function(d){
                         return d.kind
                     }).join(', ');
@@ -214,6 +220,9 @@
                 name: objectAccessor(['label']),
                 subject:
                     function(o){
+                        if (!o.subject) {
+                            return '';
+                        }
                         return o.subject.code;
                     }
             },
@@ -238,6 +247,9 @@
                 name: objectAccessor('label'),
                 description: objectAccessor('description'),
                 'data type': function (o){
+                    if (!o.types) {
+                        return '';
+                    }
                     return o.types.map(function(d){
                         return d.kind
                     }).join(', ');
@@ -268,7 +280,8 @@
 
     var sdmViewManager = function($location, $q, makeAPICall) {
         var viewAppearances = {
-            'data-layout': 'table'
+            'data-layout': 'table',
+            'editable': true
         };
 
         var viewData = {
@@ -328,8 +341,6 @@
         }
 
         function headers (viewID) {
-            console.log('headers called');
-            console.log(viewID);
             if (viewID) {
                 return viewData.views[viewID].viewDescription;
             } else {
@@ -338,7 +349,6 @@
         };
 
         function refreshView(viewID) {
-            console.log('refreshView', viewID);
             var iterator;
             var tree = viewID?getData(viewID):getCurrentViewData();
             var deferred = $q.defer();
@@ -365,6 +375,10 @@
             iterate();
             return deferred.promise;
         };
+
+        function refreshCurrentView() {
+            return refreshView(viewData['current']);
+        }
 
         var _updateCountersParent = function(node) {
             /*
@@ -394,7 +408,6 @@
             var levelDescription = headers(viewID);
             makeAPICall.async(sites_url).then(
                 function(sites){
-                    console.log(sites);
                     var promises =
                         sites.map(function(site, i){
                             var deferredSite = $q.defer();
@@ -445,11 +458,9 @@
             //var deferred = $q.defer();
 
             angular.forEach(viewData.views, function(value, viewID){
-                console.log(viewID, value);
-
                 var promise = treeInit(viewID);
                 promise.then(function(result){
-                    console.log(viewID, result);
+                    console.log('initialized data for ', viewID, result);
                     setData(viewID, result);
                     return result
                 });
@@ -459,14 +470,20 @@
                     });
                 }
             });
-        }
+        };
 
+        /*
+        ** Breadth first traversal method with cusomt node expansion.
+        **
+        ** IMPORTANT:
+        ** It doesn't modify the tree if getChildren doesn't modify the input node.
+        ** It can be used to modify the tree in place.
+        */
         var breadthFirstAsync = function (tree, getChildren) {
             var queue = [{node: tree}];
             function next() {
                 var nextDeferred = $q.defer();
                 var nodeOrPromise = queue.pop();
-                console.log('nodeOrpromise', nodeOrPromise);
                 if (typeof nodeOrPromise === 'undefined') {
                     return;
                 }
@@ -481,7 +498,6 @@
                     nextDeferred.resolve(nodeOrPromise.node);
                 } else if (nodeOrPromise.promise) {
                     nodeOrPromise.promise.then(function(children){
-                        console.log('children', children);
                         if (children && children.length) {
                             children.forEach(function(child, i){
                                 child.checked = child.checked || nodeOrPromise.checked;
@@ -511,29 +527,53 @@
             }
         };
 
+        /*
+        ** get a full tree expansion from the API and from the local tree expansion.
+        **
+        ** IMPORTANT:
+        ** It doesn't modify the tree. See comments on breadthFirstAsync, getAllChildren and getChildrenFromAPI.
+        */
         var breadthFirstFull = function(tree, viewID) {
-            /*
-            ** performs an asynchronous breadth first traversal expanding all the nodes
-            */
             var getChildren = function (node){
                 return getAllChildren(node, viewID);
             };
             return breadthFirstAsync(tree, getChildren);
         };
 
+        /*
+        ** get a full tree expansion until levelName from the API and from the local tree expansion.
+        **
+        ** IMPORTANT:
+        ** It doesn't modify the tree. See comments on breadthFirstAsync, getAllChildren and getChildrenFromAPI.
+        */
+        var breadthFirstFullUntilLevel = function(tree, viewID, levelName) {
+            var getChildren = function (node){
+                return getAllChildrenUntilLevel(node, viewID, levelName);
+            };
+            return breadthFirstAsync(tree, getChildren);
+        };
+
+        /*
+        ** refresh all the children of the expanded nodes
+        **
+        ** IMPORTANT:
+        ** It DOES modify the tree in place. See comments on breadthFirstAsync and refreshChildren.
+        */
         var breadthFirstRefresh = function(tree, viewID) {
-            /*
-            ** performs an asynchronous breadth first traversal refreshing all the children
-            ** the expanded nodes
-            */
             var getChildren = function (node){
                 return refreshChildren(node, viewID);
             };
             return breadthFirstAsync(tree, getChildren);
         };
 
-        var getAllChildren = function (node, viewID) {
-            var deferred = $q.defer();
+        /*
+        ** get all nodes from the API and from the local tree expansion.
+        **
+        ** IMPORTANT:
+        ** It doesn't modify the node. See comment on getChildrenFromAPI.
+        */
+        var getAllChildren = function (node, viewID, deferred) {
+            deferred = deferred || $q.defer();
             var children = node.children&&node.children.length?node.children:node._children;
             if (children && children.length) {
                 deferred.resolve(children);
@@ -543,24 +583,36 @@
             }
         };
 
+        var getAllChildrenUntilLevel = function (node, viewID, levelName) {
+            var deferred = $q.defer();
+            if (node.level.name === levelName) {
+                deferred.resolve();
+                return deferred.promise
+            } else {
+                return getAllChildren(node, viewID, deferred);
+            }
+        };
+
+        /*
+        ** refresh all the children of the node if the node is expanded.
+        **
+        ** IMPORTANT:
+        ** It does modify the node in place.
+        */
         var refreshChildren = function (node, viewID) {
-            console.log(node);
             var isCheckedOrIndeterminate = node.childrenChecked + node.childrenIndeterminate > 0
             node.childrenIndeterminate = 0;
             node.childrenChecked  = 0;
             var deferred = $q.defer();
 
             if (node.level.name === 'acquisitions'){
-                console.log('no children', node);
                 deferred.resolve();
                 return deferred.promise;
             }
 
             if (node.children) {
-                console.log('node.children', node);
                 var promise = getChildrenFromAPI(node, deferred, viewID);
                 promise.then(function(children){
-                    console.log(children);
                     updateChildrenList(node.children, children);
                     node.children = children;
                     node._children = null;
@@ -570,16 +622,13 @@
                 });
                 return promise;
             } else if (node._children && !isCheckedOrIndeterminate) {
-                console.log('reset', node);
                 node._children = null;
                 deferred.resolve();
                 return deferred.promise;
             } else if (node._children) {
-                console.log(node);
                 promise = getChildrenFromAPI(node, deferred, viewID);
                 promise.then(function(children){
                     updateChildrenList(node._children, children);
-                    console.log(children);
                     node._children = children;
                     node.children = null;
                     node.childrenChecked = node.checked?children.length:0;
@@ -589,7 +638,6 @@
             } else if (!node.hasData) {
                 var promise = getChildrenFromAPI(node, deferred, viewID);
                 promise.then(function(children){
-                    console.log('node no data', children);
                     if (node.children) {
                         updateChildrenList(node.children, children);
                     }
@@ -601,7 +649,6 @@
                 });
                 return promise;
             } else {
-                console.log('no children', node);
                 deferred.resolve();
                 return deferred.promise;
             }
@@ -613,15 +660,12 @@
         var updateChildrenList = function(oldList, newList) {
             var i = 0;
             var j = 0;
-            console.log(oldList, newList);
             while (true) {
                 if (i >= oldList.length || j >= newList.length) {
                     return;
                 }
-                console.log ('ij', i, j);
                 var greaterThan = naturalSortByName(oldList[i], newList[j]);
                 if (greaterThan === 0) {
-                    console.log(oldList[i], newList[j]);
                     if (!oldList[i].id || oldList[i].id === newList[j].id) {
                         newList[j].children = oldList[i].children;
                         newList[j]._children = oldList[i]._children;
@@ -640,6 +684,13 @@
             }
         };
 
+        /*
+        ** DESCRIPTION:
+        ** Get children of the node from the API and return the result wrapped in a promise.
+        **
+        ** IMPORTANT:
+        ** it doesn't modify the input node. (if node.level.urlToExpand doesn't modify it!)
+        */
         var getChildrenFromAPI = function(node, deferred, viewID) {
             var levelDescription = headers(viewID);
             if (typeof node.level.next_level === 'undefined'){
@@ -668,7 +719,19 @@
                                 levelDescription[node.level.next_level]
                                 )
                         });
-                    _children.sort(naturalSortByName);
+                    if (node.level.name !== 'projects' && node.level.name !== 'collections') {
+                        _children.sort(naturalSortByName);
+                    } else {
+                        _children.sort(function(a, b){
+                            if (!a.name){
+                                return +1;
+                            } else if (!b.name) {
+                                return -1;
+                            }
+                            return naturalSortByName(b, a)
+                        });
+                    }
+
                     _children.forEach(function (child, i) {
                         child.index = i;
                     });
@@ -728,11 +791,13 @@
             getCurrentViewData: getCurrentViewData,
             setCurrentViewData: setCurrentViewData,
             refreshView: refreshView,
+            refreshCurrentView: refreshCurrentView,
             treeInit: treeInit,
             expandNode: expandNode,
             headers: headers,
             breadthFirstFull: breadthFirstFull,
-            initialize: initialize
+            initialize: initialize,
+            breadthFirstFullUntilLevel: breadthFirstFullUntilLevel
         }
     }
 

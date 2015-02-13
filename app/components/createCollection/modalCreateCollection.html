@@ -2,15 +2,15 @@
     <div class="collection-header">
         <span class="glyphicon glyphicon-remove" ng-click="sdmCCController.cancel($event)"></span>
     </div>
-    <div class="collection-title">Create or Update Collection
-        <span class="spinner" ng-show="sdmCCController.loadingState < 2"></span></div>
+    <div class="collection-title">Update or Create Collection
+        <span class="spinner" ng-show="sdmCCController.loadingState > 0"></span></div>
     <form name="form" class="create-collection" ng-class="{error: form.hasErrors}">
-        <div class="collection-body" ng-show="sdmCCController.loadingState === 2">
-            <select class="form-control" ng-options="collection.name for collection in sdmCCController.existingCollections" ng-model="sdmCCController.selectedCollection" ng-change="sdmCCController.selectCollection()">
+        <div class="collection-body" ng-show="sdmCCController.loadingState === 0">
+            <select class="form-control" ng-class="{default:!sdmCCController.selectedCollection}" ng-options="collection.name for collection in sdmCCController.existingCollections" ng-model="sdmCCController.selectedCollection" ng-change="sdmCCController.selectCollection()">
                 <option class="default" value="">{{sdmCCController.defaultSelectText}}</option>
             </select>
             <div class="sdm-input-label">Name</div>
-            <input class="form-control" type="text" ng-model="sdmCCController.collectionName" placeholder="{{sdmCCController.collectionPlaceholder}}" required ng-class="{'ng-invalid': form.collectionName.hasErrors}" name="collectionName">
+            <input class="form-control name" type="text" ng-model="sdmCCController.collectionName" placeholder="{{sdmCCController.collectionPlaceholder}}" required ng-class="{'ng-invalid': form.collectionName.hasErrors}" name="collectionName">
             </input>
             <div class="sdm-input-label">Notes</div>
             <textarea class="form-control" ng-model="sdmCCController.collectionNotes">

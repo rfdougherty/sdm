@@ -31,10 +31,10 @@
                         sdmCCController.users = {};
                         sdmCCController.permissionPlaceholder = 'Enter User ID';
                         sdmCCController.collectionPlaceholder = 'Create New Collection';
-                        sdmCCController.loadingState = 0;
+                        sdmCCController.loadingState = 2;
                         var typeaheadElement = $element.find('#share .typeahead');
                         function initialize() {
-                            sdmCCController.defaultSelectText = '(Select Existing Collection)';
+                            sdmCCController.defaultSelectText = 'Select Existing Collection';
                             sdmUsers.getUsers().then(function(data){
                                 console.log(data);
                                 sdmCCController.users = data;
@@ -52,7 +52,7 @@
                                 $element.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
                                     sdmCCController.selectedUID = selectedUID.value;
                                 });
-                                sdmCCController.loadingState++;
+                                sdmCCController.loadingState--;
                             });
                         }
                         var refreshUsers = function() {
@@ -78,7 +78,7 @@
                         sdmRoles().then(function(data){
                             sdmCCController.roles = data;
                             sdmCCController.selectedRole = sdmCCController.roles[0];
-                            sdmCCController.loadingState++;
+                            sdmCCController.loadingState--;
                         });
 
                         $scope.$parent.disableEvents();
@@ -213,20 +213,20 @@
                                         sdmCCController.addedPermissions = collection.permissions;
                                         console.log(collection.permissions);
                                 });
-                                sdmCCController.defaultSelectText = '(Create New Collection)';
+                                sdmCCController.defaultSelectText = 'Create New Collection';
                             } else {
                                 sdmCCController.collectionName = '';
                                 sdmCCController.collectionID = null;
                                 sdmCCController.collectionNotes = '';
                                 sdmCCController.addedPermissions = [{'_id': sdmCCController.curator.user_uid, 'access': 'admin'}];
-                                sdmCCController.defaultSelectText = '(Select Existing Collection)';
+                                sdmCCController.defaultSelectText = 'Select Existing Collection';
                             }
                         };
 
                         sdmCollectionsInterface.getCollections().then(
                             function(collections){
                                 console.log(collections);
-                                sdmCCController.existingCollections =
+                                var existingCollections =
                                     sdmCCController.curator.root?collections:collections.filter(
                                         function(collection){
                                             console.log(collection.permissions);
@@ -238,6 +238,7 @@
                                             }
                                             return false;
                                         });
+                                sdmCCController.existingCollections = existingCollections.sort(naturalSortByName);
                                 sdmCCController.collectionsCurator = sdmCCController.existingCollections.filter(
                                     function (collection) {
                                         return collection.curator._id === sdmCCController.curator.user_uid;

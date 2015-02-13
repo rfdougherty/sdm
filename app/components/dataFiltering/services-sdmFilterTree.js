@@ -2,38 +2,36 @@
 
 (function(){
 
-    var sdmFilterTree = function(){
-        console.log('sdmFilter loaded');
-
-        var filterLeaves = function(node) {
+    var sdmFilterTree = function () {
+        var filterLeaves = function (node) {
             return node.isLeaf;
         };
 
         var filters;
         var filterService = {};
+        var globalFilters = {};
 
         var cachedFilters = {
             'projects': {},
             'collections': {}
         };
 
-        var setView = function(_viewID) {
+        var setView = function (_viewID) {
             filterService.viewID = _viewID;
-            console.log('viewID', filterService.viewID);
             filters = cachedFilters[filterService.viewID] || {};
         }
 
-        var getFilter = function(name) {
+        var getFilter = function (name) {
             if (filters[name]){
                 return filters[name];
             } else {
                 return {
-                    filter: function(node){return true}
+                    filter: function (node) {return true}
                 }
             }
         };
 
-        var getLevelFilter = function(level) {
+        var getLevelFilter = function (level) {
             var levelFilters = level.headers.map(function(h) {
                 return getFilter(h.toLowerCase() + 's').filter
             });
@@ -42,9 +40,7 @@
             };
         };
 
-        var createFilter = function(header, searchString, exclude) {
-            console.log('filter', header.name, searchString, exclude);
-            console.log(header);
+        var createFilter = function (header, searchString, exclude) {
             filters[header.name] = {
                 filter: function(node) {
                     if (searchString === '') {
@@ -62,7 +58,25 @@
             }
         };
 
-        var filter = function(tree) {
+        var addGlobalFilter = function (key, filter) {
+            globalFilters[key] = filter;
+        };
+
+        var removeGlobalFilter = function (key) {
+            delete globalFilters[key];
+        };
+
+        var checkGlobalFilter = function (node) {
+            var result = true;
+            angular.forEach(globalFilters, function (filter, key){
+                if (!filter(node)) {
+                    result = false;
+                }
+            });
+            return result;
+        };
+
+        var filter = function (tree) {
             var nodes = [];
             var iterator = depthFirst(tree);
             var n = iterator.next();
@@ -94,7 +108,7 @@
                     var thisChild;
                     for (var i = element.children.length - 1; i >= 0; i--){
                         thisChild = element.children[i];
-                        if (getLevelFilter(thisChild.level)(thisChild)){
+                        if (checkGlobalFilter(thisChild) && getLevelFilter(thisChild.level)(thisChild)){
                             thisChild.parent = element;
                             filteredChildren.push(thisChild);
                         }
@@ -107,7 +121,6 @@
                         isFirstChild = i === filteredChildren.length - 1;
                         thisChild.isFirstChild = isFirstChild;
                         thisChild.rowId = element.rowId + i;
-                        //console.log(thisChild);
                         elements.push(thisChild);
                     }
                     isLeaf = element.isLeaf = filteredChildren.length?false:true;
@@ -126,25 +139,10 @@
             };
         };
 
-        var getSelected = function (tree) {
-            var selected = [];
-            var action = function (node) {
-                if (node.checked && (!node.parent || !node.parent.checked)) {
-                    selected.push(node);
-                }
-            }
-            var iterator = depthFirst(tree);
-            var node = iterator.next();
-            while (!node.done){
-                action(node.value);
-                node = iterator.next();
-            }
-            return selected;
-        };
+
 
         var selectorUnchecked = function (node) {
             var preAction = function (node) {
-                //console.log(node.name, 'preAction');
                 var checked = node.checked;
                 var indeterminate = node.indeterminate;
                 if (!node.children || node.children.length === 0) {
@@ -160,7 +158,6 @@
             };
 
             var postAction = function (node) {
-                //console.log(node.name, 'postAction');
                 var checked = node.checked;
                 var indeterminate = node.indeterminate;
                 node.checked = node.childrenChecked === node.children.length;
@@ -271,9 +268,11 @@
                 createFilter: createFilter,
                 getFilter: getFilter,
                 selector: selector,
-                getSelected: getSelected,
                 setView: setView,
-                cachedFilters: cachedFilters
+                cachedFilters: cachedFilters,
+                depthFirst: depthFirst,
+                addGlobalFilter: addGlobalFilter,
+                removeGlobalFilter: removeGlobalFilter
             });
         return filterService;
     }

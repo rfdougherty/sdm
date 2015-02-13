@@ -19,18 +19,24 @@
             </span>
         </button>
     </div>
-    <button type="button" class="disabled btn-xs" sdm-popover sdm-popover-template-content="components/createCollection/modalCreateCollection.html" sdm-popover-class="sdm-create-collection" sdm-popover-show="click" sdm-popover-show-timeout="0" sdm-append-to-body>
-        <span class="glyphicon glyphicon-briefcase toolbar-icon">
-        </span>
-    </button>
-    <button type="button" class="disabled btn-xs" sdm-popover sdm-popover-template-content="components/download/modalDownload.html" sdm-popover-class="sdm-download" sdm-popover-show="click" sdm-popover-show-timeout="0" sdm-append-to-body>
-        <span class="glyphicon glyphicon-cloud-download toolbar-icon">
-        </span>
-    </button>
-    <button type="button" class="disabled btn-xs">
-        <span class="glyphicon glyphicon-trash toolbar-icon" ng-show="sdmButtonsController.location() === '/projects'">
-        </span>
-        <span class="glyphicon glyphicon-remove-circle toolbar-icon" ng-show="sdmButtonsController.location() === '/collections'">
-        </span>
-    </button>
+    <div class="btn-group btn-group-xs" role="group">
+        <button type="button" class="btn btn-default" sdm-popover sdm-popover-template-content="components/createCollection/modalCreateCollection.html" sdm-popover-class="sdm-create-collection" sdm-popover-show="click" sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
+            <span class="glyphicon glyphicon-briefcase toolbar-icon">
+            </span>
+        </button>
+        <button type="button" class="btn btn-default" sdm-popover sdm-popover-template-content="components/download/modalDownload.html" sdm-popover-class="sdm-download" sdm-popover-show="click" sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
+            <span class="glyphicon glyphicon-cloud-download toolbar-icon">
+            </span>
+        </button>
+        <button type="button" class="btn btn-default" ng-show="sdmButtonsController.location() === '/projects'" sdm-popover sdm-popover-template-content="components/moveSessions/moveSessionsPopover.html" sdm-popover-class="sdm-move-sessions" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="42px" sdm-popover-style-left="initial" sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
+            <span class="glyphicon glyphicon-arrow-right toolbar-icon">
+            </span>
+        </button>
+        <button type="button" class="btn btn-default" ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
+            <span class="glyphicon glyphicon-trash toolbar-icon" ng-show="sdmButtonsController.location() === '/projects'">
+            </span>
+            <span class="glyphicon glyphicon-remove-circle toolbar-icon" ng-show="sdmButtonsController.location() === '/collections'">
+            </span>
+        </button>
+    </div>
 </div>

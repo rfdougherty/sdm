@@ -1,7 +1,8 @@
 'use strict';
 
 (function() {
-    angular.module('sdm.download.directives.sdmDownloadModal',['sdm.download.services.sdmDownloadInterface'])
+    angular.module('sdm.download.directives.sdmDownloadModal',['sdm.download.services.sdmDownloadInterface',
+        'sdm.createCollection.services.sdmGetSelection'])
         .directive('sdmDownloadModal', ['sdmDownloadInterface', 'sdmGetSelection',
             function (sdmDownloadInterface, sdmGetSelection) {
                 return {
@@ -23,7 +24,7 @@
                             $scope.$parent._hidePopover($event, 0);
                         };
                         sdmDLController.updateLink = function() {
-                            selectionPromise.then(function(selection){
+                            selectionPromise.then(function (selection) {
                                 console.log('selection', selection);
                                 if (selection.length){
                                     sdmDownloadInterface.getDownloadURL(selection, sdmDLController.optional).then(function(url){

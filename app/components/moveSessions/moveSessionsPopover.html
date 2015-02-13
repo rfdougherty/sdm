@@ -1,0 +1,22 @@
+<sdm-move-sessions>
+    <div class="move-sessions-header"></div>
+    <div class="move-sessions-title">Move sessions<span class="spinner" ng-show="sdmMSController.loadingState > 0"></span></div>
+    <div class="move-sessions-body" ng-show="sdmMSController.hasData && sdmMSController.hasPermissionsOnSelection && sdmMSController.loadingState === 0">
+        <select class="form-control" ng-options="group.name||group._id for group in sdmMSController.groups" ng-model="sdmMSController.selectedGroup" ng-change="sdmMSController.getProjects($event, sdmMSController.selectedGroup)" ng-class="{default:!sdmMSController.selectedGroup}">
+            <option class="default" value="">Select group of destination project</option></select>
+        <select class="form-control" ng-disabled="!sdmMSController.projects.length" ng-options="project.name for project in sdmMSController.projects" ng-model="sdmMSController.selectedProject" ng-class="{default:!sdmMSController.selectedProject}"><option class="default" value="">Select destination project</option></select>
+    </div>
+    <div class="move-sessions-body warning" ng-show="!sdmMSController.hasData && sdmMSController.loadingState === 0">
+        No session has been selected. Please close this window and fully select at least one item.
+    </div>
+    <div class="move-sessions-body warning" ng-show="!sdmMSController.hasPermissionsOnSelection && sdmMSController.loadingState === 0">
+        You don't have permissions to modify some of the selected sessions. Please close this window and unsselect them. Sessions without "modify" access are shown in italic.
+    </div>
+    <div class="move-sessions-body warning" ng-show="sdmMSController.isFailed">
+        One or more operations failed. Please try again or contact an administrator.
+    </div>
+    <div class="move-sessions-confirm-buttons">
+        <input type="button" id="move-sessions-cancel" class="btn btn-default btn-xs" ng-click="sdmMSController.cancel($event)" value="Cancel"></input>
+        <input type="button"  id="move-sessions-confirm" class="btn btn-default btn-xs"  value="Move Sessions" ng-click="sdmMSController.moveSessions($event)" ng-show="sdmMSController.hasData && sdmMSController.hasPermissionsOnSelection && sdmMSController.loadingState === 0" ng-disabled="!sdmMSController.selectedProject"></input>
+    </div>
+</sdm-move-sessions>

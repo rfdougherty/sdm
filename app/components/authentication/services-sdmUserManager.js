@@ -22,7 +22,6 @@
                 }).
                 success(function(data, status, headers, config) {
                     //parse and return info
-                    console.log('data', data);
                     angular.extend(value_auth_data, {
                         access_token: access_token,
                         user_uid: data['_id'],
@@ -81,7 +80,6 @@
 
         var authenticate = function() {
             console.log('attempting to login');
-            //console.log('old token:' + value_auth_data.accessToken);
             var deferred = $q.defer();
             var extraParams = {};
             try {
@@ -122,7 +120,6 @@
         var updateUserData = function(data) {
             var deferred = $q.defer();
             var url = BASE_URL + 'users/' + value_auth_data.user_uid;
-            //console.log(data);
             $http({
                 method: 'PUT',
                 url: url,
@@ -144,7 +141,6 @@
         var getUserDataFromAPI = function() {
             var deferred = $q.defer();
             var url = BASE_URL + 'users/' + value_auth_data.user_uid;
-            //console.log(data);
             $http({
                 method: 'GET',
                 url: url,
@@ -183,7 +179,6 @@
                 angular.extend(value_auth_data, $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA));
                 initialized = true;
             }
-            //console.log('value_auth_data', value_auth_data);
             return value_auth_data;
         }
 
@@ -208,7 +203,7 @@
         .config(function(TokenProvider) {
         /*FIXME: there is probably a more angular way to do this*/
         var baseUrl = window.location.href.split('#')[0];
-        //console.log(baseUrl);
+
         TokenProvider.extendConfig({
             clientId: CLIENT_ID,
             redirectUri: baseUrl + 'components/authentication/oauth2callback.html',

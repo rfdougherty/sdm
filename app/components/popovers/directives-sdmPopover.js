@@ -20,13 +20,12 @@
                 replace: false, // Replace with the template below
                 transclude: false, // we want to insert custom content inside the directive
                 link: function($scope, $element, $attrs) {
-                    console.log($attrs);
-                    console.log($scope);
                     $scope.dialogStyle = {};
                     var attrKeys = Object.getOwnPropertyNames($attrs);
                     var match;
                     var rootElement = typeof $attrs.sdmAppendToBody ==='undefined'?
                         $element : angular.element(document.getElementsByTagName('body'));
+                    var overlay = $compile('<div class="popover-overlay" ng-click="hidePopover($event, 0)"></div>')($scope);
                     for (var i = 0; i < attrKeys.length; i++) {
                         match = attrRegex.exec(attrKeys[i]);
                         if (match !== null) {
@@ -49,9 +48,22 @@
                     else
                         throw 'Error in popover popup: missing template.';
 
+                    var addKeepShownEvent = function() {
+                        if ($attrs.sdmPopoverKeepShown) {
+                            $element.on($attrs.sdmPopoverKeepShown, function($event){
+                                return $scope.showPopover($event, $attrs.sdmPopoverShowTimeout)
+                            });
+                        }
+                    };
+
+                    var removeKeepShownEvent = function() {
+                        if ($attrs.sdmPopoverKeepShown) {
+                            $element.off($attrs.sdmPopoverKeepShown);
+                        }
+                    };
 
                     $scope.showPopover = function($event, timeout){
-                        console.log($event);
+                        console.log('showPopover');
                         timeout = typeof timeout === 'undefined' ? 600 : timeout;
                         if ($event) {
                             $event.stopPropagation();
@@ -68,11 +80,13 @@
                             $scope.$apply(function(){
                                 $scope.popover = $compile(templatePopover)($scope);
                                 rootElement.append($scope.popover);
+                                addKeepShownEvent();
                             });
                         }, timeout);
                     };
 
                     $scope._hidePopover = function($event, timeout){
+                        console.log('hidePopover');
                         timeout = typeof timeout === 'undefined' ? 400 : timeout;
                         if ($event) {
                             $event.stopPropagation();
@@ -83,6 +97,7 @@
                             if (typeof $scope.popover !== 'undefined') {
                                 $scope.popover[0].remove();
                                 $scope.popover = undefined;
+                                removeKeepShownEvent();
                             }
                         }, timeout);
                     }

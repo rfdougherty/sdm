@@ -7,38 +7,84 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
         function($q, sdmViewManager, sdmFilterTree) {
 
             var getSelection = function () {
-                console.log('getSelection called. viewID:', sdmFilterTree.viewID);
                 var deferred = $q.defer();
-                var iterator, element, selection;
+                var selection;
                 var data = sdmViewManager.getCurrentViewData();
-                console.log('getSelected', data);
                 if (sdmFilterTree.viewID === 'collections') {
-                    iterator = sdmViewManager.breadthFirstFull(data);
-                    selection = [];
-                    var iterate = function () {
-                        var element = iterator.next();
-                        if (element) {
-                            element.then(function(element){
-                                if (element && element.checked && element.level.name === 'acquisitions') {
-                                    selection.push(element);
-                                }
-                                iterate();
-                            });
-                        } else {
-                            console.log('selection', selection);
-                            deferred.resolve(selection);
-                        }
-                    };
-                    iterate();
-                } else {
-                    selection = sdmFilterTree.getSelected(data);
+                    getSelectionInCollections(data, deferred);
+                } else if (sdmFilterTree.viewID === 'projects'){
+                    selection = getSelectionInProjects(data);
                     deferred.resolve(selection);
                 }
                 return deferred.promise;
             };
 
+            var getSelectionInProjects = function (tree) {
+                var selected = [];
+                var action = function (node) {
+                    if (node.checked && (!node.parent || !node.parent.checked)) {
+                        selected.push(node);
+                    }
+                }
+                var iterator = sdmFilterTree.depthFirst(tree);
+                var node = iterator.next();
+                while (!node.done){
+                    action(node.value);
+                    node = iterator.next();
+                }
+                return selected;
+            };
+
+            var getSelectionInCollections = function (tree, deferred) {
+                deferred = deferred || $q.defer()
+                var iterator = sdmViewManager.breadthFirstFull(tree);
+                var selection = [];
+                var iterate = function () {
+                    var element = iterator.next();
+                    if (element) {
+                        element.then(function(element){
+                            if (element && element.checked && element.level.name === 'acquisitions') {
+                                selection.push(element);
+                            }
+                            iterate();
+                        });
+                    } else {
+                        deferred.resolve(selection);
+                    }
+                };
+                iterate();
+                return deferred.promise;
+            }
+
+            var _getSelectionOnLevel = function (tree, levelName, deferred) {
+                deferred = deferred || $q.defer();
+                var selection = [];
+                var iterator = sdmViewManager.breadthFirstFullUntilLevel(tree, 'projects', levelName);
+                var iterate = function() {
+                    var element = iterator.next();
+                    if (element){
+                        element.then(function(element){
+                            if (element && element.level.name === levelName && element.checked) {
+                                selection.push(element);
+                            }
+                            iterate();
+                        });
+                    } else {
+                        deferred.resolve(selection);
+                    }
+                };
+                iterate();
+                return deferred.promise;
+            };
+
+            var getSelectionOnLevel = function(levelName) {
+                var data = sdmViewManager.getCurrentViewData();
+                return _getSelectionOnLevel(data, levelName);
+            };
+
             return {
-                getSelection: getSelection
+                getSelection: getSelection,
+                getSelectionOnLevel: getSelectionOnLevel
             }
         }
     ]);

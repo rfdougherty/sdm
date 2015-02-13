@@ -13,16 +13,13 @@ var sdmApp = angular.module('sdm', [
     'sdm.dataVisualizations',
     'sdm.infoToolbar',
     'sdm.download',
-    'sdm.admin'
-]).run(['sdmD3Service', 'sdmViewManager', 'sdmUserManager',
-    function(sdmD3Service, sdmViewManager, sdmUserManager){
-        console.log(sdmUserManager, sdmViewManager);
-        sdmD3Service.init().then(function(d3){
-            var userData = sdmUserManager.getAuthData();
-            sdmViewManager.updateViewAppearance(userData.preferences);
-            sdmViewManager.initialize();
-        });
-
+    'sdm.admin',
+    'sdm.moveSessions'
+]).run(['sdmViewManager', 'sdmUserManager',
+    function(sdmViewManager, sdmUserManager){
+        var userData = sdmUserManager.getAuthData();
+        sdmViewManager.updateViewAppearance(userData.preferences);
+        sdmViewManager.initialize();
     }]);
 
 var COMING_SOON = '<div id="tree-view">Coming Soon!!!</div>';
@@ -52,7 +49,7 @@ var SAVE = 'Save';
 var CLOSE = 'Close';
 var OK = 'Ok';
 var SDM_KEY_CACHED_ACCESS_DATA = "SDM_KEY_CACHED_ACCESS_DATA";
-var UNDEFINED_PLACEHOLDER = 'undefined';
+var UNDEFINED_PLACEHOLDER = '(undefined)';
 
 
 
@@ -114,9 +111,17 @@ var DataNode = function(data, site, level, children) {
     this.indeterminate = false;
     this.notes = data.notes;
     if (level.name.search(/projects|collections|sessions|acquisitions/) === 0){
-       this.userHasPermissions = data.permissions&&data.permissions.length;
+        this.userHasPermissions = !!(data.permissions&&data.permissions.length);
+        this.userCanModify =
+            data.permissions && (data.permissions.length > 1 || (
+                data.permissions.length&&(
+                    data.permissions[0].access === 'modify' ||
+                    data.permissions[0].access === 'admin'
+                )
+            ));
     } else {
         this.userHasPermissions = true;
+        this.userCanModify = true;
     }
 
 }

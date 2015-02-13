@@ -1,8 +1,12 @@
 @import (less) "active_config/variables.less";
 
 @min-width-table: 1170px;
+@min-width-body: @min-width-table + 30;
 @tabs-header-height: 30px;
 
+html, body {
+    min-width: @min-width-body;
+}
 body {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -19,7 +23,10 @@ body {
     button:active,
     button span:hover  {
         cursor: pointer;
-
+    }
+    button:disabled,
+    button:disabled span:hover, {
+        cursor: default;
     }
     input[type="text"]:hover,
     input[type="text"]:active {
@@ -260,14 +267,14 @@ div#tree-view>div {
                     text-overflow: ellipsis;
                     max-width: 100%;
                     position: absolute;
-                    &.grey {
-                        color: grey;
-                    }
-
-                }
-                &.undefined {
-                    color: grey;
                     font-style: italic;
+                    &.no-access {
+                        opacity: 0.5;
+                        //font-style: normal;
+                    }
+                    &.modify {
+                        font-style: normal;
+                    }
 
                 }
             }
@@ -279,9 +286,22 @@ div#tree-view>div {
     }
     .row {
         background-color: @bgcol4;
+        &.full-line {
+            //background-color: @bgcol2;
+            font-weight: bold;
+            span.sdm-cell div{
+                //color: @fgcol2;
+            }
+        }
     }
     .row.grey {
         background-color: @bgcol3;
+        &.full-line {
+            //background-color: @bgcol2;
+            span.sdm-cell div {
+                //color: @fgcol2;
+            }
+        }
     }
 }
 
@@ -428,10 +448,6 @@ span.expander.glyphicon {
     stroke: @bgcol1;
 }
 
-
-//buttons toolbar section
-//@import (less) "components/partials/buttons.less";
-
 ul > li#buttons > div.toolbar {
     border: 1px solid black;
     border-bottom-color: transparent;
@@ -443,6 +459,11 @@ ul > li#buttons > div.toolbar {
         border: 1px solid transparent;
         background-color: @bgcol2;
         color: white;
+        font-size: 14px;
+        vertical-align: top;
+        .glyphicon {
+            top: 2px;
+        }
         &:focus {
             outline-color: white;
         }
@@ -453,10 +474,19 @@ ul > li#buttons > div.toolbar {
             -webkit-animation:spinner 1.2s linear infinite;
             animation:spinner 1.2s linear infinite;
         }
+        &:disabled {
+            opacity: 0.55;
+            background-color: @bgcol2;
+        }
     }
 
     .btn-group-xs > button.btn.active,  .btn-group-xs > button.btn:hover {
         background-color: @bgcol1;
+        font-size: 14px;
+        &:disabled {
+            opacity: 0.55;
+            background-color: @bgcol1;
+        }
     }
 
     .btn-group-xs > button.btn:not(:first-child) {
@@ -464,7 +494,16 @@ ul > li#buttons > div.toolbar {
     }
     .btn-group-xs > button.btn:first-child {
         border-right: 1px solid white;
+        &:focus, &:active {
+            border-right: 1px solid white;
+        }
     }
+    .btn-group-xs > button.btn:not(:last-child) {
+        &:focus, &:active {
+            border-right: 1px solid white;
+        }
+    }
+
 
 }
 

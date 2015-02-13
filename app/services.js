@@ -50,14 +50,10 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 if (reason.status == '401') {
                     return sdmUserManager.refreshToken();
                 }
-                if (reason.status == '404') {
-                    console.log("there is probably something wrong with the url or the server is unavailable");
-                    return {data: []};
-                }
                 console.log('Unhandled problem in the request.');
                 console.log('Status:', reason.status);
                 console.log('Reason', reason);
-                return {data: []};
+                throw new Error(reason.data.code + ' ' + reason.data.detail);
             }).then(function(value) {
                 if (value.data) {
                     return value.data;

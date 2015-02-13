@@ -2,5 +2,5 @@
     <span class="glyphicon glyphicon-info-sign" sdm-popover sdm-popover-template-content="components/infoToolbar/infoModal.html" sdm-popover-class="sdm-info-modal" sdm-popover-show="click" sdm-popover-show-timeout="0" sdm-append-to-body></span>
     <span class="glyphicon glyphicon-cloud-download"></span>
     <span class="glyphicon glyphicon-trash" ng-show="sdmTBController.location === '/projects'"></span>
-    <span class="glyphicon glyphicon-remove-circle" ng-show="sdmTBController.location === '/collections'" ng-click="sdmTBController.createDeleteButton()"></span>
+    <span class="glyphicon glyphicon-remove-circle" ng-show="sdmTBController.location === '/collections'" ng-click="sdmTBController.toggleDeleteButton()"></span>
 </sdm-info-toolbar>

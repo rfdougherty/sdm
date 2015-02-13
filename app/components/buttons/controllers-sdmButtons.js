@@ -1,13 +1,16 @@
 'use strict';
 
 (function(){
-    var SdmButtonsController = function($location, sdmViewManager, sdmUserManager) {
+    var SdmButtonsController = function($location, sdmViewManager, sdmUserManager, sdmFilterTree) {
         this.layout = function(value) {
             sdmViewManager.updateViewAppearanceKey('data-layout', value);
             sdmUserManager.changeViewPreference(value);
         };
 
         this.isActiveButton = function(value) {
+            if (value === 'pencil') {
+                return sdmViewManager.getViewAppearance()['editable'];
+            }
             return sdmViewManager.getViewAppearance()['data-layout'] === value;
         };
 
@@ -22,13 +25,44 @@
         this.location = function () {
             return $location.path();
         };
+
+        var onlyModifiableItems = 'onlyModifiableItems';
+
+        var switchToEditView = function () {
+            sdmFilterTree.addGlobalFilter(onlyModifiableItems, function (node) {
+                return node.userCanModify;
+            });
+            sdmViewManager.updateViewAppearanceKey('editable', true);
+            sdmViewManager.refreshView();
+        };
+
+        var switchToNormalView = function () {
+            sdmFilterTree.removeGlobalFilter(onlyModifiableItems);
+            sdmViewManager.updateViewAppearanceKey('editable', false);
+            sdmViewManager.refreshView();
+        };
+
+        this.toggleEditView = function () {
+            if (this.isActiveButton('pencil')) {
+                switchToNormalView();
+            } else {
+                switchToEditView();
+            }
+        };
+
+        this.selectionButtonsEnabled = function () {
+            var root = sdmViewManager.getCurrentViewData()||{};
+            return (root.indeterminate || root.checked) && sdmViewManager.getViewAppearance()['data-layout'] === 'table';
+        };
+
     }
 
-    SdmButtonsController.$inject = ['$location', 'sdmViewManager', 'sdmUserManager'];
+    SdmButtonsController.$inject = ['$location', 'sdmViewManager', 'sdmUserManager', 'sdmFilterTree'];
 
     angular.module('sdm.buttons.controllers.sdmButtons',
         ['sdm.main.services.sdmViewManager',
-        'sdm.authentication.services.sdmUserManager'])
+        'sdm.authentication.services.sdmUserManager',
+        'sdm.dataFiltering.services.sdmFilterTree'])
         .controller('SdmButtonsController', SdmButtonsController);
 
 })();
