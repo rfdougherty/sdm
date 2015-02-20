@@ -125,6 +125,9 @@ div#navigation>ul.nav.nav-tabs {
         span {
             position: relative;
             top: 1px;
+            &.tooltip {
+                position: absolute;
+            }
         }
     }
 }
@@ -448,6 +451,15 @@ span.expander.glyphicon {
     stroke: @bgcol1;
 }
 
+span.tooltip {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+}
+
 ul > li#buttons > div.toolbar {
     border: 1px solid black;
     border-bottom-color: transparent;
@@ -456,6 +468,7 @@ ul > li#buttons > div.toolbar {
     background-color: white;
     padding: 3px 5px 3px 5px;
     .btn-group-xs > button.btn, button.btn-xs {
+        position: relative;
         border: 1px solid transparent;
         background-color: @bgcol2;
         color: white;
@@ -478,6 +491,7 @@ ul > li#buttons > div.toolbar {
             opacity: 0.55;
             background-color: @bgcol2;
         }
+
     }
 
     .btn-group-xs > button.btn.active,  .btn-group-xs > button.btn:hover {
@@ -521,11 +535,7 @@ ul > li#buttons > div.toolbar {
 }
 
 .spinner:before {
-    //content: 'Loading…';
     float: right;
-    /*position: absolute;
-    top: 40px;
-    right: 40px;*/
     width: 16px;
     height: 16px;
     margin-top: 10px;

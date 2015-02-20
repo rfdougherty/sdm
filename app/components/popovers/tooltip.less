@@ -1,0 +1,36 @@
+@import (less) "../../active_config/variables.less";
+
+div.popover.sdm-tooltip {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    .popover-dialog {
+        padding: 0px;
+        top: 32px;
+        height: 20px;
+        overflow: visible;
+        transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+        background-color: black;
+        color: white;
+        text-align: center;
+        pointer-events: none;
+        font-size: 12px;
+        vertical-align: top;
+        &:before {
+            top: 0px;
+            left:50%;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-bottom: 7px solid black;
+        }
+        &:after {
+            top: 0px;
+            left: 50%;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid black;
+        }
+    }
+}

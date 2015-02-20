@@ -41,6 +41,7 @@
 
                         sdmCellOnHover = function(data) {
                             if (typeof this.sdmCellCompiled === 'undefined') {
+                                console.log('sdmCellOnHover');
                                 var newScope = $rootScope.$new();
                                 newScope.data = data;
                                 $compile(this.parentElement)(newScope);
@@ -309,6 +310,7 @@
                     }
                     if (i === 0 && d.notes) {
                         d3DivContent.style({'width':'70%'});
+                        // IMPORTANT: data in this tooltip is added to its scope in the sdmCellOnHover function
                         d3Element.append('div').append('span').attr({
                             'class': 'glyphicon nav-glyph expander glyphicon-comment',
                             'sdm-popover': '',
@@ -318,7 +320,6 @@
                             'sdm-popover-style-width': '250px',
                             'sdm-popover-style-height': '13ex',
                             'sdm-popover-style-top': '8px',
-                            'sdm-popover-style-left': '-32px',
                             'sdm-popover-show': 'mouseenter',
                             'sdm-popover-hide': 'mouseleave',
                             'sdm-popover-show-timeout': '400',

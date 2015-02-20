@@ -1,14 +1,15 @@
 'use strict';
 
 (function() {
+    var templateIndex = 0;
     angular.module('sdm.popovers.directives.sdmPopover', [])
-        .directive('sdmPopover', ['$compile', '$document',
-        function($compile, $document) {
+        .directive('sdmPopover', ['$compile', '$document', '$templateCache',
+        function($compile, $document, $templateCache) {
             var body = $document.find('body').eq(0);
             var templatePopover =
                 '<div class="popover" ng-class="sdmPopoverClass">' +
                     '<div class="popover-overlay" ng-click="hidePopover($event, 0)"></div>' +
-                    '<div class="popover-dialog" ng-style="dialogStyle">' +
+                    '<div class="popover-dialog" ng-style="dialogStyle" ng-class="sdmPopoverClass">' +
                         '<div class="popover-content" ng-include="sdmPopoverTemplateContent">' +
                         '</div>' +
                     '</div>' +
@@ -45,25 +46,16 @@
 
                     if ($attrs.sdmPopoverTemplateContent)
                         $scope.sdmPopoverTemplateContent = $attrs.sdmPopoverTemplateContent;
-                    else
+                    else if ($attrs.sdmPopoverTemplateText) {
+                        var templateURL = 'tempTemplate' + templateIndex++ + '.html';
+                        $templateCache.put(templateURL, $attrs.sdmPopoverTemplateText);
+                        $scope.sdmPopoverTemplateContent = templateURL;
+                    } else
                         throw 'Error in popover popup: missing template.';
 
-                    var addKeepShownEvent = function() {
-                        if ($attrs.sdmPopoverKeepShown) {
-                            $element.on($attrs.sdmPopoverKeepShown, function($event){
-                                return $scope.showPopover($event, $attrs.sdmPopoverShowTimeout)
-                            });
-                        }
-                    };
-
-                    var removeKeepShownEvent = function() {
-                        if ($attrs.sdmPopoverKeepShown) {
-                            $element.off($attrs.sdmPopoverKeepShown);
-                        }
-                    };
 
                     $scope.showPopover = function($event, timeout){
-                        console.log('showPopover');
+                        console.log('showPopover', $attrs.sdmPopoverClass);
                         timeout = typeof timeout === 'undefined' ? 600 : timeout;
                         if ($event) {
                             $event.stopPropagation();
@@ -80,13 +72,12 @@
                             $scope.$apply(function(){
                                 $scope.popover = $compile(templatePopover)($scope);
                                 rootElement.append($scope.popover);
-                                addKeepShownEvent();
                             });
                         }, timeout);
                     };
 
                     $scope._hidePopover = function($event, timeout){
-                        console.log('hidePopover');
+                        console.log('hidePopover', $attrs.sdmPopoverClass);
                         timeout = typeof timeout === 'undefined' ? 400 : timeout;
                         if ($event) {
                             $event.stopPropagation();
@@ -95,9 +86,9 @@
                         clearTimeout($scope.timerShow);
                         $scope.timerHide = setTimeout(function() {
                             if (typeof $scope.popover !== 'undefined') {
+                                console.log($scope.popover);
                                 $scope.popover[0].remove();
                                 $scope.popover = undefined;
-                                removeKeepShownEvent();
                             }
                         }, timeout);
                     }
@@ -110,7 +101,9 @@
                             });
                         }
                         if ($attrs.sdmPopoverHide) {
-                            $element.on($attrs.sdmPopoverHide, $scope.hidePopover);
+                            $element.on($attrs.sdmPopoverHide, function($event) {
+                                $scope.hidePopover($event, $attrs.sdmPopoverHideTimeout)
+                            });
                         }
                     }
 
@@ -119,6 +112,7 @@
                         $scope.hidePopover = function(){};
                         $element.off();
                     }
+
                     $scope.enableEvents();
                     if (typeof $attrs.sdmPopoverShowImmediately !== 'undefined') {
                         $scope.showPopover(null, 0);
