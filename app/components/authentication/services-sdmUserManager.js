@@ -63,12 +63,14 @@
                 return isRefreshing;
             }
             var deferred = $q.defer();
+            console.log('refreshing');
             Token.refreshToken({}).then(
                 function(params) {
                     console.log('refreshed token');
                     login(params.access_token, deferred);
                 }, function(reason) {
                     console.log("Failed to refresh token.");
+                    console.log(reason);
                     deferred.reject(reason);
                 });
             isRefreshing = deferred.promise;

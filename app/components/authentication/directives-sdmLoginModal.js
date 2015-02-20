@@ -16,13 +16,14 @@
                     sdmLMController.authProvider = AUTHENTICATION_PROVIDER;
                     sdmLMController.authenticate = function($event) {
                         return sdmUserManager.authenticate().then(function(){
+                            if (!sdmViewManager.getCurrentViewData()) {
+                                sdmViewManager.initialize();
+                            }
                             $scope.$parent._hidePopover($event, 0);
                         });
                     };
 
                     sdmLMController.cancel = function($event) {
-                        sdmUserManager.logout();
-                        sdmViewManager.initialize();
                         $scope.$parent._hidePopover($event, 0);
                     }
                 }

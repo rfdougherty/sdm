@@ -55,10 +55,10 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 console.log('Reason', reason);
                 throw new Error(reason.data.code + ' ' + reason.data.detail);
             }).then(function(value) {
+                console.log(value);
                 if (value.data) {
                     return value.data;
                 } else {
-                    console.log(value);
                     return makeAPICall.async(url, params, method, data);
                 }
             }).then(function(finalResult){
