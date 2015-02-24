@@ -2,7 +2,7 @@
 
 describe('Service: sdmViewManager', function() {
 
-    beforeEach(module('sdm.treeViews.services.sdmViewManager'));
+    beforeEach(module('sdm.main.services.sdmViewManager'));
 
     var sdmViewManager;
 

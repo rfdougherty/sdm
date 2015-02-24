@@ -1,4 +1,5 @@
 'use strict';
+var _tree;
 
 (function(){
 
@@ -292,6 +293,8 @@
             'current': 'projects'
         };
 
+        _tree = viewData;
+
         function getViewAppearance() {
             return viewAppearances;
         };
@@ -384,19 +387,30 @@
             /*
             ** used in refreshView to update counts
             */
-            while (node.parent) {
+            var parentChildren;
+            var stopWhile = false;
+            while (node.parent && !stopWhile) {
+                parentChildren = node.parent.children || node.parent._children;
                 if (node.parent.checked) {
                     return;
                 } else if (node.checked) {
                     node.parent.childrenChecked += 1;
-                    if (node.parent.childrenChecked === node.parent.children.length){
+                    if (node.parent.childrenChecked === parentChildren.length){
                         node.parent.checked = true;
                     } else {
-                        node.parent.indeterminate = true;
+                        if (node.parent.indeterminate) {
+                            stopWhile = true;
+                        } else {
+                            node.parent.indeterminate = true;
+                        }
+
                     }
-                } else {
+                } else if (!node.parent.indeterminate) {
                     node.parent.childrenIndeterminate += 1;
                     node.parent.indeterminate = true;
+                } else {
+                    node.parent.childrenIndeterminate += 1;
+                    stopWhile = true;
                 }
                 node = node.parent;
             }
@@ -613,7 +627,7 @@
             if (node.children) {
                 var promise = getChildrenFromAPI(node, deferred, viewID);
                 promise.then(function(children){
-                    updateChildrenList(node.children, children);
+                    updateChildrenList(node.children, children, node.level.name);
                     node.children = children;
                     node._children = null;
                     node.childrenChecked = node.checked?children.length:0;
@@ -628,7 +642,7 @@
             } else if (node._children) {
                 promise = getChildrenFromAPI(node, deferred, viewID);
                 promise.then(function(children){
-                    updateChildrenList(node._children, children);
+                    updateChildrenList(node._children, children, node.level.name);
                     node._children = children;
                     node.children = null;
                     node.childrenChecked = node.checked?children.length:0;
@@ -639,7 +653,7 @@
                 var promise = getChildrenFromAPI(node, deferred, viewID);
                 promise.then(function(children){
                     if (node.children) {
-                        updateChildrenList(node.children, children);
+                        updateChildrenList(node.children, children, node.level.name);
                     }
                     node.children = children;
                     node._children = null;
@@ -657,7 +671,7 @@
         /**
          ** modify newList children adding them from existing nodes in oldList
          **/
-        var updateChildrenList = function(oldList, newList) {
+        var updateChildrenList = function(oldList, newList, levelName) {
             var i = 0;
             var j = 0;
             while (true) {
@@ -665,14 +679,15 @@
                     return;
                 }
                 var greaterThan = naturalSortByName(oldList[i], newList[j]);
+                if (levelName.search(/^(projects|collections)$/) >= 0) {
+                    greaterThan *= -1;
+                }
                 if (greaterThan === 0) {
                     if (!oldList[i].id || oldList[i].id === newList[j].id) {
                         newList[j].children = oldList[i].children;
                         newList[j]._children = oldList[i]._children;
                         newList[j].checked = oldList[i].checked;
                         newList[j].hasData = oldList[i].hasData;
-                        newList[j].childrenChecked = oldList[i].childrenChecked;
-                        newList[j].childrenIndeterminate = oldList[i].childrenIndeterminate;
                     }
                     i++;
                     j++;

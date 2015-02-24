@@ -17,34 +17,34 @@ describe('sdm test authenticated user', function() {
 
     GEServiceEl.click();
     expect(
-        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        element(by.css('button.active.table-view .glyphicon-th-list')).isPresent()
         ).toBe(true);
     expect(
-        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        element(by.css('button.active.tree-view .glyphicon-tree-conifer')).isPresent()
         ).toBe(false);
 
-    element(by.css('button .glyphicon-tree-conifer')).click();
+    element(by.css('button.tree-view')).click();
     expect(
-        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        element(by.css('button.active.table-view .glyphicon-th-list')).isPresent()
         ).toBe(false);
     expect(
-        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        element(by.css('button.active.tree-view .glyphicon-tree-conifer')).isPresent()
         ).toBe(true);
 
-    element(by.css('button .glyphicon-log-out')).click();
+    element(by.css('button.logout')).click();
     expect(
-        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        element(by.css('button.active.table-view .glyphicon-th-list')).isPresent()
         ).toBe(false);
     expect(
-        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        element(by.css('button.active.tree-view .glyphicon-tree-conifer')).isPresent()
         ).toBe(true);
 
-    element(by.css('button .glyphicon-th-list')).click();
+    element(by.css('button.table-view')).click();
     expect(
-        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        element(by.css('button.active.table-view .glyphicon-th-list')).isPresent()
         ).toBe(true);
     expect(
-        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        element(by.css('button.active.tree-view .glyphicon-tree-conifer')).isPresent()
         ).toBe(false);
 
 
@@ -59,23 +59,23 @@ describe('sdm test authenticated user', function() {
     }, 60000);
 
     expect(
-        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        element(by.css('button.active.table-view .glyphicon-th-list')).isPresent()
         ).toBe(false);
     expect(
-        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        element(by.css('button.active.tree-view .glyphicon-tree-conifer')).isPresent()
         ).toBe(true);
 
-    element(by.css('button .glyphicon-th-list')).click();
+    element(by.css('button.table-view')).click();
     expect(
-        element(by.css('button.active .glyphicon-th-list')).isPresent()
+        element(by.css('button.active.table-view .glyphicon-th-list')).isPresent()
         ).toBe(true);
     expect(
-        element(by.css('button.active .glyphicon-tree-conifer')).isPresent()
+        element(by.css('button.active.tree-view .glyphicon-tree-conifer')).isPresent()
         ).toBe(false);
 
-    element(by.css('button .glyphicon-eye-open')).click();
+    element(by.css('button.superuser')).click();
 
-    element(by.css('button .glyphicon-eye-close')).click();
+    element(by.css('button.superuser')).click();
 
   }, 240000);
 });

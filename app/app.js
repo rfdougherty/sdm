@@ -89,6 +89,7 @@ var naturalSortByName = function(a, b){
     return aa.length - bb.length;
 };
 
+
 var DataNode = function(data, site, level, children) {
     this.level = level;
     this.site = site;
@@ -123,8 +124,9 @@ var DataNode = function(data, site, level, children) {
         this.userHasPermissions = true;
         this.userCanModify = true;
     }
-
 }
+
+
 
 var substringMatcher = function(elements, field) {
   return function findMatches(q, cb) {

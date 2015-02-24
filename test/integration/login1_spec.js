@@ -5,7 +5,7 @@ describe('sdm logout test', function() {
         element(by.css('button.active .glyphicon-th-list')).isPresent()
         ).toBe(true);
 
-    element(by.css('button .glyphicon-log-out')).click();
+    element(by.css('button.logout')).click();
 
   });
 });

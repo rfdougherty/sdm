@@ -34,7 +34,7 @@ describe('public data test', function() {
     filterSession.clear();
     filterSubject.clear();
 
-    element(by.css('button .glyphicon-tree-conifer')).click();
+    element(by.css('button.tree-view')).click();
 
     for (var i =1; i <12; i++) {
         element(by.repeater('tab in sdmNavigationController.tabs').row(i%4)).click();

@@ -34,7 +34,7 @@ describe('sdm test change the name ', function() {
         }, 60000);
 
         browser.driver.actions().mouseMove({x: 0, y: 0}).perform();
-        for (var i = 0; i<50; i++) {
+        for (var i = 0; i<5; i++) {
             element(by.repeater('tab in sdmNavigationController.tabs').row(0)).click();
         }
         expect(element(by.id('user-preferences-edit')).isPresent()).toBe(false);
@@ -46,6 +46,6 @@ describe('sdm test change the name ', function() {
     });
 
     afterEach(function() {
-        element(by.css('button .glyphicon-log-out')).click();
+        element(by.css('button.logout')).click();
     });
 });
