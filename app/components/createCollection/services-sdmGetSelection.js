@@ -22,7 +22,10 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
             var getSelectionInProjects = function (tree) {
                 var selected = [];
                 var action = function (node) {
-                    if (node.checked && (!node.parent || !node.parent.checked)) {
+                    var nodeInSelection = function(node){
+                        return node.checked && node.level.name.search(/^(sessions|projects|acquisitions)$/) >= 0;
+                    };
+                    if (nodeInSelection(node) && (!node.parent || !nodeInSelection(node.parent))) {
                         selected.push(node);
                     }
                 }
