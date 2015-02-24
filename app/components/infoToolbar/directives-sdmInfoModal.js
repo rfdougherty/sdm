@@ -139,6 +139,7 @@
 
                         sdmIMController.removeUser = function ($index) {
                             sdmIMController.apiData.permissions.splice($index, 1);
+                            sdmIMController.arePermissionsChanged = true;
                         };
 
                         sdmIMController.addUser = function ($event, form) {
@@ -166,6 +167,7 @@
                             });
                             sdmIMController.selectedUID = '';
                             sdmIMController.permissionPlaceholder = 'Permission added. Save to confirm.';
+                            sdmIMController.arePermissionsChanged = true;
                         };
 
                         sdmIMController.createUserInModal = function ($event) {
@@ -181,7 +183,7 @@
                         sdmIMController.save = function ($event) {
                             var url = BASE_URL + node.level.name + '/' + node.id;
                             var payload = {notes: sdmIMController.apiData.notes};
-                            if (sdmIMController.apiData.permissions) {
+                            if (sdmIMController.arePermissionsChanged) {
                                 payload.permissions = sdmIMController.apiData.permissions;
                             }
                             makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(function(){

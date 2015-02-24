@@ -184,7 +184,7 @@
                                 access: sdmCCController.selectedRole.rid
                             });
                             sdmCCController.selectedUID = '';
-                            sdmIMController.permissionPlaceholder = 'Permission added. Save to confirm.';
+                            sdmCCController.permissionPlaceholder = 'Permission added. Save to confirm.';
                         };
 
                         sdmCCController.removeUser = function ($index) {
