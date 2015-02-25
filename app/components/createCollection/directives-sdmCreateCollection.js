@@ -185,6 +185,7 @@
                             });
                             sdmCCController.selectedUID = '';
                             sdmCCController.permissionPlaceholder = 'Permission added. Save to confirm.';
+                            typeaheadElement.typeahead('val', '');
                         };
 
                         sdmCCController.removeUser = function ($index) {

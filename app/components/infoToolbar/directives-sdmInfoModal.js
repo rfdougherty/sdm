@@ -20,6 +20,7 @@
                         $scope.$parent.$parent.hideToolbar(null, 0);
                         $scope.$parent.dialogStyle.height = '500px';//100px';
                         $scope.$parent.dialogStyle.width = '600px';//280px';
+                        sdmIMController.selectedUID = {};
                         var node = $scope.$parent.$parent.data;
                         var APIUrl = BASE_URL + node.level.name + '/' + node.id;
                         var level = node.level.name;
@@ -30,12 +31,12 @@
                             path.unshift(n.parent.level.name==='sessions'?n.parent.name + ' - ' + n.parent.subject:n.parent.name);
                             n = n.parent;
                         }
-                        sdmIMController.loadingState = 0;
+                        sdmIMController.loadingState = 3;
                         sdmIMController.permissionPlaceholder = 'Enter User ID';
                         sdmRoles().then(function(data){
                             sdmIMController.roles = data;
                             sdmIMController.selectedRole = sdmIMController.roles[0];
-                            sdmIMController.loadingState++;
+                            sdmIMController.loadingState--;
                         });
                         var typeaheadElement = $element.find('#info-change-permissions .typeahead');
                         sdmUsers.getUsers().then(function(data){
@@ -53,9 +54,10 @@
                                 }
                             );
                             $element.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
-                                sdmIMController.selectedUID = selectedUID.value;
+                                console.log('typeahead');
+                                sdmIMController.selectedUID.value = selectedUID.value;
                             });
-                            sdmIMController.loadingState++;
+                            sdmIMController.loadingState--;
                         });
                         var refreshUsers = function() {
                             sdmUsers.getUsers().then(function(data){
@@ -117,7 +119,7 @@
                                     node.level.name.search(/collections|projects/) === 0 ?
                                         apiData.permissions : null;
                                 sdmIMController.apiData = apiData;
-                                sdmIMController.loadingState++;
+                                sdmIMController.loadingState--;
                                 console.log(sdmIMController);
                             });
 
@@ -138,36 +140,38 @@
                         };
 
                         sdmIMController.removeUser = function ($index) {
+                            console.log('removing', sdmIMController.apiData.permissions[$index]);
                             sdmIMController.apiData.permissions.splice($index, 1);
                             sdmIMController.arePermissionsChanged = true;
                         };
 
                         sdmIMController.addUser = function ($event, form) {
-                            if (!sdmIMController.selectedUID) {
+                            if (!sdmIMController.selectedUID.value) {
                                 form.hasErrors = true;
                                 form.newPermission.hasErrors = true;
-                                sdmIMController.selectedUID = null;
+                                sdmIMController.selectedUID.value = null;
                                 sdmIMController.permissionPlaceholder = "User UID is missing";
                                 return;
                             } else {
                                 if (sdmIMController.apiData.permissions.map(
                                         function(permission){
                                             return permission._id;
-                                        }).indexOf(sdmIMController.selectedUID) >= 0 ) {
+                                        }).indexOf(sdmIMController.selectedUID.value) >= 0 ) {
                                     form.hasErrors = true;
                                     form.newPermission.hasErrors = true;
-                                    sdmIMController.selectedUID = null;
+                                    sdmIMController.selectedUID.value = null;
                                     sdmIMController.permissionPlaceholder = "User already has permission";
                                     return;
                                 }
                             }
                             sdmIMController.apiData.permissions.push({
-                                _id: sdmIMController.selectedUID,
+                                _id: sdmIMController.selectedUID.value,
                                 access: sdmIMController.selectedRole.rid
                             });
-                            sdmIMController.selectedUID = '';
+                            sdmIMController.selectedUID.value = '';
                             sdmIMController.permissionPlaceholder = 'Permission added. Save to confirm.';
                             sdmIMController.arePermissionsChanged = true;
+                            typeaheadElement.typeahead('val', '');
                         };
 
                         sdmIMController.createUserInModal = function ($event) {
