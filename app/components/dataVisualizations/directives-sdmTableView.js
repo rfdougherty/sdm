@@ -258,6 +258,9 @@
                         }).property({
                             'checked': d.checked||false,
                             'indeterminate': d.indeterminate
+                        }).attr('class', function(d) {
+
+                            return d.defaultView?'':d.userAccess + '-access';
                         }).on('click', function(d){
                             actions.selector(d);
                             refresh(selectAllNodes);
@@ -288,9 +291,8 @@
                     d3Text
                         .append('span')
                         .classed('text', true)
-                        .classed('no-access', function(d){return !d.userHasPermissions})
-                        .classed('modify', function(d){
-                            return d.userCanModify;
+                        .classed('no-access', function(d) {
+                            return d.userAccess === 'no' && !d.defaultView;
                         })
                         .text(value||UNDEFINED_PLACEHOLDER);
 

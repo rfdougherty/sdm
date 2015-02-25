@@ -106,7 +106,7 @@
                                 if (sdmIMController.userPermission) {
                                     console.log(sdmIMController.userPermission);
                                     sdmIMController.isAdmin = sdmIMController.userPermission === 'admin';
-                                    sdmIMController.canModify = sdmIMController.userPermission.search(/modify$|admin$/) === 0;
+                                    sdmIMController.canModify = sdmIMController.userPermission.search(/rw$|admin$/) === 0;
                                 }
                                 if (sdmIMController.user.root) {
                                     sdmIMController.isAdmin = sdmIMController.canModify = true;
@@ -193,6 +193,12 @@
                         }
 
                         sdmIMController.save = function ($event) {
+                            var areNotesChanged = apiDataNotes !== sdmIMController.apiData.notes;
+                            if (!sdmIMController.arePermissionsChanged && !areNotesChanged) {
+                                $scope.$parent.enableEvents();
+                                $scope.$parent._hidePopover($event, 0);
+                                return;
+                            }
                             var url = BASE_URL + node.level.name + '/' + node.id;
                             var payload = {notes: sdmIMController.apiData.notes};
                             if (sdmIMController.arePermissionsChanged) {

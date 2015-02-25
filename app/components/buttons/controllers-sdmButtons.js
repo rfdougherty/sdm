@@ -26,29 +26,12 @@
             return $location.path();
         };
 
-        var onlyModifiableItems = 'onlyModifiableItems';
-
-        var switchToEditView = function () {
-            sdmFilterTree.addGlobalFilter(onlyModifiableItems, function (node) {
-                return node.userCanModify;
-            });
-            sdmViewManager.updateViewAppearanceKey('editable', true);
-            sdmViewManager.refreshView();
-        };
-
         var switchToNormalView = function () {
             sdmFilterTree.removeGlobalFilter(onlyModifiableItems);
             sdmViewManager.updateViewAppearanceKey('editable', false);
             sdmViewManager.refreshView();
         };
 
-        this.toggleEditView = function () {
-            if (this.isActiveButton('pencil')) {
-                switchToNormalView();
-            } else {
-                switchToEditView();
-            }
-        };
 
         this.selectionButtonsEnabled = function () {
             var root = sdmViewManager.getCurrentViewData()||{};

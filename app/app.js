@@ -113,16 +113,23 @@ var DataNode = function(data, site, level, children) {
     this.notes = data.notes;
     if (level.name.search(/projects|collections|sessions|acquisitions/) === 0){
         this.userHasPermissions = !!(data.permissions&&data.permissions.length);
-        this.userCanModify =
-            data.permissions && (data.permissions.length > 1 || (
-                data.permissions.length&&(
-                    data.permissions[0].access === 'modify' ||
-                    data.permissions[0].access === 'admin'
-                )
-            ));
+        if (data.permissions) {
+            if (!data.permissions.length) {
+                this.userAccess = 'no';
+            } else if (data.permissions.length > 1) {
+                this.userAccess = 'admin';
+            } else {
+                this.userAccess = data.permissions[0].access;
+            }
+        } else {
+            this.userAccess = 'no';
+        }
+
+        this.defaultView = false;
     } else {
         this.userHasPermissions = true;
-        this.userCanModify = true;
+        this.userAccess = 'no';
+        this.defaultView = true;
     }
 }
 

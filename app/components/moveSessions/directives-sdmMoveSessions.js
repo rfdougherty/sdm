@@ -36,7 +36,7 @@
                                 var _projects = userData.root?projects:projects.filter(function(project){
                                     var p = project.permissions;
                                     return p && (p.length > 1 || (
-                                        p.length && (p[0].access === 'modify' || p[0].access === 'admin')
+                                        p.length && (p[0].access === 'admin')
                                     ));
                                 });
                                 sdmMSController.projects = _projects.sort(naturalSortByName);
@@ -49,7 +49,7 @@
                                 sdmMSController.hasPermissionsOnSelection = true;
                                 if (!userData.root) {
                                     for (var i = 0; i < selection.length; i++) {
-                                        if (!selection[i].userCanModify) {
+                                        if (!(selection[i].userAccess === 'admin')) {
                                             sdmMSController.hasPermissionsOnSelection = false;
                                         }
                                     }

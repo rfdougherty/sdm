@@ -10,7 +10,7 @@
         No session has been selected. Please close this window and fully select at least one item.
     </div>
     <div class="move-sessions-body warning" ng-show="!sdmMSController.hasPermissionsOnSelection && sdmMSController.loadingState === 0">
-        You don't have permissions to modify some of the selected sessions. Please close this window and unsselect them. Sessions without "modify" access are shown in italic.
+        You don't have permissions to modify some of the selected sessions. Please close this window and unsselect them. Sessions with "admin" access are shown using the main <span>color.</span>
     </div>
     <div class="move-sessions-body warning" ng-show="sdmMSController.isFailed">
         One or more operations failed. Please try again or contact an administrator.
