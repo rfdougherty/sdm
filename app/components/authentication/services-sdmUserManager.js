@@ -136,6 +136,23 @@
                 angular.extend(value_auth_data, data);
                 $cookieStore.put(SDM_KEY_CACHED_ACCESS_DATA, value_auth_data);
                 deferred.resolve(value_auth_data);
+            }).
+            error(function(errorData, status, headers, config) {
+                if (status === 401) {
+                    refreshToken().then(function(){
+                        deferred.resolve(updateUserData(data));
+                    },
+                    function() {
+                        deferred.reject();
+                    });
+                    return;
+                }
+                console.log(errorData);
+                console.log(status);
+                console.log(headers);
+                console.log(config);
+
+                deferred.reject(status);
             });
             return deferred.promise;
         }
@@ -157,6 +174,23 @@
                 angular.extend(value_auth_data, data);
                 $cookieStore.put(SDM_KEY_CACHED_ACCESS_DATA, value_auth_data);
                 deferred.resolve(value_auth_data);
+            }).
+            error(function(errorData, status, headers, config) {
+                if (status === 401) {
+                    refreshToken().then(function(){
+                        deferred.resolve(getUserDataFromAPI());
+                    },
+                    function() {
+                        deferred.reject();
+                    });
+                    return;
+                }
+                console.log(errorData);
+                console.log(status);
+                console.log(headers);
+                console.log(config);
+
+                deferred.reject(status);
             });
             return deferred.promise;
         }
