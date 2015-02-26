@@ -119,6 +119,10 @@
                                 apiDataNotes = apiData.notes;
                                 sdmIMController.loadingState--;
                                 console.log(sdmIMController);
+                            },
+                            function(reason){
+                                console.log('rejected request because of', reason);
+                                sdmIMController.dismiss();
                             });
 
                         sdmIMController.download = function(file) {
@@ -138,7 +142,7 @@
                         };
 
                         sdmIMController.close = function ($event) {
-                            var areNotesChanged = apiDataNotes !== sdmIMController.apiData.notes;
+                            var areNotesChanged = sdmIMController.apiData && apiDataNotes !== sdmIMController.apiData.notes;
                             if (sdmIMController.arePermissionsChanged || areNotesChanged) {
                                 sdmIMController.confirmDismiss = true;
                             } else {

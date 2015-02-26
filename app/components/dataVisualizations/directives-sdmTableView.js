@@ -259,8 +259,23 @@
                             'checked': d.checked||false,
                             'indeterminate': d.indeterminate
                         }).attr('class', function(d) {
-
                             return d.defaultView?'':d.userAccess + '-access';
+                        }).attr('title', function(d) {
+                            if (!d.defaultView) {
+                                var userAccess;
+                                switch (d.userAccess) {
+                                    case 'rw':
+                                        userAccess = 'Read-Write';
+                                        break;
+                                    case 'ro':
+                                        userAccess = 'Read-Only';
+                                        break;
+                                    default:
+                                        userAccess = d.userAccess.charAt(0).toUpperCase() + d.userAccess.slice(1);
+
+                                }
+                                return userAccess + ' Access';
+                            }
                         }).on('click', function(d){
                             actions.selector(d);
                             refresh(selectAllNodes);
