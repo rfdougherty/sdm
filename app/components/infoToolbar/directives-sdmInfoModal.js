@@ -40,7 +40,6 @@
                         });
                         var typeaheadElement = $element.find('#info-change-permissions .typeahead');
                         sdmUsers.getUsers().then(function(data){
-                            console.log(data);
                             sdmIMController.users = data;
                             typeaheadElement.typeahead({
                                     hint: true,
@@ -62,8 +61,6 @@
                         var refreshUsers = function() {
                             sdmUsers.getUsers().then(function(data){
                                 sdmIMController.users = data;
-                                var typeahead
-
                                 typeaheadElement.typeahead('destroy');
                                 typeaheadElement.typeahead({
                                         hint: true,
@@ -162,10 +159,13 @@
                                 form.hasErrors = true;
                                 form.newPermission.hasErrors = true;
                                 sdmIMController.selectedUID = null;
-                                sdmIMController.permissionPlaceholder = "User UID is missing";
+                                sdmIMController.permissionPlaceholder = "User UID is missing or invalid";
                                 return;
                             } else {
-                                if (sdmIMController.apiData.permissions.map(
+                                if (!sdmIMController.users[sdmIMController.selectedUID]) {
+                                    sdmIMController.createUserInModal($event);
+                                    return;
+                                } else if (sdmIMController.apiData.permissions.map(
                                         function(permission){
                                             return permission._id;
                                         }).indexOf(sdmIMController.selectedUID) >= 0 ) {

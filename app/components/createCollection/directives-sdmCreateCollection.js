@@ -165,10 +165,13 @@
                                 form.hasErrors = true;
                                 form.newPermission.hasErrors = true;
                                 sdmCCController.selectedUID = null;
-                                sdmCCController.permissionPlaceholder = "User UID is missing";
+                                sdmCCController.permissionPlaceholder = "User UID is missing or invalid";
                                 return;
                             } else {
-                                if (sdmCCController.addedPermissions.map(
+                                if (!sdmCCController.users[sdmCCController.selectedUID]) {
+                                    sdmCCController.createUserInModal($event);
+                                    return;
+                                } else if (sdmCCController.addedPermissions.map(
                                         function(permission){
                                             return permission._id;
                                         }).indexOf(sdmCCController.selectedUID) >= 0 ) {

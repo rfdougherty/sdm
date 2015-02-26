@@ -17,10 +17,9 @@
             </textarea>
             <div id="share" class="form-inline" ng-show="!sdmCCController.selectedCollection || sdmCCController.selectedCollection.userAccess === 'admin' || sdmCCController.curator.root">
                 <div class="sdm-input-label">Share</div><br>
-                <input class="typeahead form-control" type="text" placeholder="{{sdmCCController.permissionPlaceholder}}" ng-model="sdmCCController.selectedUID" name="newPermission" ng-class="{'ng-invalid': form.newPermission.hasErrors}" ></input>
+                <input class="typeahead form-control" type="email" placeholder="{{sdmCCController.permissionPlaceholder}}" ng-model="sdmCCController.selectedUID" name="newPermission" ng-class="{'sdm-invalid': form.newPermission.hasErrors}" ></input>
                 <select class="form-control" ng-init="" ng-options="role.name for role in sdmCCController.roles" ng-model="sdmCCController.selectedRole"></select>
                 <span class="glyphicon glyphicon-plus-sign" ng-click="sdmCCController.addUser($event, form)"></span>
-                <input type="button" class="create-user btn btn-default" value="Create New User" ng-click="sdmCCController.createUserInModal($event)">
             </div>
 
             <div id="collection-permissions">
