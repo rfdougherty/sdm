@@ -41,7 +41,7 @@
                         <tbody>
                             <tr class='user-permission' ng-repeat="permission in sdmCCController.addedPermissions">
                                 <td>{{permission._id}}</td>
-                                <td>{{permission.access}}</td>
+                                <td class="permissions-access"><select class="form-control" ng-options="role.rid as role.name for role in sdmCCController.roles" ng-model="permission.access" ng-disabled="permission._id===sdmCCController.curator.user_uid && !sdmCCController.curator.root"></select></td>
                                 <td>
                                     <span class="glyphicon glyphicon-remove" ng-if="(sdmCCController.selectedCollection.userAccess === 'admin' && permission._id!==sdmCCController.curator.user_uid) || sdmCCController.curator.root" ng-click="sdmCCController.removeUser($index)"></span>
                                     <span class="glyphicon glyphicon-remove disabled" ng-if="permission._id===sdmCCController.curator.user_uid && !sdmCCController.curator.root"></span></td>

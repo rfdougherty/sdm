@@ -61,7 +61,7 @@
                     <tbody>
                         <tr class='user-permission' ng-repeat="permission in sdmIMController.apiData.permissions">
                             <td>{{permission._id}}</td>
-                            <td>{{permission.access}}</td>
+                            <td class="permissions-access"><select class="form-control" ng-options="role.rid as role.name for role in sdmIMController.roles" ng-model="permission.access" ng-change="sdmIMController.arePermissionsChanged = true" ng-disabled="permission._id===sdmIMController.user.user_uid && !sdmIMController.user.root"></select></td>
                             <td>
                                 <span class="glyphicon glyphicon-remove" ng-if="(permission._id!==sdmIMController.user.user_uid && sdmIMController.userPermission === 'admin') || sdmIMController.user.root" ng-click="sdmIMController.removeUser($index)"></span>
                                 <span class="glyphicon glyphicon-remove disabled" ng-if="permission._id===sdmIMController.user.user_uid && !sdmIMController.user.root"></span></td>
