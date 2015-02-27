@@ -148,9 +148,21 @@
                             }
                         };
 
-                        sdmIMController.removeUser = function ($index) {
+                        sdmIMController.removeUser = function ($index, form) {
                             console.log('removing', sdmIMController.apiData.permissions[$index]);
+                            var userID = sdmIMController.apiData.permissions[$index]._id;
                             sdmIMController.apiData.permissions.splice($index, 1);
+                            sdmIMController.permissionPlaceholder = ' User removed. Save to confirm';
+                            sdmIMController.success = true;
+                            form.newPermission.hasErrors = false;
+                            var viewValue = form.newPermission.$viewValue;
+                            sdmIMController.selectedUID = null;
+                            setTimeout(function(){
+                                $scope.$apply(function(){
+                                    sdmIMController.success = false;
+                                    sdmIMController.selectedUID = viewValue;
+                                });
+                            }, 2000);
                             sdmIMController.arePermissionsChanged = true;
                         };
 
@@ -182,6 +194,13 @@
                             });
                             sdmIMController.selectedUID = '';
                             sdmIMController.permissionPlaceholder = 'Permission added. Save to confirm.';
+                            sdmIMController.success = true;
+                            form.newPermission.hasErrors = false;
+                            setTimeout(function(){
+                                $scope.$apply(function(){
+                                    sdmIMController.success = false;
+                                });
+                            }, 2000);
                             sdmIMController.arePermissionsChanged = true;
                             typeaheadElement.typeahead('val', '');
                         };

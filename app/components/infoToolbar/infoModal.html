@@ -25,7 +25,7 @@
 
             <div id="info-change-permissions" class="form-inline" ng-show="sdmIMController.isAdmin">
                 <div id="permissions-title" class="sdm-input-label">Change permissions</div><br>
-                <input class="typeahead form-control" type="email" placeholder="{{sdmIMController.permissionPlaceholder}}" ng-model="sdmIMController.selectedUID" name="newPermission" ng-class="{'sdm-invalid': form.newPermission.hasErrors}">
+                <input class="typeahead form-control" type="email" placeholder="{{sdmIMController.permissionPlaceholder}}" ng-model="sdmIMController.selectedUID" name="newPermission" ng-class="{'sdm-invalid': form.newPermission.hasErrors, 'sdm-operation-success': sdmIMController.success}">
                 <select class="form-control" ng-options="role.name for role in sdmIMController.roles" ng-model="sdmIMController.selectedRole"></select>
                 <span class="add-user" ng-click="sdmIMController.addUser($event, form)">
                     <span class="glyphicon glyphicon-plus-sign"></span>
@@ -62,7 +62,7 @@
                             <td>{{permission._id}}</td>
                             <td class="permissions-access"><select class="form-control" ng-options="role.rid as role.name for role in sdmIMController.roles" ng-model="permission.access" ng-change="sdmIMController.arePermissionsChanged = true" ng-disabled="permission._id===sdmIMController.user.user_uid && !sdmIMController.user.root"></select></td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" ng-if="(permission._id!==sdmIMController.user.user_uid && sdmIMController.userPermission === 'admin') || sdmIMController.user.root" ng-click="sdmIMController.removeUser($index)"></span>
+                                <span class="glyphicon glyphicon-remove" ng-if="(permission._id!==sdmIMController.user.user_uid && sdmIMController.userPermission === 'admin') || sdmIMController.user.root" ng-click="sdmIMController.removeUser($index, form)"></span>
                                 <span class="glyphicon glyphicon-remove disabled" ng-if="permission._id===sdmIMController.user.user_uid && !sdmIMController.user.root"></span></td>
                         </tr>
                     </tbody>

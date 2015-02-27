@@ -187,12 +187,30 @@
                                 access: sdmCCController.selectedRole.rid
                             });
                             sdmCCController.selectedUID = '';
+                            sdmCCController.success = true;
+                            form.newPermission.hasErrors = false;
+                            setTimeout(function(){
+                                $scope.$apply(function(){
+                                    sdmCCController.success = false;
+                                });
+                            }, 2000);
                             sdmCCController.permissionPlaceholder = 'Permission added. Save to confirm.';
                             typeaheadElement.typeahead('val', '');
                         };
 
-                        sdmCCController.removeUser = function ($index) {
+                        sdmCCController.removeUser = function ($index, form) {
                             sdmCCController.addedPermissions.splice($index, 1);
+                            sdmCCController.permissionPlaceholder = ' User removed. Save to confirm';
+                            sdmCCController.success = true;
+                            form.newPermission.hasErrors = false;
+                            var viewValue = form.newPermission.$viewValue;
+                            sdmCCController.selectedUID = null;
+                            setTimeout(function(){
+                                $scope.$apply(function(){
+                                    sdmCCController.success = false;
+                                    sdmCCController.selectedUID = viewValue;
+                                });
+                            }, 2000);
                         };
 
                         sdmCCController.createUserInModal = function ($event) {
