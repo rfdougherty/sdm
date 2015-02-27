@@ -6,14 +6,14 @@
             <span class="tooltip"
                 sdm-popover
                 sdm-popover-template-text="Information"
-                sdm-popover-style-width="74px"
-                sdm-popover-style-left="-29px"
-                sdm-popover-style-top="30px"
                 sdm-popover-class="sdm-tooltip"
                 sdm-popover-show="mouseenter"
                 sdm-popover-hide="mouseleave"
                 sdm-popover-show-timeout="400"
-                sdm-popover-hide-timeout="0">
+                sdm-popover-hide-timeout="0"
+                sdm-tooltip-style
+                sdm-tooltip-x="8"
+                sdm-tooltip-y="30">
             </span>
         </span>
         <span class="sdm-btn">
@@ -29,7 +29,10 @@
                 sdm-popover-show="mouseenter"
                 sdm-popover-hide="mouseleave"
                 sdm-popover-show-timeout="400"
-                sdm-popover-hide-timeout="0">
+                sdm-popover-hide-timeout="0"
+                sdm-tooltip-style
+                sdm-tooltip-x="8"
+                sdm-tooltip-y="30">
             </span>
         </span>
         <span class="sdm-btn" ng-show="sdmTBController.location === '/projects'">
@@ -45,7 +48,10 @@
                 sdm-popover-show="mouseenter"
                 sdm-popover-hide="mouseleave"
                 sdm-popover-show-timeout="400"
-                sdm-popover-hide-timeout="0">
+                sdm-popover-hide-timeout="0"
+                sdm-tooltip-style
+                sdm-tooltip-x="8"
+                sdm-tooltip-y="30">
             </span>
         </span>
         <span class="sdm-btn" ng-show="sdmTBController.location === '/collections'" ng-click="sdmTBController.toggleDeleteButton()">
@@ -61,7 +67,10 @@
                 sdm-popover-show="mouseenter"
                 sdm-popover-hide="mouseleave"
                 sdm-popover-show-timeout="400"
-                sdm-popover-hide-timeout="0">
+                sdm-popover-hide-timeout="0"
+                sdm-tooltip-style
+                sdm-tooltip-x="8"
+                sdm-tooltip-y="30">
             </span>
     </span>
 </sdm-info-toolbar>

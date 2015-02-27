@@ -19,7 +19,21 @@
                 <div class="sdm-input-label">Share</div><br>
                 <input class="typeahead form-control" type="email" placeholder="{{sdmCCController.permissionPlaceholder}}" ng-model="sdmCCController.selectedUID" name="newPermission" ng-class="{'sdm-invalid': form.newPermission.hasErrors, 'sdm-operation-success': sdmCCController.success}" ></input>
                 <select class="form-control" ng-init="" ng-options="role.name for role in sdmCCController.roles" ng-model="sdmCCController.selectedRole"></select>
-                <span class="glyphicon glyphicon-plus-sign" ng-click="sdmCCController.addUser($event, form)"></span>
+                <span class="add-user" ng-click="sdmCCController.addUser($event, form)">
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+                    <span class="tooltip"
+                        sdm-popover
+                        sdm-popover-template-text="Add Permission"
+                        sdm-popover-class="sdm-tooltip"
+                        sdm-popover-show="mouseenter"
+                        sdm-popover-hide="mouseleave"
+                        sdm-popover-show-timeout="400"
+                        sdm-popover-hide-timeout="0"
+                        sdm-tooltip-style
+                        sdm-tooltip-x="10"
+                        sdm-tooltip-y="32">
+                    </span>
+                </span>
             </div>
 
             <div id="collection-permissions">

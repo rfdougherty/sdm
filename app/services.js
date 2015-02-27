@@ -5,7 +5,7 @@
 
 // Demonstrate how to register services
 // In this case it is a simple value service.
-var nimsServices = angular.module('sdm.services', ['sdmHttpServices', 'sdmD3Service']).
+var nimsServices = angular.module('sdm.services', ['sdmHttpServices', 'sdmD3Service', 'sdmTextWidthCalculator']).
 value('version', '0.11');
 
 var httpServices = angular.module('sdmHttpServices', ['ngCookies', 'sdm.authentication.services.sdmUserManager']);
@@ -100,3 +100,29 @@ angular.module('sdmD3Service', [])
                 d3: function(){ return d3}
             };
         }]);
+
+angular.module('sdmTextWidthCalculator', [])
+    .factory('sdmTextWidthCalculator', function(){
+        var cache = {};
+        var calculator = function(content, fontSize, element) {
+            element = element||'div';
+            fontSize = fontSize||12;
+            if (cache[content]&&cache[content][fontSize]&&cache[content][fontSize][element]){
+                return cache[content][fontSize][element];
+            }
+            var testElement = document.createElement(element);
+            testElement.innerHTML = content;
+            testElement.setAttribute('style',
+                'position: absolute; height: auto; width: auto; white-space: nowrap; ' +
+                'letter-spacing:normal; font-weight: normal; visibility: hidden; ')
+            testElement.style.fontSize = fontSize + 'px';
+            document.body.appendChild(testElement);
+            var width = testElement.clientWidth;
+            document.body.removeChild(testElement);
+            cache[content] = cache[content]||{};
+            cache[content][fontSize] = cache[content][fontSize]||{};
+            cache[content][fontSize][element] = width;
+            return width;
+        }
+        return calculator;
+    });

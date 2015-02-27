@@ -2,9 +2,9 @@
 
 (function() {
     var templateIndex = 0;
-    angular.module('sdm.popovers.directives.sdmPopover', [])
-        .directive('sdmPopover', ['$compile', '$document', '$templateCache',
-        function($compile, $document, $templateCache) {
+    angular.module('sdm.popovers.directives.sdmPopover', ['sdm.services'])
+        .directive('sdmPopover', ['$compile', '$document', '$templateCache', 'sdmTextWidthCalculator',
+        function($compile, $document, $templateCache, sdmTextWidthCalculator) {
             var body = $document.find('body').eq(0);
             var templatePopover =
                 '<div class="popover" ng-class="sdmPopoverClass">' +
@@ -20,19 +20,31 @@
                 scope: {},
                 replace: false, // Replace with the template below
                 transclude: false, // we want to insert custom content inside the directive
-                link: function($scope, $element, $attrs) {
+                controller: function() {
+                    var _this = this;
+                    _this.properties = {};
+                    _this.getProperty = function(key) {
+                        return _this.properties[key];
+                    }
+                    _this.setProperty = function(key, value) {
+                        _this.properties[key] = value;
+                    }
+                },
+                controllerAs: 'sdmPopoverController',
+                link: { pre: function($scope, $element, $attrs, sdmPopoverController) {
                     $scope.dialogStyle = {};
+                    sdmPopoverController.setProperty('dialogStyle', $scope.dialogStyle);
                     var attrKeys = Object.getOwnPropertyNames($attrs);
                     var match;
                     var rootElement = typeof $attrs.sdmAppendToBody ==='undefined'?
                         $element : angular.element(document.getElementsByTagName('body'));
-                    var overlay = $compile('<div class="popover-overlay" ng-click="hidePopover($event, 0)"></div>')($scope);
                     for (var i = 0; i < attrKeys.length; i++) {
                         match = attrRegex.exec(attrKeys[i]);
                         if (match !== null) {
                             $scope.dialogStyle[match[1].toLowerCase()] = $attrs[attrKeys[i]];
                         }
                     }
+
 
                     $scope.hasDynamicPosition = $attrs.sdmPopoverDynamicPosition==='true'?true:false;
 
@@ -47,6 +59,7 @@
                     if ($attrs.sdmPopoverTemplateContent)
                         $scope.sdmPopoverTemplateContent = $attrs.sdmPopoverTemplateContent;
                     else if ($attrs.sdmPopoverTemplateText) {
+                        sdmPopoverController.setProperty('sdmPopoverTemplateText', $attrs.sdmPopoverTemplateText);
                         var templateURL = 'tempTemplate' + templateIndex++ + '.html';
                         $templateCache.put(templateURL, $attrs.sdmPopoverTemplateText);
                         $scope.sdmPopoverTemplateContent = templateURL;
@@ -118,7 +131,7 @@
                         $scope.showPopover(null, 0);
                     }
                 }
-            };
+            }};
         }]
     );
 })();
