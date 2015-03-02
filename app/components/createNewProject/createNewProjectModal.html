@@ -1,0 +1,16 @@
+<sdm-create-project>
+    <div class="create-project-header"></div>
+    <div class="create-project-title">Create New Project<span class="spinner" ng-show="sdmNPController.loadingState > 0"></span></div>
+    <form name="projectForm" ng-class="{submitted: sdmNPController.submitted}">
+        <div class="create-project-body" ng-show="sdmNPController.loadingState === 0">
+            <select class="form-control" ng-options="group.name||group._id for group in sdmNPController.groups" ng-model="sdmNPController.selectedGroup" ng-change="sdmNPController.getProjects($event, sdmNPController.selectedGroup)" ng-class="{default:!sdmNPController.selectedGroup}">
+                <option class="default" value="">Select group for new project</option></select>
+            <input class="form-control" ng-disabled="!sdmNPController.selectedGroup" type="text" ng-model="sdmNPController.newProject" name="projectName" placeholder="{{sdmNPController.placeholder}}" sdm-list-validator="sdmNPController.projects" required ng-minlength="1"></input>
+        </div>
+        <div class="create-project-confirm-buttons">
+            <input type="button" id="create-project-cancel" class="btn btn-default btn-xs" ng-click="sdmNPController.cancel($event)" value="Cancel"></input>
+            <input type="button"  id="create-project-confirm" class="btn btn-default btn-xs"  value="Create Project" ng-click="sdmNPController.save($event, projectForm)" ng-show="sdmNPController.loadingState === 0" ></input>
+        </div>
+    </form>
+</sdm-create-project>
+

@@ -263,7 +263,7 @@
                                 sdmCCController.existingCollections = existingCollections.sort(naturalSortByName);
                                 sdmCCController.collectionsCurator = sdmCCController.existingCollections.filter(
                                     function (collection) {
-                                        return collection.curator._id === sdmCCController.curator.user_uid;
+                                        return collection.curator_id === sdmCCController.curator.user_uid;
                                     }
                                 ).map(function(collection){return collection.name});
                             }
