@@ -265,7 +265,7 @@
                     .classed(classed, true);
                 var value = d[p];
                 if (d.show) {
-                    if (i === 0){
+                    if (i === 0 && !d.hideGlyphs){
                         d.indeterminate = !d.checked && d.childrenChecked + d.childrenIndeterminate > 0;
                         d3Element.append('input').attr({
                             'type': 'checkbox'
@@ -325,7 +325,7 @@
                         })
                         .text(value||UNDEFINED_PLACEHOLDER);
 
-                    if (i === a.length - 1){
+                    if (i === a.length - 1 && !d.hideGlyphs){
                         d3Element.append('span').attr('class',
                             function(d){
                                 var icon;
@@ -371,6 +371,7 @@
         var addParentNameToRow = true;
         while (node.parent) {
             addParentNameToRow = node.isFirstChild && addParentNameToRow;
+            node.parent.hideGlyphs = !addParentNameToRow && leaf.fullLine;
             node.parent.show = addParentNameToRow || leaf.fullLine;
             dataRow.unshift(node.parent);
             node = node.parent;
