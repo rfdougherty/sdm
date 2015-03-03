@@ -15,7 +15,7 @@
     <div class="move-sessions-body warning" ng-show="sdmMSController.isFailed">
         One or more operations failed. Please try again or contact an administrator.
     </div>
-    <div class="create-project-button" ng-show="sdmMSController.hasData && sdmMSController.hasPermissionsOnSelection">
+    <div class="create-project-button" ng-show="sdmMSController.hasData && sdmMSController.hasPermissionsOnSelection && sdmMSController.adminGroups.length">
         <input type="button" id="create-project" class="btn btn-default btn-xs" sdm-popover sdm-popover-template-content="components/createNewProject/createNewProjectModal.html" sdm-popover-class="sdm-create-project" sdm-popover-show="click" sdm-popover-style-top="254px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="42px" sdm-popover-style-left="initial" sdm-popover-show-timeout="0" sdm-append-to-body value="New Project" ng-click="sdmMSController.selectedGroup = null"></input>
     </div>
     <div class="move-sessions-confirm-buttons">

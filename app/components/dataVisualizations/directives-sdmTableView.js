@@ -191,27 +191,14 @@
             .classed('row', true)
             .classed('d3row', true)
             .on('mouseenter', function (leaf){
-                var now = new Date().getTime();
-                var element = this;
-                if (!rowEntered.element) {
-                    rowEntered.element = element;
-                    rowEntered.leaf = leaf;
-                    rowEntered.leaf.fullLine = true;
+                if (rowEntered.leaf) {
+                    rowEntered.leaf.fullLine = false;
                     updateRow(actions).call(rowEntered.element, rowEntered.leaf);
-                } else {
-                    if (rowEntered.leaf !== leaf) {
-                        clearTimeout(rowEntered.timer);
-                        rowEntered.timer = setTimeout(function(){
-                            rowEntered.leaf.fullLine = false;
-                            updateRow(actions).call(rowEntered.element, rowEntered.leaf);
-                            leaf.fullLine = true;
-                            updateRow(actions).call(element, leaf);
-                            rowEntered.element = element;
-                            rowEntered.leaf = leaf;
-                        }, 500);
-                    }
-
                 }
+                leaf.fullLine = true;
+                updateRow(actions).call(this, leaf);
+                rowEntered.leaf = leaf;
+                rowEntered.element = this;
             })
             .each(updateRow(actions));
 

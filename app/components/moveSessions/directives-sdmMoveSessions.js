@@ -32,7 +32,7 @@
                                 sdmMSController.selectedProject = null;
                                 return;
                             }
-                            makeAPICall.async(BASE_URL + 'projects', {group: group._id}).then(function(projects){
+                            return makeAPICall.async(BASE_URL + 'projects', {group: group._id}).then(function(projects){
                                 var _projects = userData.root?projects:projects.filter(function(project){
                                     var p = project.permissions;
                                     return p && (p.length > 1 || (
@@ -100,7 +100,15 @@
                             });
 
                         };
-                        console.log(sdmMSController.selectedGroup);
+                        sdmMSController.adminGroups = [];
+                        var getAdminGroups = function() {
+                            var groupsURL = BASE_URL + 'groups';
+                            var data = {'admin': 'true'};
+                            makeAPICall.async(groupsURL, data).then(function(result) {
+                                sdmMSController.adminGroups = result;
+                            });
+                        }
+                        getAdminGroups();
                     }
                 }
             }]);
