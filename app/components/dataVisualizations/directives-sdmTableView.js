@@ -4,14 +4,16 @@
     var d3;
     var sdmCellOnHover;
     var scope;
+    var calculateTextWidth;
 
     angular.module('sdm.dataVisualizations.directives.sdmTableView',
-        ['sdmD3Service', 'sdm.dataFiltering.services.sdmFilterTree',
+        ['sdm.services', 'sdm.dataFiltering.services.sdmFilterTree',
         'sdm.main.services.sdmViewManager'])
     .directive('sdmTableView',
         ['$compile', '$location', '$rootScope',
-        'sdmD3Service', 'sdmFilterTree', 'sdmViewManager',
-        function($compile, $location, $rootScope, sdmD3Service, sdmFilterTree, sdmViewManager){
+        'sdmD3Service', 'sdmFilterTree', 'sdmViewManager', 'sdmTextWidthCalculator',
+        function($compile, $location, $rootScope, sdmD3Service,
+                 sdmFilterTree, sdmViewManager, sdmTextWidthCalculator) {
             return {
                 // name: '',
                 // priority: 1,
@@ -40,12 +42,12 @@
                         $scope.headersTitles = getHeaderTitles(sdmViewManager.headers());
 
                         sdmCellOnHover = function(data) {
-                            if (typeof this.sdmCellCompiled === 'undefined') {
+                            if (typeof this.parentElement.sdmCellCompiled === 'undefined') {
                                 console.log('sdmCellOnHover');
                                 var newScope = $rootScope.$new();
                                 newScope.data = data;
                                 $compile(this.parentElement)(newScope);
-                                this.sdmCellCompiled = true;
+                                this.parentElement.sdmCellCompiled = true;
                             }
                         };
 
@@ -54,6 +56,8 @@
                             getLeaves: sdmFilterTree.filter,
                             selector: sdmFilterTree.selector
                         };
+
+                        calculateTextWidth = sdmTextWidthCalculator;
 
                         sdmD3Service.init().then(function(_d3){
                             d3 = _d3;
@@ -255,35 +259,50 @@
                     if (i === 0 && !d.hideGlyphs){
                         d.indeterminate = !d.checked && d.childrenChecked + d.childrenIndeterminate > 0;
                         d3Element.append('input').attr({
-                            'type': 'checkbox'
-                        }).property({
-                            'checked': d.checked||false,
-                            'indeterminate': d.indeterminate
-                        }).attr('class', function(d) {
-                            return d.defaultView?'':d.userAccess + '-access';
-                        }).attr('title', function(d) {
-                            if (!d.defaultView) {
-                                var userAccess;
-                                switch (d.userAccess) {
-                                    case 'rw':
-                                        userAccess = 'Read-Write';
-                                        break;
-                                    case 'ro':
-                                        userAccess = 'Read-Only';
-                                        break;
-                                    default:
-                                        userAccess = d.userAccess.charAt(0).toUpperCase() + d.userAccess.slice(1);
-
+                                'type': 'checkbox'
+                            }).property({
+                                'checked': d.checked||false,
+                                'indeterminate': d.indeterminate
+                            }).attr('class', function(d) {
+                                return d.defaultView?'':d.userAccess + '-access';
+                            }).on('click', function(d){
+                                actions.selector(d);
+                                refresh(selectAllNodes);
+                                scope.$apply();
+                            }).on('mouseenter', function(d){
+                                if (!d.defaultView) {
+                                    checkboxTooltip.attr({
+                                        'class': 'd3-tooltip d3-show'
+                                    })
                                 }
-                                return userAccess + ' Access';
+                            }).on('mouseleave', function(d){
+                                if (!d.defaultView) {
+                                    checkboxTooltip.attr({
+                                        'class': 'd3-tooltip d3-hide'
+                                    })
+                                }
+                            });
+
+                        var text = function(access) {
+                            if (access === 'rw') {
+                                return 'read-write-access';
+                            } else if (access === 'ro') {
+                                return 'read-only-access';
+                            } else {
+                                return access + '-access';
                             }
-                        }).on('click', function(d){
-                            actions.selector(d);
-                            refresh(selectAllNodes);
-                            scope.$apply();
-                        });
+                        };
+                        var checkboxTooltip = d3Element.append('div').attr({
+                                'class': 'd3-tooltip d3-hide'
+                            }).style('width', function(d){
+                                return calculateTextWidth(text(d.userAccess)) + 6 + 'px';
+                            }).style('left', function(d) {
+                                var width = calculateTextWidth(text(d.userAccess)) + 6;
+                                return (8 - width/2) +'px';
+                            }).text(function(d){
+                                return text(d.userAccess);
+                            });
                     }
-                    //
                     var d3DivContent = d3Element.append('div')
                         .classed('content', true);
                     var d3Text = d3DivContent

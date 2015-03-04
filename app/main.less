@@ -276,7 +276,6 @@ div#tree-view>div {
                         content: "\2013";
                         position: relative;
                         top: -3px;
-
                     }
                     font-size: 12px;
                     font-weight: 900;
@@ -289,6 +288,55 @@ div#tree-view>div {
             input.rw-access[type=checkbox] {
                 background-color: fade(color(@bgcol2), 75%);
                 color: @fgcol2;
+            }
+            div.d3-tooltip {
+                position: absolute;
+                background-color: black;
+                color: white;
+                top: 28px;
+                height: 20px;
+                z-index: 100;
+                font-size: 12px;
+                font-weight: normal;
+                text-align: center;
+                border-radius: 4px;
+                line-height: 1.5;
+                text-align: center;
+                &:before {
+                    z-index:100;
+                    width: 0;
+                    height: 0;
+                    top: 0px;
+                    left: 50%;
+                    color: black;
+                    border-left: 7px solid transparent;
+                    border-right: 7px solid transparent;
+                    border-bottom: 7px solid black;
+                    position: absolute;
+                    content:"";
+                    transform: translate(-50%, -100%);
+                    -webkit-transform: translate(-50%, -100%);
+                    -moz-transform: translate(-50%, -100%);
+                }
+                &:after {
+                    z-index:100;
+                    width: 0;
+                    height: 0;
+                    top: 0px;
+                    left: 50%;
+                    color:black;
+                    position: absolute;
+                    border-left: 6px solid transparent;
+                    border-right: 6px solid transparent;
+                    border-bottom: 6px solid black;
+                    content:"";
+                    transform: translate(-50%, -100%);
+                    -webkit-transform: translate(-50%, -100%);
+                    -moz-transform: translate(-50%, -100%);
+                }
+                &.d3-hide {
+                    display: none;
+                }
             }
             div.content {
                 display: inline;
