@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('sdm.download.services.sdmDownloadInterface',
-    ['sdm.services'])
-    .factory('sdmDownloadInterface', ['$q', 'makeAPICall',
-        function($q, makeAPICall) {
+    ['sdm.services', 'sdm.util.services.sdmHumanReadableSize'])
+    .factory('sdmDownloadInterface', ['$q', 'makeAPICall', 'sdmHumanReadableSize',
+        function($q, makeAPICall, sdmHumanReadableSize) {
 
             var getDownloadURL = function (selection, isSingleFile, optional) {
                 var deferred = $q.defer(),
@@ -23,12 +23,13 @@ angular.module('sdm.download.services.sdmDownloadInterface',
                         });
                     data = {
                         nodes: nodes,
-                        optional: optional
+                        optional: optional || false
                     };
                 }
-
+                console.log(data);
                 makeAPICall.async(url, null, 'POST', data).then(function(response){
-                    deferred.resolve(response.url);
+                    response.size = sdmHumanReadableSize(response.size);
+                    deferred.resolve(response);
                 });
                 return deferred.promise;
             }

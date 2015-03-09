@@ -13,8 +13,6 @@
                     controller: function(){},
                     controllerAs: 'sdmDLController',
                     link: function($scope, $element, $attrs, sdmDLController){
-                        $scope.$parent.dialogStyle.height = '500px';//100px';
-                        $scope.$parent.dialogStyle.width = '600px';//280px';
                         var selectionPromise = sdmGetSelection.getSelection();
                         $scope.$parent.disableEvents();
                         sdmDLController.cancel = function ($event) {
@@ -27,14 +25,23 @@
                             selectionPromise.then(function (selection) {
                                 console.log('selection', selection);
                                 if (selection.length){
-                                    sdmDownloadInterface.getDownloadURL(selection, sdmDLController.optional).then(function(url){
-                                        console.log(url);
-                                        //sdmDLController.downloadURL = BASE_URL + 'download?ticket=' + ticket;
+                                    sdmDownloadInterface.getDownloadURL(selection, false, sdmDLController.optional).then(function(response){
+                                        console.log(response);
+                                        sdmDLController.downloadURL = response.url;
+                                        sdmDLController.fileCount = response.file_cnt;
+                                        sdmDLController.size = response.size;
                                     });
                                 }
                             });
                         }
                         sdmDLController.updateLink();
+                        sdmDLController.download = function($event) {
+                            window.open(sdmDLController.downloadURL, '_self');
+                            $event.stopPropagation();
+                            $event.preventDefault();
+                            $scope.$parent.enableEvents();
+                            $scope.$parent._hidePopover($event, 0);
+                        }
                     }
                 }
             }]);

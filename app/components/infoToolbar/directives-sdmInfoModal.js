@@ -128,8 +128,8 @@
                                 _id: node.id,
                                 file: file
                             };
-                            sdmDownloadInterface.getDownloadURL(_node, true).then(function(url){
-                                window.open(url, '_self');
+                            sdmDownloadInterface.getDownloadURL(_node, true, false).then(function(response){
+                                window.open(response.url, '_self');
                             });
                         };
 

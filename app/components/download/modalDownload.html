@@ -2,13 +2,13 @@
     <div class="download-header"></div>
     <div class="download-title">Download Files</div>
     <div id="download-body">
-        <div>60 files</div>
-        <div>1 GB</div>
-        <input id="download" type="checkbox" ng-change="sdmDLController.updateLink($event)" ng-model="sdmDLController.optional"></input><span> Include Optional Files</span>
+        <div>File count: {{sdmDLController.fileCount}}</div>
+        <div>Total size: {{sdmDLController.size}}</div>
+        <input id="download" type="checkbox" ng-change="sdmDLController.updateLink($event)" ng-model="sdmDLController.optional" disabled> <label for="download"> Include Optional Files</label>
     </div>
-    <div class="download-confirm-buttons">
-        <input id="download-cancel" class="btn btn-default btn-xs" ng-click="sdmDLController.cancel($event)" value="Cancel"></input>
-        <input id="download-save" class="btn btn-default btn-xs" ng-href="{{sdmDLController.downloadURL}}" value="Download" ng-show="sdmDLController.downloadURL"></input>
-    </div>
+    <form class="download-confirm-buttons" ng-submit="sdmDLController.download($event)">
+        <input type="button" id="download-cancel" class="btn btn-default btn-xs" ng-click="sdmDLController.cancel($event)" value="Cancel"></input>
+        <input type="submit" id="download-save" class="btn btn-default btn-xs" value="Download" ng-show="sdmDLController.downloadURL"></input>
+    </form>
 
 </sdm-donwload-modal>

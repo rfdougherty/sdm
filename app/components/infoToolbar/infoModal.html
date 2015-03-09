@@ -16,7 +16,7 @@
         <div ng-if="sdmIMController.files.length" class="field-name">File list:</div>
 
         <div ng-repeat="file in sdmIMController.files">
-            <a href ng-click="sdmIMController.download(file)">{{file.type}}: {{file.kinds.join(', ')}}</a> ({{file.size}} Bytes)
+            <a href ng-click="sdmIMController.download(file)">{{file.type}}: {{file.kinds.join(', ')}}</a> ({{file.size}})
         </div>
     </div>
     <form name="form" ng-class="{error: form.hasErrors}" ng-show="sdmIMController.loadingState === 0">

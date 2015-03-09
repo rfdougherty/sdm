@@ -1,26 +1,32 @@
 @import (less) "../../active_config/variables.less";
 
-div.sdm-download{
-    .popover-dialog {
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -65%);
-        -webkit-transform: translate(-50%, -65%);
-        -moz-transform: translate(-50%, -65%);
-        width: 0px;
-        height: 0px;
-        padding: 0px;
-    }
+@min-width-table: 1170px;
+@min-width-body: @min-width-table + 30;
 
+div.sdm-download{
+    .popover-overlay {
+        background-color: lightgray;
+    }
+    .popover-dialog {
+        padding: 0px;
+        transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+    }
+    .popover-dialog:after {
+        border-bottom-color: @bgcol1;
+    }
     .popover-dialog:before, .popover-dialog:after {
         top: 0px;
         left: 95%;
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
     }
-    .popover-overlay {
-        background-color: lightgray;
+    &.popover {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        min-width: @min-width-body;
+        width: 100%;
+        height: 100%;
     }
 }
 
@@ -45,10 +51,19 @@ sdm-download-modal {
     div#download-body {
         padding-left: 10px;
     }
-    div.download-confirm-buttons {
+    form.download-confirm-buttons {
         position: absolute;
         bottom: 6px;
         right: 10px;
         text-align: right;
+        input {
+            cursor: pointer;
+        }
+    }
+    input+label {
+        font-weight: normal;
+    }
+    input:disabled+label {
+        color: lightgray;
     }
 }
