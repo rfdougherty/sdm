@@ -78,7 +78,7 @@
 
         var filter = function (tree) {
             var nodes = [];
-            var iterator = depthFirst(tree);
+            var iterator = _depthFirst(tree);
             var n = iterator.next();
             var counts = {};
             while (!n.done) {
@@ -91,7 +91,7 @@
             return {leaves: nodes, counts: counts};
         };
 
-        var depthFirst = function(tree) {
+        var _depthFirst = function(tree) {
             var element;
             var elements = [tree];
             if (tree) {
@@ -270,7 +270,6 @@
                 selector: selector,
                 setView: setView,
                 cachedFilters: cachedFilters,
-                depthFirst: depthFirst,
                 addGlobalFilter: addGlobalFilter,
                 removeGlobalFilter: removeGlobalFilter
             });

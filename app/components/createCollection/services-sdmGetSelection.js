@@ -1,18 +1,18 @@
 'use strict';
 
 angular.module('sdm.createCollection.services.sdmGetSelection', [
-    'sdm.dataFiltering.services.sdmFilterTree',
     'sdm.main.services.sdmViewManager'])
-    .factory('sdmGetSelection', ['$q', 'sdmViewManager', 'sdmFilterTree',
-        function($q, sdmViewManager, sdmFilterTree) {
+    .factory('sdmGetSelection', ['$q', '$location', 'sdmViewManager',
+        function($q, $location, sdmViewManager) {
 
             var getSelection = function () {
                 var deferred = $q.defer();
                 var selection;
                 var data = sdmViewManager.getCurrentViewData();
-                if (sdmFilterTree.viewID === 'collections') {
+                var currentPath = $location.path();
+                if (currentPath === '/collections') {
                     getSelectionInCollections(data, deferred);
-                } else if (sdmFilterTree.viewID === 'projects'){
+                } else if (currentPath === '/projects'){
                     selection = getSelectionInProjects(data);
                     deferred.resolve(selection);
                 }
@@ -29,13 +29,35 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
                         selected.push(node);
                     }
                 }
-                var iterator = sdmFilterTree.depthFirst(tree);
+                var iterator = _fullDepthFirst(tree);
                 var node = iterator.next();
                 while (!node.done){
                     action(node.value);
                     node = iterator.next();
                 }
                 return selected;
+            };
+
+            var _fullDepthFirst = function(tree) {
+                var elements = [tree];
+                function next() {
+                    var children;
+                    var node = elements.pop();
+                    if (typeof node === 'undefined') {
+                        return {done: true};
+                    } else if (children = node._children || node.children) {
+                        for (var i = 0; i < children.length; i++) {
+                            elements.push(children[i]);
+                        }
+                    }
+                    return {
+                        value: node,
+                        done: false
+                    }
+                }
+                return {
+                    next: next
+                };
             };
 
             var getSelectionInCollections = function (tree, deferred) {
