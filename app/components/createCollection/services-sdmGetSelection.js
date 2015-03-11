@@ -13,14 +13,35 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
                 if (currentPath === '/collections') {
                     getSelectionInCollections(data, deferred);
                 } else if (currentPath === '/projects'){
-                    selection = getSelectionInProjects(data);
-                    deferred.resolve(selection);
+                    getSelectionInProjects(data, deferred);
                 }
                 return deferred.promise;
             };
 
-            var getSelectionInProjects = function (tree) {
-                var selected = [];
+            var getSelectionInProjects = function (tree, deferred) {
+                deferred = deferred || $q.defer()
+                var iterator = sdmViewManager.breadthFirstExpandCheckedGroups(tree, 'projects');
+                var selection = [];
+                var nodeInSelection = function(node) {
+                    return node && node.checked && node.level.name.search(/^(sessions|projects|acquisitions)$/) >= 0;
+                };
+                var iterate = function () {
+                    var element = iterator.next();
+                    if (element) {
+                        element.then(function(node){
+                            if (nodeInSelection(node) && (!node.parent || !nodeInSelection(node.parent))) {
+                                selection.push(node);
+                            }
+                            iterate();
+                        });
+                    } else {
+                        deferred.resolve(selection);
+                    }
+                };
+                iterate();
+                return deferred.promise;
+            };
+/*                var selected = [];
                 var action = function (node) {
                     var nodeInSelection = function(node){
                         return node.checked && node.level.name.search(/^(sessions|projects|acquisitions)$/) >= 0;
@@ -59,7 +80,7 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
                     next: next
                 };
             };
-
+*/
             var getSelectionInCollections = function (tree, deferred) {
                 deferred = deferred || $q.defer()
                 var iterator = sdmViewManager.breadthFirstFull(tree);

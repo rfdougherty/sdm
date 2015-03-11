@@ -554,6 +554,19 @@ var _tree;
             return breadthFirstAsync(tree, getChildren);
         };
 
+        var breadthFirstExpandCheckedGroups = function(tree, viewID) {
+            var getChildren = function (node, viewID) {
+                var deferred = $q.defer();
+                if (node.level.name === 'groups' && node.checked) {
+                    return getAllChildren(node, viewID, deferred);
+                } else {
+                    deferred.resolve(node.children || node._children);
+                    return deferred.promise;
+                }
+            }
+            return breadthFirstAsync(tree, getChildren);
+        }
+
         /*
         ** get a full tree expansion until levelName from the API and from the local tree expansion.
         **
@@ -606,6 +619,8 @@ var _tree;
                 return getAllChildren(node, viewID, deferred);
             }
         };
+
+
 
         /*
         ** refresh all the children of the node if the node is expanded.
@@ -812,7 +827,8 @@ var _tree;
             headers: headers,
             breadthFirstFull: breadthFirstFull,
             initialize: initialize,
-            breadthFirstFullUntilLevel: breadthFirstFullUntilLevel
+            breadthFirstFullUntilLevel: breadthFirstFullUntilLevel,
+            breadthFirstExpandCheckedGroups: breadthFirstExpandCheckedGroups
         }
     }
 

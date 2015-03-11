@@ -13,6 +13,7 @@
                     controller: function(){},
                     controllerAs: 'sdmDLController',
                     link: function($scope, $element, $attrs, sdmDLController){
+                        sdmDLController.loadingState = -1;
                         var selectionPromise = sdmGetSelection.getSelection();
                         $scope.$parent.disableEvents();
                         sdmDLController.cancel = function ($event) {
@@ -22,6 +23,7 @@
                             $scope.$parent._hidePopover($event, 0);
                         };
                         sdmDLController.updateLink = function() {
+                            sdmDLController.loadingState = 1;
                             selectionPromise.then(function (selection) {
                                 console.log('selection', selection);
                                 if (selection.length){
@@ -30,7 +32,14 @@
                                         sdmDLController.downloadURL = response.url;
                                         sdmDLController.fileCount = response.file_cnt;
                                         sdmDLController.size = response.size;
+                                        sdmDLController.loadingState--;
+                                        sdmDLController.loadedOnce = true;
                                     });
+                                } else {
+                                    sdmDLController.loadedOnce = true;
+                                    sdmDLController.fileCount = 0;
+                                    sdmDLController.size = '0 Bytes';
+                                    sdmDLController.loadingState--;
                                 }
                             });
                         }
