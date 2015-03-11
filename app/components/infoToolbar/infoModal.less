@@ -2,7 +2,8 @@
 
 div.sdm-info-modal {
     .popover-dialog {
-
+        height: 600px;
+        width: 600px;
     }
 
     .popover-dialog:before, .popover-dialog:after {
@@ -22,13 +23,74 @@ sdm-info-modal {
     .field-name {
         font-weight: bold;
     }
-
-    div#permissions-title {
-        padding-top: 10px;
-        padding-bottom: 10px;
+    div#permissions-title, div#attachments-title  {
+        padding-top: 0px;
+        padding-bottom: 0px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-left: 0px;
+        margin-right: 0px;
         font-size: 18px;
         font-variant: small-caps;
-        //border-top: solid 1px black;
+        background-color: @bgcol2;
+        color: @fgcol2;
+        span.expand {
+            position: relative;
+            top: 1px;
+            font-size: 16px;
+            margin-left: 5px;
+            font-variant: normal;
+            float: right;
+        }
+
+
+    }
+
+    textarea {
+        max-height: 60px;
+        max-width: 100%;
+    }
+
+    div.sdm-upload-files {
+        padding-left: 10px;
+        padding-right: 10px;
+        div.attachments-header table {
+            border: 1px solid lightgrey;
+
+            margin-bottom: 0px;
+            td {
+                width: 200px;
+            }
+        }
+        div.attachments-body {
+
+            height: 100px;
+            overflow: scroll;
+            border: 1px solid lightgrey;
+
+            border-top: none;
+            table.table {
+                margin-top: 0px;
+                margin-bottom: 0px;
+                td {
+                    border-top: none;
+                    width: 200px;
+                    .glyphicon.disabled {
+                        color: lightgrey;
+                    }
+                    &.permissions-access {
+                        padding-left: 0px;
+                        select {
+                            width: 103px;
+                        }
+                    }
+                    vertical-align: middle;
+                }
+
+            }
+        }
     }
 
     div.info-modal-path{
@@ -84,6 +146,10 @@ sdm-info-modal {
     }
 
     div#info-change-permissions {
+        span.twitter-typeahead {
+            margin-left: 10px;
+        }
+
         input.typeahead {
             width: 287px;
             &.sdm-invalid {
@@ -129,8 +195,20 @@ sdm-info-modal {
 
     div#info-permissions {
         margin-top: 5px;
-        padding-left: 10px;
-        padding-right:10px;
+        padding-left: 0px;
+        padding-right:0px;
+        &>* {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        &>div#info-change-permissions {
+            margin-left: 0px;
+            margin-right: 0px;
+        }
+        &>#permissions-title {
+            margin-left: 0px;
+            margin-right: 0px;
+        }
 
         div.permissions-header table {
             border: 1px solid lightgrey;
@@ -182,6 +260,42 @@ sdm-info-modal {
         float: left;
         width: 100%;
         font-weight: bold;
+    }
+    .drop-box {
+        background: #F8F8F8;
+        border: 5px dashed #DDD;
+        width: 200px;
+        height: 65px;
+        text-align: center;
+        padding-top: 6px;
+        //margin-bottom: 10px;
+        display: inline-block;
+    }
+    .progress-container {
+        div {
+            margin-bottom: 5px;
+            input {
+                float: right;
+                width: 50px;
+            }
+        }
+        .progress {
+            width: 360px;
+            //margin-bottom: 0px;
+        }
+        //width: 360px;
+        height: 65px;
+        top: -2px;
+        position: relative;
+        display: inline-block;
+        left: 15px;
+    }
+    .error-message {
+        color: red;
+    }
+
+    .dragover {
+        border: 5px dashed blue;
     }
 
 }

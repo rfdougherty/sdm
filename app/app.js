@@ -16,7 +16,8 @@ var sdmApp = angular.module('sdm', [
     'sdm.download',
     'sdm.admin',
     'sdm.moveSessions',
-    'sdm.newProject'
+    'sdm.newProject',
+    'sdm.upload'
 ]).run(['sdmViewManager', 'sdmUserManager',
     function(sdmViewManager, sdmUserManager){
         var userData = sdmUserManager.getAuthData();

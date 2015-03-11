@@ -1,9 +1,11 @@
 d3.min.js
 app/config/local
 app/config/local1
+app/config/localme
 architecture
 dist
 node_modules
 .tmp
 coverage
 instrumented
+bower_components

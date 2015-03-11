@@ -20,11 +20,12 @@
                         console.log($scope);
                         sdmTBController.location = $location.path();
                         var appended;
+                        var originalWidth;
                         sdmTBController.toggleDeleteButton = function(){
                             if ($scope.data.level.name === 'collections') {
                                 if (appended) {
                                     appended.remove();
-                                    $scope.$parent.dialogStyle.width = '64px';
+                                    $scope.$parent.dialogStyle.width = originalWidth;
                                     appended = null;
                                 } else {
                                     var button = '<input type="button"' +
@@ -33,7 +34,8 @@
                                         ' value="Delete"></input>';
                                     appended = $compile(button)($scope);
                                     $element.append(appended);
-                                    $scope.$parent.dialogStyle.width = '109px';
+                                    originalWidth = $scope.$parent.dialogStyle.width;
+                                    $scope.$parent.dialogStyle.width = '107px';
                                 }
                             }
                         };

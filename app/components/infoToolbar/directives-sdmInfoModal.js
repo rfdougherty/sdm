@@ -6,9 +6,13 @@
              'sdm.authentication.services.sdmUserManager', 'sdm.main.services.sdmViewManager',
              'sdm.APIServices.services.sdmRoles',
              'sdm.APIServices.services.sdmUsers',
-             'sdm.popovers.services.sdmPopoverTrampoline'])
-        .directive('sdmInfoModal', ['$location', 'sdmPopoverTrampoline', 'makeAPICall', 'sdmDownloadInterface', 'sdmUserManager', 'sdmViewManager', 'sdmRoles', 'sdmUsers',
-            function($location, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface, sdmUserManager, sdmViewManager, sdmRoles, sdmUsers) {
+             'sdm.popovers.services.sdmPopoverTrampoline',
+             'sdm.util.services.sdmHumanReadableSize'])
+        .directive('sdmInfoModal', ['$location', 'sdmPopoverTrampoline', 'makeAPICall',
+            'sdmDownloadInterface', 'sdmUserManager', 'sdmViewManager', 'sdmRoles',
+            'sdmUsers', 'sdmHumanReadableSize',
+            function($location, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface,
+                sdmUserManager, sdmViewManager, sdmRoles, sdmUsers, sdmHumanReadableSize) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -18,15 +22,15 @@
                     controllerAs: 'sdmIMController',
                     link: function($scope, $element, $attrs, sdmIMController){
                         $scope.$parent.$parent.hideToolbar(null, 0);
-                        $scope.$parent.dialogStyle.height = '500px';//100px';
-                        $scope.$parent.dialogStyle.width = '600px';//280px';
                         var node = $scope.$parent.$parent.data;
                         var APIUrl = BASE_URL + node.level.name + '/' + node.id;
                         var level = node.level.name;
+                        $scope.node = node;
                         sdmIMController.data = {};
                         var path = [];
                         var n = node;
                         var apiDataNotes;
+                        sdmIMController.formatSize = sdmHumanReadableSize;
                         while (n.parent){
                             path.unshift(n.parent.level.name==='sessions'?n.parent.name + ' - ' + n.parent.subject:n.parent.name);
                             n = n.parent;
@@ -38,6 +42,8 @@
                             sdmIMController.selectedRole = sdmIMController.roles[0];
                             sdmIMController.loadingState--;
                         });
+                        sdmIMController.expandedPermissions = false;
+                        sdmIMController.expandedAttachments = true;
                         var typeaheadElement = $element.find('#info-change-permissions .typeahead');
                         sdmUsers.getUsers().then(function(data){
                             sdmIMController.users = data;
@@ -86,6 +92,8 @@
                             function (apiData) {
                                 console.log('apiData', apiData);
                                 sdmIMController.data = node.level.getModalData(node, apiData);
+                                sdmIMController.attachments = apiData.attachments||[];
+
 
                                 sdmIMController.files = apiData.files||[];
                                 sdmIMController.files.sort(function(file, file1){
@@ -133,6 +141,16 @@
                             });
                         };
 
+                        sdmIMController.expandSection = function(section) {
+                            if (section === 'permissions') {
+                                sdmIMController.expandedPermissions = !sdmIMController.expandedPermissions;
+                                sdmIMController.expandedAttachments = false;
+                            } else {
+                                sdmIMController.expandedPermissions = false;
+                                sdmIMController.expandedAttachments = !sdmIMController.expandedAttachments;
+                            }
+                        };
+
                         sdmIMController.dismiss = function ($event) {
                             $scope.$parent.enableEvents();
                             $scope.$parent._hidePopover($event, 0);
@@ -165,6 +183,28 @@
                             }, 2000);
                             sdmIMController.arePermissionsChanged = true;
                         };
+
+                        sdmIMController.updateAttachments = function() {
+                            return makeAPICall.async(APIUrl, {site: node.site}).then(
+                                function (apiData) {
+                                    sdmIMController.attachments = apiData.attachments || [];
+                                }
+                            );
+                        }
+
+                        sdmIMController.removeAttachment = function($index) {
+                            var url = APIUrl + '/attachment?name=' + sdmIMController.attachments[$index].name
+                                + sdmIMController.attachments[$index].ext;
+                            makeAPICall.async(url, null, 'DELETE', null).then(sdmIMController.updateAttachments);
+                        }
+
+                        sdmIMController.downloadAttachment= function($index) {
+                            var url = APIUrl + '/attachment?name=' + sdmIMController.attachments[$index].name
+                                + sdmIMController.attachments[$index].ext;
+                            makeAPICall.async(url, null, 'POST', null).then(function(response){
+                                window.open(response.url, '_self');
+                            });
+                        }
 
                         sdmIMController.addUser = function ($event, form) {
                             if (!sdmIMController.selectedUID) {
