@@ -15,21 +15,32 @@
                         console.log('upload', sdmULController);
                         console.log($scope);
                         sdmULController.files = [];
-                        var shaWorker = new Worker('utils/rusha.js');
-                        var jobid = 0;
-                        var deferreds = {};
-                        shaWorker.onmessage = function(e) {
-                            var deferred = deferreds[e.data.id];
-                            if (deferred) {
-                                deferreds[e.data.id] = null;
-                                deferred.resolve(e.data.hash);
-                            } else {
-                                console.warn('this message has already been resolved: ', e);
-                            }
-                        };
-                        shaWorker.onerror = function(e, filename, lineno) {
-                            console.log(e);
-                        };
+                        var shaWorker, jobid, deferreds;
+                        var initializeShaWorker = function(){
+                            shaWorker = new Worker('utils/rusha.js');
+                            jobid = 0;
+                            deferreds = {};
+
+                            shaWorker.onmessage = function(e) {
+                                console.log(e);
+                                if (typeof e.data.progress !== 'undefined') {
+                                    sdmULController.progressPercentage = e.data.progress;
+                                    $scope.$apply();
+                                    return;
+                                }
+                                var deferred = deferreds[e.data.id];
+                                if (deferred) {
+                                    deferreds[e.data.id] = null;
+                                    deferred.resolve(e.data.hash);
+                                } else {
+                                    console.warn('this message has already been resolved: ', e);
+                                }
+                            };
+                            shaWorker.onerror = function(e, filename, lineno) {
+                                console.log(e);
+                            };
+                        }
+                        initializeShaWorker();
                         var calculateSHA1 = function(file, deferred) {
                             deferred = deferred || $q.defer();
                             var _jobid = jobid++;
@@ -62,18 +73,8 @@
 
                         sdmULController.addFiles = function() {
                             sdmULController.errorMessage = null;
-                            var filesTooLong = sdmULController.newFiles.filter(function(file){
-                                console.log(file);
-                                return file.size > Math.pow(2, 28) - 200;
-                            });
-                            console.log(filesTooLong);
-                            if (filesTooLong.length) {
-                                console.error('These files are bigger than 255 MB: ', filesTooLong);
-                                addError('It is possible to upload only files smaller than 255MB');
-                            } else {
-                                addFilesToQueue(sdmULController.newFiles)
-                                processQueue(false);
-                            }
+                            addFilesToQueue(sdmULController.newFiles)
+                            processQueue(false);
                         }
                         sdmULController.uploadInProgress = false;
                         sdmULController.queueLength = 0;
@@ -107,6 +108,7 @@
                                 sdmULController.files.push(file);
                             });
                         }
+                        var currentShaPromise;
                         var uploadFile = function(file) {
                             var deferred = $q.defer();
                             var url = BASE_URL + [$scope.node.level.name, $scope.node.id, 'attachment'].join('/');
@@ -117,10 +119,12 @@
                             var shaPromises = [];
                             shaPromises.push(calculateSHA1(metadataFile));
                             shaPromises.push(calculateSHA1(file));
+                            sdmULController.calculatingSHA1 = true;
                             fileFormDataName.push(file.name);
 
                             fileFormDataName.push('sha');
                             $q.all(shaPromises).then(function(results) {
+                                sdmULController.calculatingSHA1 = false;
                                 var shaList = results.map(function(sha, i){
                                     if (i === 0) {
                                         return {
@@ -133,7 +137,7 @@
                                         sha1: sha
                                     }
                                 })
-
+                                sdmULController.progressPercentage = 0;
                                 console.log(shaList);
                                 var shaFile = createFile(shaList);
                                 shaFile.name = 'sha';
@@ -177,22 +181,30 @@
                         sdmULController.clearUploadFiles = function($event) {
                             if (sdmULController.currentFile) {
                                 sdmULController.currentFile.abort();
-                                addError('Upload aborted.');
-                                sdmULController.abortedUpload = true;
-                                sdmULController.files = [];
-                                sdmULController.uploadInProgress = false;
-                                sdmULController.processedFiles = 0;
-                                sdmULController.queueLength = 0;
+                            } else {
+                                shaWorker.terminate();
+                                shaWorker = undefined;
+                                initializeShaWorker();
                             }
+                            addError('Upload aborted.');
+                            sdmULController.abortedUpload = true;
+                            sdmULController.files = [];
+                            sdmULController.uploadInProgress = false;
+                            sdmULController.processedFiles = 0;
+                            sdmULController.queueLength = 0;
                         }
                         sdmULController.skipFile = function($event) {
                             if (sdmULController.currentFile) {
                                 console.log(sdmULController.currentFile);
                                 sdmULController.currentFile.abort();
-                                addError('Upload skipped.');
-                                sdmULController.abortedUpload = true;
-                                processQueue(true);
+                            } else {
+                                shaWorker.terminate();
+                                shaWorker = undefined;
+                                initializeShaWorker();
                             }
+                            addError('Upload skipped.');
+                            sdmULController.abortedUpload = true;
+                            processQueue(true);
                         }
                         var clearError;
                         var addError = function(message) {

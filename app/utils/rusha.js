@@ -25,6 +25,11 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
+ *
+ * ------------------------------------------------------------------------------
+ *
+ * Modified by Renzo Frigato @rentzso to fix bug when msgLen is greater than 2^32
+ *
  */
 (function () {
     // If we'e running in Node.JS, export a module.
@@ -45,7 +50,7 @@
             var hash, data = event.data.data;
             if (data instanceof Blob) {
                 try {
-                    data = reader.readAsBinaryString(data);
+                    hash = hasher.digestFile(data);
                 } catch (e) {
                     self.postMessage({
                         id: event.data.id,
@@ -53,8 +58,9 @@
                     });
                     return;
                 }
+            } else {
+                hash = hasher.digest(data);
             }
-            hash = hasher.digest(data);
             self.postMessage({
                 id: event.data.id,
                 hash: hash
@@ -66,6 +72,11 @@
     // format accepted by RushaCore as well as other utility methods.
     function Rusha(chunkSize) {
         'use strict';
+        var leftShiftFixUp = function(a1, a2) {
+            var a1Big = Math.floor(a1/Math.pow(2,32 - a2));
+            var a1Small = a1 % Math.pow(2, 32 - a2);
+            return [a1Big, a1Small << a2];
+        }
         // Private object structure.
         var self$2 = { fill: 0 };
         // Calculate the length of buffer that the sha1 routine uses
@@ -80,7 +91,9 @@
         };
         var padData = function (bin, chunkLen, msgLen) {
             bin[chunkLen >> 2] |= 128 << 24 - (chunkLen % 4 << 3);
-            bin[((chunkLen >> 2) + 2 & ~15) + 15] = msgLen << 3;
+            var fixup = leftShiftFixUp(msgLen, 3)
+            bin[((chunkLen >> 2) + 2 & ~15) + 14] = fixup[0];
+            bin[((chunkLen >> 2) + 2 & ~15) + 15] = fixup[1]; //msgLen << 3;
         };
         // Convert a binary string to a big-endian Int32Array using
         // four characters per slot and pad it per the sha1 spec.
@@ -239,11 +252,32 @@
             };
         // The digest and digestFrom* interface returns the hash digest
         // as a hex string.
-        this.digest = this.digestFromString = this.digestFromBuffer = this.digestFromArrayBuffer = function (str, start) {
-            return hex(rawDigest(str, start).buffer);
+        this.digest = this.digestFromString = this.digestFromBuffer = this.digestFromArrayBuffer = function (str) {
+            return hex(rawDigest(str).buffer);
         };
-    }
-    ;
+        this.digestFile = function(file, jobid) {
+            var msgLen = file.size;
+            var reader = new FileReaderSync();
+            initState(self$2.heap, self$2.padMaxChunkLen);
+            var chunkOffset, chunkLen = self$2.maxChunkLen, chunk, str;
+            for (chunkOffset = 0; chunkOffset + chunkLen < msgLen; chunkOffset += chunkLen) {
+                chunk = file.slice(chunkOffset, chunkOffset + chunkLen);
+                str = reader.readAsBinaryString(chunk);
+                coreCall(str, 0, chunkLen, msgLen, false);
+                if ((chunkOffset/chunkLen) % 10 === 9) {
+                    console.log(Math.floor((chunkOffset + chunkLen)/msgLen));
+                    self.postMessage({
+                        progress: Math.floor(100*(chunkOffset + chunkLen)/msgLen)
+                    });
+                }
+            }
+            chunk = file.slice(chunkOffset, chunkOffset + chunkLen);
+            str = reader.readAsBinaryString(chunk);
+            coreCall(str, 0, msgLen - chunkOffset, msgLen, true);
+            var rawDigest = getRawDigest(self$2.heap, self$2.padMaxChunkLen);
+            return hex(rawDigest.buffer);
+        }
+    };
     // The low-level RushCore module provides the heart of Rusha,
     // a high-speed sha1 implementation working on an Int32Array heap.
     // At first glance, the implementation seems complicated, however
