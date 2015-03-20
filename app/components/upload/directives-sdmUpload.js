@@ -59,7 +59,7 @@
                                     name: files[i].name,
                                     size: files[i].size,
                                     ext: '',
-                                    kind: 'other'
+                                    kinds: ['other']
                                 };
                                 metadata.push(m);
                             }
