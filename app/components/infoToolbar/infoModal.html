@@ -71,7 +71,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <td>User ID</td>
+                            <td>Filename</td>
                             <td>Size</td>
                             <td>Remove</td>
                         </tr>
@@ -84,7 +84,10 @@
                         <tr class='attachment' ng-repeat="attachment in sdmIMController.attachments">
                             <td><a href ng-click="sdmIMController.downloadAttachment($index)">{{attachment.name + attachment.ext}}</a></td>
                             <td>{{sdmIMController.formatSize(attachment.size)}}</td>
-                            <td><span class="glyphicon glyphicon-remove" ng-click="sdmIMController.removeAttachment($index)"></span></td>
+                            <td>
+                                <span class="glyphicon glyphicon-remove" ng-click="sdmIMController.addConfirmAttachment($index)" ng-show="!sdmIMController.confirmAttachmentRemove[$index]"></span>
+                                <input type="button" id="info-modal-dismiss" class="btn btn-default btn-xs btn-danger" ng-click="sdmIMController.removeAttachment($index)" value="Delete" ng-show="sdmIMController.confirmAttachmentRemove[$index]"></input>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

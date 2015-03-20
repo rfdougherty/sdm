@@ -192,6 +192,16 @@
                             );
                         }
 
+                        sdmIMController.confirmAttachmentRemove = [];
+
+                        sdmIMController.addConfirmAttachment = function($index) {
+                            sdmIMController.confirmAttachmentRemove[$index] = true;
+                            setTimeout(function(){
+                                sdmIMController.confirmAttachmentRemove[$index] = false;
+                                $scope.$apply();
+                            }, 30000);
+                        }
+
                         sdmIMController.removeAttachment = function($index) {
                             var url = APIUrl + '/attachment?name=' + sdmIMController.attachments[$index].name
                                 + sdmIMController.attachments[$index].ext;
