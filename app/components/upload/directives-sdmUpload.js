@@ -1,9 +1,11 @@
 'use strict';
 
 (function() {
-    angular.module('sdm.upload.directives.sdmUpload',['angularFileUpload', 'ngCookies'])
-        .directive('sdmUpload', ['$q', '$upload', '$cookieStore',
-            function ($q, $upload, $cookieStore) {
+    angular.module('sdm.upload.directives.sdmUpload',[
+            'angularFileUpload', 'ngCookies',
+            'sdm.authentication.services.sdmUserManager'])
+        .directive('sdmUpload', ['$q', '$upload', '$cookieStore', 'sdmUserManager',
+            function ($q, $upload, $cookieStore, sdmUserManager) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -103,8 +105,9 @@
                         }
 
                         var addFilesToQueue = function(newFiles) {
+                            console.log(newFiles);
                             sdmULController.queueLength += newFiles.length;
-                            newFiles.forEach(function(file){
+                            angular.forEach(newFiles, function(file){
                                 sdmULController.files.push(file);
                             });
                         }
@@ -141,43 +144,61 @@
                                 console.log(shaList);
                                 var shaFile = createFile(shaList);
                                 shaFile.name = 'sha';
-                                sdmULController.currentFile = $upload.upload({
-                                    url: url,
-                                    file: [metadataFile, file, shaFile],
-                                    headers: {
-                                        Authorization: accessToken
-                                    },
-                                    method: 'PUT',
-                                    fileFormDataName: fileFormDataName
-                                }).progress(function (evt) {
-                                    sdmULController.progressPercentage = parseInt(95.0 * evt.loaded / evt.total);
-                                }).success(function (data, status, headers, config) {
-                                    console.log(data);
-                                    sdmULController.progressPercentage = 100;
-                                    $scope.sdmIMController.updateAttachments();
-                                    deferred.resolve();
-                                    console.log('file ' + config.file[1].name + 'uploaded. Response: ' + data);
-                                    sdmULController.currentFile = null;
-                                }).error(function(data, status, headers, config){
-                                    sdmULController.currentFile = null
-                                    console.log(data, status);
-                                    if (sdmULController.abortedUpload) {
-                                        sdmULController.abortedUpload = false;
-
-                                        return;
-                                    } else if (status === 400) {
-                                        addError('Received file was corrupted. Please retry.');
-                                    } else {
-                                        addError('Error during upload. Please contact an administrator.');
-                                    }
-                                    sdmULController.uploadInProgress = false;
-                                    sdmULController.processedFiles = 0;
-                                    sdmULController.queueLength = 0;
-                                    sdmULController.progressPercentage = 0;
-                                });
+                                sdmULController.currentFile = uploadToAPI(
+                                    url,
+                                    [metadataFile, file, shaFile],
+                                    accessToken,
+                                    fileFormDataName,
+                                    deferred
+                                );
                             });
                             return deferred.promise;
                         }
+
+                        var uploadToAPI = function(url, files, accessToken, fileFormDataName, deferred, retry) {
+                            $upload.upload({
+                                url: url,
+                                file: files,
+                                headers: {
+                                    Authorization: accessToken
+                                },
+                                method: 'PUT',
+                                fileFormDataName: fileFormDataName
+                            }).progress(function (evt) {
+                                sdmULController.progressPercentage = parseInt(95.0 * evt.loaded / evt.total);
+                            }).success(function (data, status, headers, config) {
+                                console.log(data);
+                                sdmULController.progressPercentage = 100;
+                                $scope.sdmIMController.updateAttachments();
+                                deferred.resolve();
+                                console.log('file ' + config.file[1].name + 'uploaded. Response: ' + data);
+                                sdmULController.currentFile = null;
+                            }).error(function(data, status, headers, config){
+                                sdmULController.currentFile = null
+                                console.log(data, status);
+                                if (sdmULController.abortedUpload) {
+                                    sdmULController.abortedUpload = false;
+                                    return;
+                                } else if (status === 400) {
+                                    addError('Received file was corrupted. Please retry.');
+                                } else if ((status === 401 || status === 0) && (!retry || retry < 3)) {
+                                    sdmUserManager.refreshToken().then(
+                                        function(){
+                                            var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
+                                            var accessToken = typeof accessData !== undefined? accessData.access_token:undefined;
+                                            var retry = retry?(retry + 1):1;
+                                            uploadToAPI(url, files, accessToken, fileFormDataName, deferred, retry);
+                                        });
+                                } else {
+                                    addError('Error during upload. Please contact an administrator.');
+                                }
+                                sdmULController.uploadInProgress = false;
+                                sdmULController.processedFiles = 0;
+                                sdmULController.queueLength = 0;
+                                sdmULController.progressPercentage = 0;
+                            });
+                        };
+
                         sdmULController.clearUploadFiles = function($event) {
                             if (sdmULController.currentFile) {
                                 sdmULController.currentFile.abort();
