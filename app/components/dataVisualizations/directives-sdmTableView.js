@@ -314,7 +314,7 @@
                             'sdm-popover-class': 'sdm-info-toolbar',
                             'sdm-popover-template-content': 'components/infoToolbar/infoToolbarPopover.html',
                             'sdm-popover-dynamic-position': 'false',
-                            'sdm-popover-style-width': '64px',
+                            'sdm-popover-style-width': '46px',
                             'sdm-popover-style-height': '28px',
                             'sdm-popover-style-top': '24px',
                             'sdm-popover-show': 'mouseenter',

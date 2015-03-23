@@ -72,6 +72,7 @@
                         <tr>
                             <td>Filename</td>
                             <td>Size</td>
+                            <td>Viewer</td>
                             <td ng-show="sdmIMController.userPermission !== 'ro' || sdmIMController.user.root">Remove</td>
                         </tr>
                     </thead>
@@ -83,10 +84,33 @@
                         <tr class='attachment' ng-repeat="attachment in sdmIMController.attachments">
                             <td><a href ng-click="sdmIMController.downloadAttachment($index)">{{attachment.name + attachment.ext}}</a></td>
                             <td>{{sdmIMController.formatSize(attachment.size)}}</td>
+                            <td>
+                                <a href >
+                                    <span class="glyphicon glyphicon-eye-open"
+                                        ng-show="sdmIMController.hasPapayaViewer(attachment)"
+                                        sdm-popover
+                                        sdm-popover-template-content="components/papayaViewer/papayaViewer.html"
+                                        sdm-popover-class="sdm-papaya-viewer"
+                                        sdm-popover-show="click"
+                                        sdm-popover-show-timeout="0"
+                                        sdm-append-to-body ng-click="sdmIMController.viewAttachment(attachment)">
+                                    </span>
+                                    <span class="glyphicon glyphicon-eye-open"
+                                        ng-show="!sdmIMController.hasPapayaViewer(attachment)"
+                                        sdm-popover
+                                        sdm-popover-template-content="components/genericViewer/genericViewer.html"
+                                        sdm-popover-class="sdm-generic-viewer"
+                                        sdm-popover-show="click"
+                                        sdm-popover-show-timeout="0"
+                                        sdm-append-to-body ng-click="sdmIMController.viewAttachment(attachment)">
+                                    </span>
+                                </a>
+                            </td>
                             <td ng-show="sdmIMController.userPermission !== 'ro' || sdmIMController.user.root">
                                 <span class="glyphicon glyphicon-remove" ng-click="sdmIMController.addConfirmAttachment($index)" ng-show="!sdmIMController.confirmAttachmentRemove[$index]"></span>
                                 <input type="button" class="btn btn-default btn-xs btn-danger" ng-click="sdmIMController.removeAttachment($index)" value="Delete" ng-show="sdmIMController.confirmAttachmentRemove[$index]"></input>
                             </td>
+
                         </tr>
                     </tbody>
                 </table>

@@ -35,7 +35,7 @@
                                     appended = $compile(button)($scope);
                                     $element.append(appended);
                                     originalWidth = $scope.$parent.dialogStyle.width;
-                                    $scope.$parent.dialogStyle.width = '107px';
+                                    $scope.$parent.dialogStyle.width = '89px';
                                 }
                             }
                         };

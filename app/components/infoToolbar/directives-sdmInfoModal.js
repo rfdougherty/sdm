@@ -8,10 +8,10 @@
              'sdm.APIServices.services.sdmUsers',
              'sdm.popovers.services.sdmPopoverTrampoline',
              'sdm.util.services.sdmHumanReadableSize'])
-        .directive('sdmInfoModal', ['$location', 'sdmPopoverTrampoline', 'makeAPICall',
+        .directive('sdmInfoModal', ['$location', '$document', 'sdmPopoverTrampoline', 'makeAPICall',
             'sdmDownloadInterface', 'sdmUserManager', 'sdmViewManager', 'sdmRoles',
             'sdmUsers', 'sdmHumanReadableSize',
-            function($location, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface,
+            function($location, $document, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface,
                 sdmUserManager, sdmViewManager, sdmRoles, sdmUsers, sdmHumanReadableSize) {
                 return {
                     restrict: 'E',
@@ -88,12 +88,19 @@
                         sdmIMController.name = node.name;
                         sdmIMController.user = sdmUserManager.getAuthData();
                         console.log(sdmIMController.user);
+                        sdmIMController.getAttachmentType = function(attachment) {
+                            if (attachment.ext){
+                                return attachment.ext.slice(1, attachment.length);
+                            } else {
+                                var nameSplit = attachment.name.split('.');
+                                return nameSplit[nameSplit.length - 1];
+                            }
+                        };
                         makeAPICall.async(APIUrl, {site: node.site}).then(
                             function (apiData) {
                                 console.log('apiData', apiData);
                                 sdmIMController.data = node.level.getModalData(node, apiData);
                                 sdmIMController.attachments = apiData.attachments||[];
-
 
                                 sdmIMController.files = apiData.files||[];
                                 sdmIMController.files.sort(function(file, file1){
@@ -150,6 +157,7 @@
                                 sdmIMController.expandedAttachments = !sdmIMController.expandedAttachments;
                             }
                         };
+
 
                         sdmIMController.dismiss = function ($event) {
                             $scope.$parent.enableEvents();
@@ -214,7 +222,34 @@
                             makeAPICall.async(url, null, 'POST', null).then(function(response){
                                 window.open(response.url, '_self');
                             });
+                        };
+
+                        sdmIMController.hasPapayaViewer = function(attachment) {
+                            var filename = attachment.name + attachment.ext;
+                            return filename.search(/\.nii(\.gz)?$/) >= 0;
                         }
+
+                        sdmIMController.viewAttachment = function(attachment) {
+                            var fullname = attachment.name + attachment.ext;
+                            var url = APIUrl + '/attachment?name=' + fullname;
+                            var callback;
+                            if (sdmIMController.hasPapayaViewer(attachment)) {
+                                callback = function(response) {
+                                    papayaParams.images = [response.url];
+                                    papaya.Container.startPapaya();
+                                };
+                            } else {
+                                callback = function(response) {
+                                    sdmIMController.resourceViewer = {
+                                        fileUrl: response.url,
+                                        type: sdmIMController.getAttachmentType(attachment)
+                                    }
+                                };
+                            }
+                            makeAPICall.async(url, null, 'POST', null).then(callback);
+                        };
+
+
 
                         sdmIMController.addUser = function ($event, form) {
                             if (!sdmIMController.selectedUID) {

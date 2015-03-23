@@ -17,9 +17,10 @@ var sdmApp = angular.module('sdm', [
     'sdm.admin',
     'sdm.moveSessions',
     'sdm.newProject',
-    'sdm.upload'
+    'sdm.upload',
+    'sdm.util'
 ]).run(['sdmViewManager', 'sdmUserManager',
-    function(sdmViewManager, sdmUserManager){
+    function(sdmViewManager, sdmUserManager, $sce){
         var userData = sdmUserManager.getAuthData();
         sdmViewManager.updateViewAppearance(userData.preferences);
         sdmViewManager.initialize();
@@ -53,8 +54,8 @@ var CLOSE = 'Close';
 var OK = 'Ok';
 var SDM_KEY_CACHED_ACCESS_DATA = "SDM_KEY_CACHED_ACCESS_DATA";
 var UNDEFINED_PLACEHOLDER = '(undefined)';
-
-
+var papayaParams = [];
+papayaParams.expandable = "true";
 
 var naturalSortByName = function(a, b){
     if (typeof a.name === 'undefined') {
