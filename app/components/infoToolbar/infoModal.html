@@ -20,8 +20,8 @@
         </div>
 
     </div>
-    <div id="attachments-title" class="sdm-input-label" ng-show="sdmIMController.loadingState === 0">
-        Upload attachments
+    <div id="attachments-title" class="sdm-input-label" ng-show="sdmIMController.loadingState === 0 && (sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root || (sdmIMController.userPermission === 'ro' && sdmIMController.attachments.length))">
+        Attachments
         <span class="expand" ng-click="sdmIMController.expandSection('attachments')">
             <span class="glyphicon glyphicon-chevron-right" ng-if="!sdmIMController.expandedAttachments"></span>
             <span class="glyphicon glyphicon-chevron-down" ng-if="sdmIMController.expandedAttachments"></span>
@@ -40,7 +40,7 @@
         </span>
     </div>
     <div class="sdm-upload-files" ng-show="sdmIMController.loadingState === 0 && sdmIMController.expandedAttachments">
-        <sdm-upload>
+        <sdm-upload ng-show="sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root">
             <div ng-file-drop ng-file-select ng-model="sdmULController.newFiles" class="drop-box"
                 drag-over-class="dragover" ng-multiple="true" allow-dir="true" ng-change="sdmULController.addFiles()">
                 Drop files here or click to upload</div>
@@ -66,14 +66,13 @@
             </div>
         </sdm-upload>
         <div ng-show="sdmIMController.attachments.length">
-            <div class="sdm-input-label">Attachments</div><br>
             <div class="attachments-header">
                 <table class="table">
                     <thead>
                         <tr>
                             <td>Filename</td>
                             <td>Size</td>
-                            <td>Remove</td>
+                            <td ng-show="sdmIMController.userPermission !== 'ro' || sdmIMController.user.root">Remove</td>
                         </tr>
                     </thead>
                 </table>
@@ -84,9 +83,9 @@
                         <tr class='attachment' ng-repeat="attachment in sdmIMController.attachments">
                             <td><a href ng-click="sdmIMController.downloadAttachment($index)">{{attachment.name + attachment.ext}}</a></td>
                             <td>{{sdmIMController.formatSize(attachment.size)}}</td>
-                            <td>
+                            <td ng-show="sdmIMController.userPermission !== 'ro' || sdmIMController.user.root">
                                 <span class="glyphicon glyphicon-remove" ng-click="sdmIMController.addConfirmAttachment($index)" ng-show="!sdmIMController.confirmAttachmentRemove[$index]"></span>
-                                <input type="button" id="info-modal-dismiss" class="btn btn-default btn-xs btn-danger" ng-click="sdmIMController.removeAttachment($index)" value="Delete" ng-show="sdmIMController.confirmAttachmentRemove[$index]"></input>
+                                <input type="button" class="btn btn-default btn-xs btn-danger" ng-click="sdmIMController.removeAttachment($index)" value="Delete" ng-show="sdmIMController.confirmAttachmentRemove[$index]"></input>
                             </td>
                         </tr>
                     </tbody>
