@@ -13,6 +13,79 @@
             'sdmUsers', 'sdmHumanReadableSize',
             function($location, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface,
                 sdmUserManager, sdmViewManager, sdmRoles, sdmUsers, sdmHumanReadableSize) {
+                var tileViewer = function(nodeId) {
+                    var width = 900,
+                        height = 625,
+                        prefix = prefixMatch(["webkit", "ms", "Moz", "O"]);
+
+                    var tile = d3.geo.tile()
+                        .size([width, height]);
+
+
+                    var zoom = d3.behavior.zoom()
+                        .scale(1 << 12)
+                        .scaleExtent([1 << 10, 1 << 14])
+                        .translate([width / 2, height / 2])
+                        .on("zoom", zoomed);
+
+                    var map = d3.select("div.sdm-d3-map")
+                        .style("width", width + "px")
+                        .style("height", height + "px")
+                        .style("margin", 25 + "px")
+                        .style("margin-bottom", 50 + "px")
+                        .call(zoom);
+
+                    var layer = map.append("div")
+                        .attr("class", "sdm-d3-layer");
+
+                    zoomed();
+
+                    function getUrl(z, x, y) {
+                            var coordinates = [
+                            ['z', z].join('='),
+                            ['x', x].join('='),
+                            ['y', y].join('=')
+                        ].join('&');
+                        return 'https://coronal.stanford.edu/api/acquisitions/' + nodeId +
+                               '/tile?user=kevinhahn@flywheel.io&' + coordinates;
+                    }
+
+                    function zoomed() {
+                        var tiles = tile
+                            .scale(zoom.scale())
+                            .translate(zoom.translate())
+                            ();
+
+                        var image = layer
+                            .style(prefix + "transform", matrix3d(tiles.scale, tiles.translate))
+                          .selectAll(".sd-d3-tile")
+                            .data(tiles, function(d) { return d; });
+
+                        image.exit()
+                            .remove();
+
+                        image.enter().append("img")
+                            .attr("class", "sdm-d3-tile")
+                            .attr("src", function(d) {
+                              return getUrl(d[2], d[0], d[1])
+                            }) //"http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-i86nkdio/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+                            .style("left", function(d) { return (d[0] << 8) + "px"; })
+                            .style("top", function(d) { return (d[1] << 8) + "px"; });
+                    }
+
+
+
+                    function matrix3d(scale, translate) {
+                        var k = scale / 256, r = scale % 1 ? Number : Math.round;
+                        return "matrix3d(" + [k, 0, 0, 0, 0, k, 0, 0, 0, 0, k, 0, r(translate[0] * scale), r(translate[1] * scale), 0, 1 ] + ")";
+                    }
+
+                    function prefixMatch(p) {
+                        var i = -1, n = p.length, s = document.body.style;
+                        while (++i < n) if (p[i] + "Transform" in s) return "-" + p[i].toLowerCase() + "-";
+                        return "";
+                    }
+                }
                 return {
                     restrict: 'E',
                     scope: false,
@@ -81,6 +154,9 @@
                                 );
                             });
                         };
+
+                        sdmIMController.nodeId = '5515db4c8a68229eacc536b9';//node.id;
+                        sdmIMController.tileViewer = function(){tileViewer(sdmIMController.nodeId)};
                         sdmIMController.baseUrl = BASE_URL + 'acquisitions/' + node.id + '/file';
                         console.log(path);
                         sdmIMController.path = path.slice(1);
@@ -96,6 +172,10 @@
 
 
                                 sdmIMController.files = apiData.files||[];
+                                if (sdmIMController.files.length) {
+                                    sdmIMController.expandedAttachments = false;
+                                    sdmIMController.expandedFiles = true;
+                                }
                                 sdmIMController.files.sort(function(file, file1){
                                     return file.type===file1.type?0:file.type>file1.type?1:-1 });
                                 console.log(apiData.permissions, node.level.name);
@@ -142,12 +222,22 @@
                         };
 
                         sdmIMController.expandSection = function(section) {
-                            if (section === 'permissions') {
-                                sdmIMController.expandedPermissions = !sdmIMController.expandedPermissions;
-                                sdmIMController.expandedAttachments = false;
-                            } else {
-                                sdmIMController.expandedPermissions = false;
-                                sdmIMController.expandedAttachments = !sdmIMController.expandedAttachments;
+                            switch(section) {
+                                case 'permissions':
+                                    sdmIMController.expandedPermissions = !sdmIMController.expandedPermissions;
+                                    sdmIMController.expandedAttachments = false;
+                                    sdmIMController.expandedFiles = false;
+                                    break;
+                                case 'attachments':
+                                    sdmIMController.expandedPermissions = false;
+                                    sdmIMController.expandedAttachments = !sdmIMController.expandedAttachments;
+                                    sdmIMController.expandedFiles = false;
+                                    break;
+                                case 'files':
+                                    sdmIMController.expandedPermissions = false;
+                                    sdmIMController.expandedAttachments = false;
+                                    sdmIMController.expandedFiles = !sdmIMController.expandedFiles;
+                                    break;
                             }
                         };
 

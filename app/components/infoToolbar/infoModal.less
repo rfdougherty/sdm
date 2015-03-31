@@ -23,7 +23,7 @@ sdm-info-modal {
     .field-name {
         font-weight: bold;
     }
-    div#permissions-title, div#attachments-title  {
+    div#permissions-title, div#attachments-title,  div#files-title {
         padding-top: 0px;
         padding-bottom: 0px;
         margin-top: 10px;
@@ -53,7 +53,7 @@ sdm-info-modal {
         max-width: 100%;
     }
 
-    div.sdm-upload-files {
+    div.sdm-upload-attachments, div.sdm-view-files {
         padding-left: 10px;
         padding-right: 10px;
         div.attachments-header table {
@@ -66,6 +66,40 @@ sdm-info-modal {
         }
         div.attachments-body {
 
+            height: 100px;
+            overflow: scroll;
+            border: 1px solid lightgrey;
+
+            border-top: none;
+            table.table {
+                margin-top: 0px;
+                margin-bottom: 0px;
+                td {
+                    border-top: none;
+                    width: 200px;
+                    .glyphicon.disabled {
+                        color: lightgrey;
+                    }
+                    &.permissions-access {
+                        padding-left: 0px;
+                        select {
+                            width: 103px;
+                        }
+                    }
+                    vertical-align: middle;
+                }
+
+            }
+        }
+        div.files-header table {
+            border: 1px solid lightgrey;
+            margin-top: 8px;
+            margin-bottom: 0px;
+            td {
+                width: 200px;
+            }
+        }
+        div.files-body {
             height: 100px;
             overflow: scroll;
             border: 1px solid lightgrey;
@@ -133,6 +167,8 @@ sdm-info-modal {
     div.info-modal-body {
         padding-left: 10px;
         padding-right: 10px;
+
+
     }
 
 

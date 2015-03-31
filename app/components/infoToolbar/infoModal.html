@@ -13,12 +13,59 @@
         <textarea class="form-control" ng-model="sdmIMController.apiData.notes" ng-show="sdmIMController.canModify">
         </textarea>
         <div class="sdm-notes" ng-show="!sdmIMController.canModify">{{sdmIMController.apiData.notes}}</div>
-        <div ng-if="sdmIMController.files.length" class="field-name">File list:</div>
-
-        <div ng-repeat="file in sdmIMController.files">
-            <a href ng-click="sdmIMController.download(file)">{{file.type}}: {{file.kinds.join(', ')}}</a> ({{sdmIMController.formatSize(file.size)}})
+    </div>
+    <div ng-if="sdmIMController.files.length">
+        <div id="files-title" class="sdm-input-label" ng-show="sdmIMController.loadingState === 0 && (sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root || (sdmIMController.userPermission === 'ro'))">
+            File list
+            <span class="expand" ng-click="sdmIMController.expandSection('files')">
+                <span class="glyphicon glyphicon-chevron-right" ng-if="!sdmIMController.expandedFiles"></span>
+                <span class="glyphicon glyphicon-chevron-down" ng-if="sdmIMController.expandedFiles"></span>
+                <span class="tooltip"
+                    sdm-popover
+                    sdm-popover-template-text="Toggle Files view"
+                    sdm-popover-class="sdm-tooltip"
+                    sdm-popover-show="mouseenter"
+                    sdm-popover-hide="mouseleave"
+                    sdm-popover-show-timeout="400"
+                    sdm-popover-hide-timeout="0"
+                    sdm-tooltip-style
+                    sdm-tooltip-x="10"
+                    sdm-tooltip-y="32">
+                </span>
+            </span>
         </div>
-
+        <div ng-show="sdmIMController.expandedFiles" class="sdm-view-files">
+            <div class="files-header">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>File description</td>
+                            <td>Size</td>
+                            <td>Viewer</td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="files-body">
+                <table class="table">
+                    <tbody>
+                        <tr class='file' ng-repeat="file in sdmIMController.files">
+                            <td><a href ng-click="sdmIMController.download(file)">{{file.type}}: {{file.kinds.join(', ')}}</a></td>
+                            <td>{{sdmIMController.formatSize(file.size)}}</td>
+                            <td>
+                                <span class="glyphicon glyphicon-eye-open"
+                                      ng-show="file.type === 'tiff' && file.kinds.length === 1 && file.kinds[0] === 'montage'"
+                                      sdm-popover sdm-popover-template-content="components/d3Viewer/tileViewer.html"
+                                      sdm-popover-class="sdm-info-modal" sdm-popover-show="click"
+                                      sdm-popover-show-timeout="0" sdm-popover-style-width="950px"
+                                      sdm-popover-style-height="700px" sdm-append-to-body>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     <div id="attachments-title" class="sdm-input-label" ng-show="sdmIMController.loadingState === 0 && (sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root || (sdmIMController.userPermission === 'ro' && sdmIMController.attachments.length))">
         Attachments
@@ -39,7 +86,7 @@
             </span>
         </span>
     </div>
-    <div class="sdm-upload-files" ng-show="sdmIMController.loadingState === 0 && sdmIMController.expandedAttachments">
+    <div class="sdm-upload-attachments" ng-show="sdmIMController.loadingState === 0 && sdmIMController.expandedAttachments">
         <sdm-upload ng-show="sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root">
             <div ng-file-drop ng-file-select ng-model="sdmULController.newFiles" class="drop-box"
                 drag-over-class="dragover" ng-multiple="true" allow-dir="true" ng-change="sdmULController.addFiles()">

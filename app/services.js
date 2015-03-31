@@ -79,6 +79,13 @@ angular.module('sdmD3Service', [])
             function onScriptLoad() {
                 // Load client in the browser
                 $rootScope.$apply(function() { d3 = window.d3; d.resolve(window.d3); });
+                var scriptTag = $document[0].createElement('script');
+                scriptTag.type = 'text/javascript';
+                scriptTag.async = true;
+                scriptTag.src = 'utils/d3.geo.tile.v0.min.js';
+
+                var s = $document[0].getElementsByTagName('body')[0];
+                s.appendChild(scriptTag);
             }
             // Create a script tag with d3 as the source
             // and call our onScriptLoad callback when it
