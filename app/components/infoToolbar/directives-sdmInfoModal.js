@@ -210,9 +210,9 @@
                             }, 30000);
                         }
 
-                        sdmIMController.removeAttachment = function($index) {
-                            var url = APIUrl + '/attachment?name=' + sdmIMController.attachments[$index].name
-                                + sdmIMController.attachments[$index].ext;
+                        sdmIMController.removeAttachment = function(attachment) {
+                            var url = APIUrl + '/attachment?name=' + attachment.name
+                                + attachment.ext;
                             makeAPICall.async(url, null, 'DELETE', null).then(sdmIMController.updateAttachments);
                         }
 

@@ -107,8 +107,8 @@
                                 </a>
                             </td>
                             <td ng-show="sdmIMController.userPermission !== 'ro' || sdmIMController.user.root">
-                                <span class="glyphicon glyphicon-remove" ng-click="sdmIMController.addConfirmAttachment($index)" ng-show="!sdmIMController.confirmAttachmentRemove[$index]"></span>
-                                <input type="button" class="btn btn-default btn-xs btn-danger" ng-click="sdmIMController.removeAttachment($index)" value="Delete" ng-show="sdmIMController.confirmAttachmentRemove[$index]"></input>
+                                <span class="glyphicon glyphicon-remove" ng-click="attachment.confirmRemove=true" ng-show="!attachment.confirmRemove"></span>
+                                <input type="button" class="btn btn-default btn-xs btn-danger" ng-click="sdmIMController.removeAttachment(attachment)" value="Delete" ng-show="attachment.confirmRemove"></input>
                             </td>
 
                         </tr>
