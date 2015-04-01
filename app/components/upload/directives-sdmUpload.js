@@ -108,7 +108,9 @@
                             console.log(newFiles);
                             sdmULController.queueLength += newFiles.length;
                             angular.forEach(newFiles, function(file){
-                                sdmULController.files.push(file);
+                                if (file.type !== 'directory') {
+                                    sdmULController.files.push(file);
+                                }
                             });
                         }
                         var currentShaPromise;
