@@ -10,8 +10,8 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
                 var selection;
                 var data = sdmViewManager.getCurrentViewData();
                 var currentPath = $location.path();
-                if (currentPath === '/collections') {
-                    getSelectionInCollections(data, deferred);
+                if (currentPath === '/collections' || currentPath === '/search') {
+                    getSelectionInCollectionsOrSearch(data, deferred);
                 } else if (currentPath === '/projects'){
                     getSelectionInProjects(data, deferred);
                 }
@@ -81,7 +81,7 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
                 };
             };
 */
-            var getSelectionInCollections = function (tree, deferred) {
+            var getSelectionInCollectionsOrSearch = function (tree, deferred) {
                 deferred = deferred || $q.defer()
                 var iterator = sdmViewManager.breadthFirstFull(tree);
                 var selection = [];
