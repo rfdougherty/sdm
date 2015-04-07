@@ -155,7 +155,7 @@
                             });
                         };
 
-                        sdmIMController.nodeId = '5515db4c8a68229eacc536b9';//node.id;
+                        sdmIMController.nodeId = node.id;
                         sdmIMController.tileViewer = function(){tileViewer(sdmIMController.nodeId)};
                         sdmIMController.baseUrl = BASE_URL + 'acquisitions/' + node.id + '/file';
                         console.log(path);

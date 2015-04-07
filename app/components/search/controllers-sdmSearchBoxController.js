@@ -1,11 +1,14 @@
 'use strict';
-var _date;
 (function(){
-
+    var isBoxExpanded = true;
     var SdmSearchBoxController = function(makeAPICall, sdmViewManager) {
         var _this = this;
         _this.parameters = sdmViewManager.getSearchParameters();
-
+        _this.isBoxExpanded = isBoxExpanded;
+        _this.toggleBox = function(){
+            _this.isBoxExpanded = isBoxExpanded = !_this.isBoxExpanded;
+            angular.element('#sdm-table-root.sdm-table-search').toggleClass('hidden-box');
+        }
         _this.search = function() {
             var params = {};
             angular.forEach(_this.parameters, function(p, k){
@@ -26,10 +29,12 @@ var _date;
                     }
                 }
             });
+            // using jquery to add a small effect
             var refreshButton = angular.element('#sdm-refresh-button');
             refreshButton.addClass('loading');
             sdmViewManager.searchAcquisitions(params).then(function(){
                 refreshButton.removeClass('loading');
+                //_this.toggleBox();
             });
         }
         _this.isEmpty = function() {

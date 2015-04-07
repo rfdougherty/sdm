@@ -24,6 +24,12 @@
         text-align: center;
         font-size: 22px;
         padding-left: 20px;
+        span {
+            float: right;
+            margin-right: 5px;
+            margin-top: 4px;
+            font-size: 16px;
+        }
     }
     #sdm-search-box-body {
         position:absolute;
@@ -32,6 +38,11 @@
         right:5px;
         bottom: 0px;
         border: solid 1px black;
+        &.hidden-box {
+            height: 0;
+            border: none;
+            display: none;
+        }
         #sdm-search-form {
             margin-top: 5px;
             display: flex;
@@ -103,4 +114,7 @@
 }
 #sdm-table-root.sdm-table-search {
     top: @search-box-position + @search-box-height;
+    &.hidden-box {
+        top: @search-box-position + @search-box-height - 195;
+    }
 }

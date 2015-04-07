@@ -1,6 +1,11 @@
 <div id="sdm-search-box" ng-controller="SdmSearchBoxController as sdmSearchBox">
-    <div id="sdm-search-box-title">Insert Search Parameters</div>
-    <div id="sdm-search-box-body">
+    <div id="sdm-search-box-title" ng-click="sdmSearchBox.toggleBox()">Insert Search Parameters
+        <span>
+            <span class="glyphicon glyphicon-chevron-down" ng-show="sdmSearchBox.isBoxExpanded"></span>
+            <span class="glyphicon glyphicon-chevron-right" ng-show="!sdmSearchBox.isBoxExpanded"></span>
+        </span>
+    </div>
+    <div id="sdm-search-box-body" ng-class="{'hidden-box':!sdmSearchBox.isBoxExpanded}">
         <form name="sdmSearchBox.form" id="sdm-search-box-form" ng-submit="sdmSearchBox.search()" novalidate>
             <div id="sdm-search-form">
                 <div class="sdm-search-group">
