@@ -60,6 +60,15 @@
                                       sdm-popover-show-timeout="0" sdm-popover-style-width="950px"
                                       sdm-popover-style-height="700px" sdm-append-to-body>
                                 </span>
+                                <span class="glyphicon glyphicon-eye-open"
+                                    ng-show="file.type === 'nifti'"
+                                    sdm-popover
+                                    sdm-popover-template-content="components/papayaViewer/papayaViewer.html"
+                                    sdm-popover-class="sdm-papaya-viewer"
+                                    sdm-popover-show="click"
+                                    sdm-popover-show-timeout="0"
+                                    sdm-append-to-body ng-click="sdmIMController.viewFileInPapaya(file)">
+                                </span>
                             </td>
                         </tr>
                     </tbody>

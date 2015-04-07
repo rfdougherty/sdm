@@ -339,6 +339,18 @@
                             makeAPICall.async(url, null, 'POST', null).then(callback);
                         };
 
+                        sdmIMController.viewFileInPapaya = function(file) {
+                            var _node = {
+                                level: level,
+                                _id: node.id,
+                                file: file
+                            };
+                            sdmDownloadInterface.getDownloadURL(_node, true, false).then(function(response){
+                                papayaParams.images = [response.url];
+                                papaya.Container.startPapaya();
+                            });
+                        }
+
 
 
                         sdmIMController.addUser = function ($event, form) {
