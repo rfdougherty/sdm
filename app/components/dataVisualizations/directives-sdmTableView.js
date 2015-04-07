@@ -247,6 +247,10 @@
         };
     };
 
+    var _parseNote = function(note) {
+        return note.replace(/https?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
+    }
+
 
     var createCell = function(selection, actions) {
         selection.each(function(d){
@@ -352,7 +356,7 @@
                             'class': 'glyphicon nav-glyph expander glyphicon-comment',
                             'sdm-popover': '',
                             'sdm-popover-class': 'sdm-info-toolbar sdm-note-tooltip',
-                            'sdm-popover-template-content': 'components/infoToolbar/notesTooltip.html',
+                            'sdm-popover-template-text': function(d){return '<div class="notes-tooltip sdm-notes">' + _parseNote(d.notes) + '</div>'},
                             'sdm-popover-dynamic-position': 'false',
                             'sdm-popover-style-width': '250px',
                             'sdm-popover-style-height': '13ex',

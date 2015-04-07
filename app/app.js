@@ -1,6 +1,7 @@
 // Declare app level module which depends on filters, and services
 var sdmApp = angular.module('sdm', [
     'ngRoute',
+    'ngSanitize',
     'sdm.authentication',
     'sdm.buttons',
     'sdm.services',

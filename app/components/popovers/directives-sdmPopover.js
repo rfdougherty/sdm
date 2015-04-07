@@ -3,8 +3,8 @@
 (function() {
     var templateIndex = 0;
     angular.module('sdm.popovers.directives.sdmPopover', ['sdm.services'])
-        .directive('sdmPopover', ['$compile', '$document', '$templateCache', 'sdmTextWidthCalculator',
-        function($compile, $document, $templateCache, sdmTextWidthCalculator) {
+        .directive('sdmPopover', ['$compile', '$document', '$templateCache', '$sanitize', 'sdmTextWidthCalculator',
+        function($compile, $document, $templateCache, $sanitize, sdmTextWidthCalculator) {
             var body = $document.find('body').eq(0);
             var templatePopover =
                 '<div class="popover" ng-class="sdmPopoverClass">' +
@@ -59,6 +59,7 @@
                     if ($attrs.sdmPopoverTemplateContent)
                         $scope.sdmPopoverTemplateContent = $attrs.sdmPopoverTemplateContent;
                     else if ($attrs.sdmPopoverTemplateText) {
+                        $attrs.sdmPopoverTemplateText = $sanitize($attrs.sdmPopoverTemplateText);
                         sdmPopoverController.setProperty('sdmPopoverTemplateText', $attrs.sdmPopoverTemplateText);
                         var templateURL = 'tempTemplate' + templateIndex++ + '.html';
                         $templateCache.put(templateURL, $attrs.sdmPopoverTemplateText);

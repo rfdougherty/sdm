@@ -6,10 +6,12 @@ div.popover.sdm-info-toolbar {
     top: 0px;
     left: 0px;
     height: 32px;
-    &.sdm-note-tooltip .popover-dialog {
-        background-color: @bgcol3;
-        &:after {
-            border-bottom: 6px solid @bgcol3;;
+    &.sdm-note-tooltip {
+        .popover-dialog.sdm-info-toolbar{
+            background-color: @bgcol3;
+            &:after {
+                border-bottom: 6px solid @bgcol3;;
+            }
         }
     }
     div.notes-tooltip {
