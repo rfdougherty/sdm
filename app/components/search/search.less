@@ -1,0 +1,106 @@
+@import (less) "../../active_config/variables.less";
+
+@search-box-position: 71px;
+@search-box-height: 232px;
+
+#sdm-search-box {
+    position: absolute;
+    top: @search-box-position;
+    right: 15px;
+    left: 15px;
+    border-right: solid 1px black;
+    border-left: solid 1px black;
+    min-width: 1170px;
+    height: @search-box-height;
+    #sdm-search-box-title {
+        position:absolute;
+        top: 5px;
+        left:5px;
+        right:5px;
+        border: solid 1px black;
+        font-variant: small-caps;
+        background-color: @bgcol2;
+        color: @fgcol2;
+        text-align: center;
+        font-size: 22px;
+        padding-left: 20px;
+    }
+    #sdm-search-box-body {
+        position:absolute;
+        top: 37px;
+        left: 5px;
+        right:5px;
+        bottom: 0px;
+        border: solid 1px black;
+        #sdm-search-form {
+            margin-top: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            .sdm-search-group {
+                flex: 1 33%;
+                padding-left: 10px;
+                text-align: center;
+                label {
+                    width: 120px;
+                    text-align: left;
+                }
+                .input-group {
+                    width: 300px;
+                    display: inline;
+                    select {
+                        width: 240px;
+                        height: 40px;
+                        margin-left: 2px;
+                        margin-right: 2px;
+                        float: none;
+                        &.form-control.default {
+                            color: rgb(169, 169, 169);
+                        }
+                    }
+                    input {
+                        width: 240px;
+                        height: 40px;
+                        margin-left: 2px;
+                        margin-right: 2px;
+                        &:focus {
+                            outline: none;
+                        }
+                        &.ng-invalid {
+                            color: red;
+                        }
+                        &[type="date"].default {
+                            color: rgb(169, 169, 169);
+                        }
+                    }
+                    &.age {
+                        input[type="number"] {
+                            width: 116px;
+                        }
+                    }
+                    input.btn {
+                        width: 116px;
+                        height: 24px;
+                        padding: 1px;
+                        background-color: @bgcol1;
+                        color: @fgcol1;
+                        &[type="button"] {
+                            background-color: @bgcol2;
+                            color: @fgcol2;
+                        }
+                    }
+                }
+                &.sdm-search-buttons {
+                    padding-top: 0px;
+                    padding-bottom: 10px;
+                }
+                margin-bottom: 10px;
+            }
+        }
+
+    }
+
+}
+#sdm-table-root.sdm-table-search {
+    top: @search-box-position + @search-box-height;
+}

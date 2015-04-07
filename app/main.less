@@ -194,7 +194,7 @@ div#sdm-main-table-content {
     padding-bottom: 60px;
 }
 
-div#sdm-table-root, div#tree-view{
+div#sdm-table-root, div#tree-view, div#coming-soon {
     position: absolute;
     bottom: 41px;
     top: 72px;
@@ -203,6 +203,25 @@ div#sdm-table-root, div#tree-view{
     min-width: @min-width-table;
     border: solid 1px black;
     border-top: none;
+}
+div#coming-soon {
+    padding-left: 10px;
+    div.message {
+        width: 400px;
+        margin: 20px;
+        margin-bottom: 0px;
+    }
+    .drop-box {
+        background: #F8F8F8;
+        border: 5px dashed #DDD;
+        width: 350px;
+        height: 65px;
+        text-align: center;
+        margin: 40px;
+        padding-top: 15px;
+
+        display: inline-block;
+    }
 }
 
 div#tree-view>div {

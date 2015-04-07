@@ -1,0 +1,84 @@
+<div id="sdm-search-box" ng-controller="SdmSearchBoxController as sdmSearchBox">
+    <div id="sdm-search-box-title">Insert Search Parameters</div>
+    <div id="sdm-search-box-body">
+        <form name="sdmSearchBox.form" id="sdm-search-box-form" ng-submit="sdmSearchBox.search()" novalidate>
+            <div id="sdm-search-form">
+                <div class="sdm-search-group">
+                    <label for="subjectCode">Subject Code:</label>
+                    <span class="input-group">
+                        <input type="text" id="subjectCode" ng-model="sdmSearchBox.parameters.subj_code" placeholder="Enter subject code">
+                    </span>
+                </div>
+                <div class="sdm-search-group">
+                    <label for="subjectFirstName">Firstname Hash:</label>
+                    <span class="input-group">
+                        <input type="text" id="subjectCode" ng-model="sdmSearchBox.parameters.subj_firstname" placeholder="Enter hash for subject firstname">
+                </div>
+                <div class="sdm-search-group">
+                    <label for="subjectLastName">Lastname Hash:</label>
+                    <span class="input-group">
+                        <input type="text" id="subjectLastName"  ng-model="sdmSearchBox.parameters.subj_lastname" placeholder="Enter hash for subject lastname">
+                    </span>
+                </div>
+
+                <div class="sdm-search-group">
+                    <label for="subjectAge1">Subject Age:</label>
+                    <span class="input-group age">
+                        <input type="number" id="subjectAge1" ng-model="sdmSearchBox.parameters.subj_age_min" placeholder="minimum age" step="any" min="0" max="120">
+                        <input type="number" id="subjectAge2" ng-model="sdmSearchBox.parameters.subj_age_max" placeholder="maximum age" step="any" min="0" max="120">
+                    </span>
+                </div>
+                <div class="sdm-search-group">
+                    <label for="examNumber">Exam Number:</label>
+                    <span class="input-group">
+                        <input type="number" id="examNumber" ng-model="sdmSearchBox.parameters.exam" placeholder="Enter exam number">
+                    </span>
+                </div>
+                <div class="sdm-search-group">
+                    <label for="scanType">Scan Type:</label>
+                    <span class="input-group">
+                        <select class="form-control" form="sdm-search-box-form" id="scanType" ng-class="{default:!sdmSearchBox.parameters.scan_type && sdmSearchBox.parameters.scan_type !== 0}" ng-options="sdmSearchBox.scanTypeValues.indexOf(type) as type for type in sdmSearchBox.scanTypeValues" ng-model="sdmSearchBox.parameters.scan_type" ng-change="sdmSearchBox.changeScanTypeDefault()">
+                            <option class="default" value="">{{sdmSearchBox.selectScanTypeDefault}}</option>
+                        </select>
+                    </span>
+                </div>
+
+                <div class="sdm-search-group">
+                    <label for="psdName">PSD Name:</label>
+                    <span class="input-group">
+                        <input type="text" id="psdName" ng-model="sdmSearchBox.parameters.psd" placeholder="Enter psd name">
+                    </span>
+                </div>
+                <div class="sdm-search-group">
+                    <label for="fromDate">From Date:</label>
+                    <span class="input-group">
+                        <input type="date" id="fromDate" ng-model="sdmSearchBox.parameters.date_from" ng-class="{default:!sdmSearchBox.parameters.date_from}">
+                    </span>
+                </div>
+                <div class="sdm-search-group">
+                    <label for="toDate">To Date:</label>
+                    <span class="input-group">
+                        <input type="date" id="toDate"  ng-model="sdmSearchBox.parameters.date_to" ng-class="{default:!sdmSearchBox.parameters.date_to}">
+                    </span>
+                </div>
+
+                <div class="sdm-search-group">
+                </div>
+                <div class="sdm-search-group">
+                </div>
+                <div class="sdm-search-group sdm-search-buttons">
+                    <label></label>
+                    <span class="input-group">
+                        <input type="button" class="btn btn-default" value="Clear" ng-click="sdmSearchBox.clear()">
+                        <input type="submit" class="btn btn-default" value="Search" ng-disabled="sdmSearchBox.form.$invalid || sdmSearchBox.isEmpty()">
+                    </span>
+                </div>
+
+
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<sdm-table-view class="sdm-table-search" sdm-data="sdmTableViewData.sdmData" sdm-trigger="sdmTableViewData.trigger"></sdm-table-view>

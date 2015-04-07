@@ -277,7 +277,12 @@ var _tree;
             sessions: sessions,
             acquisitions: acquisitions
         }
-    })();;
+    })();
+
+    var searchViewDescription = angular.copy(projectsViewDescription);
+    angular.forEach(searchViewDescription, function(levelDescription){
+        delete levelDescription.urlToExpand;
+    });
 
     var sdmViewManager = function($location, $q, makeAPICall) {
         var viewAppearances = {
@@ -288,7 +293,8 @@ var _tree;
         var viewData = {
             views: {
                 'projects': {'viewDescription': projectsViewDescription},
-                'collections': {'viewDescription': collectionsViewDescription}
+                'collections': {'viewDescription': collectionsViewDescription},
+                'search': {'viewDescription': searchViewDescription}
             },
             'current': 'projects'
         };
@@ -467,24 +473,161 @@ var _tree;
             return deferred.promise;
         };
 
-        var initialize = function() {
-            var currentView = viewData.current;
-            //var deferred = $q.defer();
-
-            angular.forEach(viewData.views, function(value, viewID){
-                var promise = treeInit(viewID);
-                promise.then(function(result){
-                    console.log('initialized data for ', viewID, result);
-                    setData(viewID, result);
-                    return result
-                });
-                if (viewID === currentView) {
-                    promise.then(function(result) {
-                        triggerViewChange(result);
-                    });
-                }
+        var initializeView = function(viewDescription, viewID) {
+            if (viewID === 'search') {
+                return;
+            }
+            var promise = treeInit(viewID);
+            promise.then(function(result){
+                console.log('initialized data for ', viewID, result);
+                setData(viewID, result);
+                return result
             });
+            if (viewID === viewData.current) {
+                promise.then(function(result) {
+                    triggerViewChange(result);
+                });
+            }
         };
+
+        var initialize = function() {
+            angular.forEach(viewData.views, initializeView);
+        };
+
+        var buildSearchResults = function(queryResults, levelDescription, site_id) {
+            console.log(queryResults);
+            if (!queryResults.groups) {
+                return [];
+            }
+            var levelName = 'groups';
+            var level = levelDescription['groups'];
+            var results = {};
+            results[levelName] = {};
+            angular.forEach(queryResults[levelName], function(value){
+                console.log(value);
+                var node = new DataNode(
+                    {name: value},
+                    site_id,
+                    level);
+                console.log(value);
+                results[levelName][value] = node;
+            });
+            console.log(results);
+            var prevLevelName = levelName;
+            levelName = level.next_level;
+            var parent, parent_id;
+            while (levelName) {
+                level = levelDescription[levelName];
+                results[levelName] = {};
+                angular.forEach(queryResults[levelName], function(value){
+                    console.log(value);
+                    var node = new DataNode(
+                        value,
+                        site_id,
+                        level);
+                    console.log(node);
+                    results[levelName][value._id] = node;
+                    parent_id = value[prevLevelName.slice(0, prevLevelName.length - 1)];
+                    parent = results[prevLevelName][parent_id];
+                    node.parent = parent;
+                    parent.children = parent.children||[];
+                    parent.children.push(node);
+                });
+                prevLevelName = levelName;
+                levelName = level.next_level;
+            }
+            var groups = [];
+            angular.forEach(results.groups, function(g) {
+                groups.push(g);
+            });
+            return groups;
+        };
+
+        var searchAcquisitions = function(parameters) {
+            var deferred = $q.defer();
+            var search_url = BASE_URL + 'search';
+            var sites_url = BASE_URL + 'sites';
+            var viewID = 'search';
+            var levelDescription = headers(viewID);
+            makeAPICall.async(sites_url).then(function(sites){
+                sites = sites.filter(function(s){return s.onload});
+                var tree =  new DataNode(
+                    {name: 'root'},
+                    null,
+                    levelDescription['roots'],
+                    sites
+                );
+                var promises = sites.map(function(site) {
+                    var deferred = $q.defer();
+                    console.log(parameters);
+                    makeAPICall.async(search_url, {site: site._id}, 'POST', parameters).then(function(results) {
+                        var groups = buildSearchResults(results, levelDescription, site._id);
+                        console.log(groups);
+                        console.log(site);
+                        var siteNode = new DataNode(
+                            site,
+                            site._id,
+                            levelDescription['sites'],
+                            groups
+                        );
+                        console.log(siteNode);
+                        angular.forEach(groups, function(group) {
+                            group.parent = siteNode;
+                        });
+
+                        deferred.resolve(siteNode);
+                    });
+                    return deferred.promise;
+                });
+                $q.all(promises).then(function(sites){
+                    sites.sort(naturalSortByName);
+                    sites.forEach(
+                        function(site, i){
+                            site.index = i;
+                        });
+                    var tree = new DataNode(
+                            {name: 'root'},
+                            null,
+                            levelDescription['roots'],
+                            sites
+                        );
+                    sortTree(tree);
+                    setData('search', tree);
+                    triggerViewChange(tree);
+                    deferred.resolve(tree);
+                })
+            });
+            return deferred.promise;
+        }
+
+        var sortTree = function(tree) {
+            var queue = [tree];
+            var node, _children;
+
+            while (queue.length > 0) {
+                node = queue.pop();
+                if (node.children || node._children) {
+                    _children = node.children || node._children;
+                    _children.sort(naturalSortByName);
+                    _children.forEach(function(child, i) {
+                        child.index = i;
+                        queue.unshift(child);
+                    });
+                    if (node.children) {
+                        node.children = _children;
+                    } else {
+                        node._children = _children;
+                    }
+                }
+            }
+        };
+
+        var getSearchParameters = function() {
+            if (!viewData.views.search.parameters) {
+                viewData.views.search.parameters = {};
+            }
+            return viewData.views.search.parameters;
+        }
 
         /*
         ** Breadth first traversal method with cusomt node expansion.
@@ -727,8 +870,11 @@ var _tree;
                 deferred.resolve();
                 return deferred.promise;
             }
+            if (!node.level.urlToExpand) {
+                deferred.resolve([]);
+                return deferred.promise;
+            }
             var urlToExpand = node.level.urlToExpand(node);
-
             urlToExpand.params = urlToExpand.params || {};
             urlToExpand.params.site = node.site;
 
@@ -827,8 +973,10 @@ var _tree;
             headers: headers,
             breadthFirstFull: breadthFirstFull,
             initialize: initialize,
+            searchAcquisitions: searchAcquisitions,
             breadthFirstFullUntilLevel: breadthFirstFullUntilLevel,
-            breadthFirstExpandCheckedGroups: breadthFirstExpandCheckedGroups
+            breadthFirstExpandCheckedGroups: breadthFirstExpandCheckedGroups,
+            getSearchParameters: getSearchParameters
         }
     }
 

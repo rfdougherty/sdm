@@ -18,9 +18,10 @@ var sdmApp = angular.module('sdm', [
     'sdm.moveSessions',
     'sdm.newProject',
     'sdm.upload',
-    'sdm.util'
+    'sdm.util',
+    'sdm.search'
 ]).run(['sdmViewManager', 'sdmUserManager',
-    function(sdmViewManager, sdmUserManager, $sce){
+    function(sdmViewManager, sdmUserManager){
         var userData = sdmUserManager.getAuthData();
         sdmViewManager.updateViewAppearance(userData.preferences);
         sdmViewManager.initialize();
@@ -43,8 +44,13 @@ sdmApp.config(['$routeProvider', function($routeProvider) {
             controllerAs: 'sdmTableViewData'
         }
     );
-    $routeProvider.when('/search', {'template': COMING_SOON});
-    $routeProvider.when('/upload', {'template': COMING_SOON});
+    $routeProvider.when('/search',
+        {
+            templateUrl: 'components/search/table.html',
+            controller: 'SdmTableViewData',
+            controllerAs: 'sdmTableViewData'
+        });
+    $routeProvider.when('/upload', {templateUrl: 'components/upload/upload.html'});
     $routeProvider.otherwise({redirectTo: '/projects'});
 }]);
 

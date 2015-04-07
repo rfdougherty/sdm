@@ -36,6 +36,7 @@
         this.selectionButtonsEnabled = function () {
             var root = sdmViewManager.getCurrentViewData()||{};
             if (!sdmUserManager.getAuthData().access_token) return false;
+            if ($location.path() === '/search') return false;
             return (root.indeterminate || root.checked) && sdmViewManager.getViewAppearance()['data-layout'] === 'table';
         };
 

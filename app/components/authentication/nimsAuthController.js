@@ -3,8 +3,6 @@
 var nimsAuthControllers = angular.module('sdm.authentication.controllers',
     ['sdm.authentication.services.sdmUserManager',
     'sdm.main.services.sdmViewManager']);
-var _auth_data;
-var _user_manager;
 
 nimsAuthControllers.controller('LoginController', [
     '$scope', 'sdmUserManager', 'sdmViewManager',

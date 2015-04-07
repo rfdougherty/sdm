@@ -2,7 +2,7 @@
 
 (function(){
 
-    var SdmNavigationController = function($scope, $location){
+    var SdmNavigationController = function($location){
         this.tabs = [
             {
                 'glyphicon': 'folder-open',
@@ -33,7 +33,7 @@
 
     };
 
-    SdmNavigationController.$inject = ['$scope', '$location'];
+    SdmNavigationController.$inject = ['$location'];
 
     angular.module('sdm.navigation.controllers.sdmNavigation', [])
         .controller('SdmNavigationController', SdmNavigationController);
