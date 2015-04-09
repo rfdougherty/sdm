@@ -8,15 +8,23 @@
              'sdm.APIServices.services.sdmUsers',
              'sdm.popovers.services.sdmPopoverTrampoline',
              'sdm.util.services.sdmHumanReadableSize'])
-        .directive('sdmInfoModal', ['$location', '$document', 'sdmPopoverTrampoline', 'makeAPICall',
+        .directive('sdmInfoModal', ['$location', '$document', '$q', 'sdmPopoverTrampoline', 'makeAPICall',
             'sdmDownloadInterface', 'sdmUserManager', 'sdmViewManager', 'sdmRoles',
             'sdmUsers', 'sdmHumanReadableSize',
-            function($location, $document, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface,
+            function($location, $document, $q, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface,
                 sdmUserManager, sdmViewManager, sdmRoles, sdmUsers, sdmHumanReadableSize) {
                 var tileViewer = function(nodeId) {
+                    makeAPICall.async(BASE_URL + 'acquisitions/' + nodeId + '/tile').then(
+                        function(response) {
+                            console.log(response);
+                            console.log(BASE_URL + 'acquisitions/' + nodeId +'/tile');
+                        }
+                    );
                     var width = 900,
                         height = 625,
-                        prefix = prefixMatch(["webkit", "ms", "Moz", "O"]);
+                        prefix = prefixMatch(["webkit", "ms", "Moz", "O"]),
+                        rectangle = {},
+                        cacheData = {};
 
                     var tile = d3.geo.tile()
                         .size([width, height]);
@@ -50,27 +58,87 @@
                                '/tile?' + coordinates;
                     }
 
+                    function getData(z, x, y, timeout) {
+                        return makeAPICall.async(getUrl(z, x, y), null, 'GET', null, 'arraybuffer', timeout);
+                    }
+
+                    function calculateRectangle(tiles){
+                        if (tiles.translate) {
+                            console.log(tiles.translate);
+                            var minX = - tiles.translate[0] - 1;
+                            var minY = - tiles.translate[1] - 1;
+                            rectangle = {
+                                maxX: minX + 2 + width/256,
+                                maxY: minY + 2 + height/256,
+                                minX: minX,
+                                minY: minY
+                            }
+                        }
+                        return rectangle
+                    }
+                    function inRectangle(x, y) {
+                        return !(
+                            x > rectangle.maxX || x < rectangle.minX ||
+                            y > rectangle.maxY || y < rectangle.minY
+                        )
+                    }
+
                     function zoomed() {
                         var tiles = tile
                             .scale(zoom.scale())
                             .translate(zoom.translate())
                             ();
-
+                        calculateRectangle(tiles);
                         var image = layer
                             .style(prefix + "transform", matrix3d(tiles.scale, tiles.translate))
-                          .selectAll(".sd-d3-tile")
-                            .data(tiles, function(d) { return d; });
+                          .selectAll(".sdm-d3-tile")
+                            .data(
+                                tiles.filter(
+                                    function(d) {
+                                        return inRectangle(d[0], d[1])
+                                    }
+                                ),
+                                function (d) { return d; }
+                            );
 
-                        image.exit()
-                            .remove();
+                        image.exit().remove().each(function(d){
+                            if (d.abort) {
+                                d.abort.resolve();
+                            }
+                        });
 
-                        image.enter().append("img")
+                        image.enter()
+                            .append("img")
                             .attr("class", "sdm-d3-tile")
-                            .attr("src", function(d) {
-                              return getUrl(d[2], d[0], d[1])
-                            }) //"http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-i86nkdio/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
                             .style("left", function(d) { return (d[0] << 8) + "px"; })
-                            .style("top", function(d) { return (d[1] << 8) + "px"; });
+                            .style("top", function(d) { return (d[1] << 8) + "px"; })
+                            .each(
+                                function(d) {
+                                    var _this = this;
+                                    d.abort = $q.defer();
+                                    var cacheKey = [d[2], d[0], d[1]].join(':');
+                                    if (cacheData[cacheKey]) {
+                                        _this.setAttribute('src', cacheData[cacheKey]);
+                                        return;
+                                    }
+                                    getData(d[2], d[0], d[1], d.abort.promise).then(
+                                        function(buffer) {
+                                            if (buffer instanceof ArrayBuffer) {
+                                                var binary = '';
+                                                var bytes = new Uint8Array( buffer );
+                                                var len = bytes.byteLength;
+                                                for (var i = 0; i < len; i++) {
+                                                    binary += String.fromCharCode( bytes[ i ] );
+                                                }
+                                                var base64 = window.btoa( binary );
+                                                cacheData[cacheKey] = 'data:image/png;base64,' + base64;
+                                                _this.setAttribute('src', cacheData[cacheKey] );
+                                            }
+
+                                        }
+                                    );
+                                }
+                            );
                     }
 
 
@@ -86,6 +154,7 @@
                         return "";
                     }
                 }
+
                 return {
                     restrict: 'E',
                     scope: false,

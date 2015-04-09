@@ -13,7 +13,7 @@ var httpServices = angular.module('sdmHttpServices', ['ngCookies', 'sdm.authenti
 httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', function($http, $cookieStore, sdmUserManager) {
 
     var makeAPICall = {
-        async: function(url, params, method, data) {
+        async: function(url, params, method, data, responseType, timeout) {
             console.log("MAKE API CALL\nwith url=", url, " and params=", params);
             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
             if (typeof method === 'undefined') {
@@ -32,7 +32,9 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 method: method,
                 url: url,
                 headers: {'Authorization': accessToken},
-                params: params
+                params: params,
+                responseType: responseType,
+                timeout: timeout
             };
             if (typeof data !== 'undefined') {
                 requestParams.data = data;
@@ -53,7 +55,10 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 console.log('Unhandled problem in the request.');
                 console.log('Status:', reason.status);
                 console.log('Reason', reason);
-                throw new Error(reason.data.code + ' ' + reason.data.detail);
+                if (reason.data) {
+                    throw new Error(reason.data.code + ' ' + reason.data.detail);
+                }
+                return {data: null};
             }).then(function(value) {
                 console.log(value);
                 if (value.data) {
