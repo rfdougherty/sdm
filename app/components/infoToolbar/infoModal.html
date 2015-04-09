@@ -54,7 +54,7 @@
                             <td>{{sdmIMController.formatSize(file.size)}}</td>
                             <td>
                                 <span class="glyphicon glyphicon-eye-open"
-                                      ng-show="file.type === 'tiff' && file.kinds.length === 1 && file.kinds[0] === 'montage'"
+                                      ng-show="file.type === 'zip' && file.kinds.length === 1 && file.kinds[0] === 'montage'"
                                       sdm-popover sdm-popover-template-content="components/d3Viewer/tileViewer.html"
                                       sdm-popover-class="sdm-info-modal" sdm-popover-show="click"
                                       sdm-popover-show-timeout="0" sdm-popover-style-width="950px"

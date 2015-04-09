@@ -4,7 +4,7 @@
     <div id="download-body" ng-show="sdmDLController.loadedOnce">
         <div>File count: {{sdmDLController.fileCount}}</div>
         <div>Total size: {{sdmDLController.size}}</div>
-        <input id="download" type="checkbox" ng-change="sdmDLController.updateLink($event)" ng-model="sdmDLController.optional"> <label for="download"> Include Optional Files</label>
+        <input id="download" type="checkbox" ng-change="sdmDLController.updateLink($event)" ng-model="sdmDLController.optional"> <label for="download"> Include Raw Data</label>
     </div>
     <form class="download-confirm-buttons" ng-submit="sdmDLController.download($event)">
         <input type="button" id="download-cancel" class="btn btn-default btn-xs" ng-click="sdmDLController.cancel($event)" value="Cancel"></input>

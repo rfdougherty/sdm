@@ -25,7 +25,7 @@
                     var zoom = d3.behavior.zoom()
                         .scale(1 << 12)
                         .scaleExtent([1 << 10, 1 << 14])
-                        .translate([width / 2, height / 2])
+                        .translate([1 << 11, 1 << 11])
                         .on("zoom", zoomed);
 
                     var map = d3.select("div.sdm-d3-map")
@@ -46,8 +46,8 @@
                             ['x', x].join('='),
                             ['y', y].join('=')
                         ].join('&');
-                        return 'https://coronal.stanford.edu/api/acquisitions/' + nodeId +
-                               '/tile?user=kevinhahn@flywheel.io&' + coordinates;
+                        return BASE_URL + 'acquisitions/' + nodeId +
+                               '/tile?' + coordinates;
                     }
 
                     function zoomed() {
