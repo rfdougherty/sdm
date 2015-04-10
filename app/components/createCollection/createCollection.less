@@ -130,7 +130,7 @@ div.sdm-create-collection {
 
                     margin-bottom: 0px;
                     td {
-                        width: 200px;
+                        width: 33%;
                     }
                 }
                 div.permissions-body {
@@ -142,9 +142,12 @@ div.sdm-create-collection {
                     table.table {
                         margin-top: 0px;
                         margin-bottom: 0px;
+                        table-layout: fixed;
                         td {
                             border-top: none;
-                            width: 200px;
+                            width: 33%;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
                             .glyphicon.disabled {
                                 color: lightgrey;
                             }
