@@ -378,8 +378,10 @@
                         sdmIMController.downloadAttachment= function($index) {
                             var url = APIUrl + '/attachment?name=' + sdmIMController.attachments[$index].name
                                 + sdmIMController.attachments[$index].ext;
+
                             makeAPICall.async(url, null, 'POST', null).then(function(response){
-                                window.open(response.url, '_self');
+
+                                window.open(response.url + '&attach=true', '_self');
                             });
                         };
 

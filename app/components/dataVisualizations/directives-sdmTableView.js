@@ -5,15 +5,18 @@
     var sdmCellOnHover;
     var scope;
     var calculateTextWidth;
+    var user;
 
     angular.module('sdm.dataVisualizations.directives.sdmTableView',
         ['sdm.services', 'sdm.dataFiltering.services.sdmFilterTree',
-        'sdm.main.services.sdmViewManager'])
+        'sdm.main.services.sdmViewManager', 'sdm.authentication.services.sdmUserManager'])
     .directive('sdmTableView',
         ['$compile', '$location', '$rootScope',
-        'sdmD3Service', 'sdmFilterTree', 'sdmViewManager', 'sdmTextWidthCalculator',
-        function($compile, $location, $rootScope, sdmD3Service,
+        'sdmD3Service',  'sdmUserManager',
+        'sdmFilterTree', 'sdmViewManager', 'sdmTextWidthCalculator',
+        function($compile, $location, $rootScope, sdmD3Service, sdmUserManager,
                  sdmFilterTree, sdmViewManager, sdmTextWidthCalculator) {
+            user = sdmUserManager.getAuthData();
             return {
                 // name: '',
                 // priority: 1,
@@ -312,7 +315,7 @@
                     var d3Text = d3DivContent
                         .append('span');
 
-                    if (d.level.name.search(/^(sessions|projects|collections|acquisitions)$/) >= 0){
+                    if (d.level.name.search(/^(sessions|projects|collections|acquisitions)$/) >= 0 && (d.userAccess.search(/^no$/) === -1 || user.root) ){
                         d3Text.attr({
                             'sdm-popover': '',
                             'sdm-popover-class': 'sdm-info-toolbar',
