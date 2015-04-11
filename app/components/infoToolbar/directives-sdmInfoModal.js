@@ -20,27 +20,34 @@
                             console.log(BASE_URL + 'acquisitions/' + nodeId +'/tile');
                         }
                     );
-                    var width = 900,
-                        height = 625,
+
+                    var margin = {left: 25, right: 25, bottom: 25, top:25},
+                        width = d3.select("div.sdm-d3-map").style('width'),
+                        height = d3.select("div.sdm-d3-map").style('height'),
                         prefix = prefixMatch(["webkit", "ms", "Moz", "O"]),
                         rectangle = {},
-                        cacheData = {};
+                        cacheData = {},
+                        minScale = 1 << 10,
+                        maxScale = 1 << 14;
+
+                    width = +width.substr(0, width.length -2) - margin.left - margin.right;
+                    height = +height.substr(0, height.length -2) - margin.top -margin.bottom;
 
                     var tile = d3.geo.tile()
                         .size([width, height]);
 
 
                     var zoom = d3.behavior.zoom()
+                        .center([width/2, height/2])
                         .scale(1 << 12)
-                        .scaleExtent([1 << 10, 1 << 14])
+                        .scaleExtent([minScale, maxScale])
                         .translate([1 << 11, 1 << 11])
                         .on("zoom", zoomed);
 
                     var map = d3.select("div.sdm-d3-map")
-                        .style("width", width + "px")
-                        .style("height", height + "px")
-                        .style("margin", 25 + "px")
-                        .style("margin-bottom", 50 + "px")
+                        .style('width', width + 'px')
+                        .style('height', height + 'px')
+                        .style('margin', '25px')
                         .call(zoom);
 
                     var layer = map.append("div")
@@ -64,7 +71,6 @@
 
                     function calculateRectangle(tiles){
                         if (tiles.translate) {
-                            console.log(tiles.translate);
                             var minX = - tiles.translate[0] - 1;
                             var minY = - tiles.translate[1] - 1;
                             rectangle = {
@@ -141,6 +147,48 @@
                             );
                     }
 
+                    d3.selectAll("button.sdm-d3-reset")
+                        .on("click", reset);
+
+                    function reset() {
+                        zoom.scale(1 << 12).translate([1 << 11, 1 << 11]);
+                        map.call(zoom.event);
+                    }
+
+                    d3.selectAll("button[data-zoom]")
+                        .on("click", clicked);
+
+                    function clicked() {
+                        var newScale = zoom.scale() * Math.pow(2, +this.getAttribute("data-zoom"));
+                        if (newScale > maxScale) {
+                            newScale = maxScale;
+                        }
+                        if (newScale < minScale) {
+                            newScale = minScale;
+                        }
+                        map.call(zoom.event); // https://github.com/mbostock/d3/issues/2387
+
+                        // Record the coordinates (in data space) of the center (in screen space).
+                        var center0 = zoom.center(), translate0 = zoom.translate(), coordinates0 = coordinates(center0);
+                        zoom.scale(newScale);
+
+                        // Translate back to the center.
+                        var center1 = point(coordinates0);
+                        zoom.translate([translate0[0] + center0[0] - center1[0], translate0[1] + center0[1] - center1[1]]);
+
+                        map.transition().duration(750).call(zoom.event);
+                    }
+
+                    function coordinates(point) {
+                        var scale = zoom.scale(), translate = zoom.translate();
+                        return [(point[0] - translate[0]) / scale, (point[1] - translate[1]) / scale];
+                    }
+
+                    function point(coordinates) {
+                        var scale = zoom.scale(), translate = zoom.translate();
+                        return [coordinates[0] * scale + translate[0], coordinates[1] * scale + translate[1]];
+                    }
+
 
 
                     function matrix3d(scale, translate) {
@@ -162,7 +210,7 @@
                     transclude: false,// we want to insert custom content inside the directive
                     controller: function(){},
                     controllerAs: 'sdmIMController',
-                    link: function($scope, $element, $attrs, sdmIMController){
+                    link: function($scope, $element, $attrs, sdmIMController) {
                         $scope.$parent.$parent.hideToolbar(null, 0);
                         var node = $scope.$parent.$parent.data;
                         var APIUrl = BASE_URL + node.level.name + '/' + node.id;
@@ -225,7 +273,9 @@
                         };
 
                         sdmIMController.nodeId = node.id;
-                        sdmIMController.tileViewer = function(){tileViewer(sdmIMController.nodeId)};
+                        sdmIMController.tileViewer = function(){
+                            tileViewer(sdmIMController.nodeId, $element.width(), $element.height());
+                        };
                         sdmIMController.baseUrl = BASE_URL + 'acquisitions/' + node.id + '/file';
                         console.log(path);
                         sdmIMController.path = path.slice(1);
