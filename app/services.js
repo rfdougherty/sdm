@@ -13,7 +13,7 @@ var httpServices = angular.module('sdmHttpServices', ['ngCookies', 'sdm.authenti
 httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', function($http, $cookieStore, sdmUserManager) {
 
     var makeAPICall = {
-        async: function(url, params, method, data) {
+        async: function(url, params, method, data, headers) {
             console.log("MAKE API CALL\nwith url=", url, " and params=", params);
             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
             if (typeof method === 'undefined') {
@@ -28,15 +28,21 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 params = {};
             }
 
+
             var requestParams = {
                 method: method,
                 url: url,
-                headers: {'Authorization': accessToken},
+                headers: angular.extend(headers||{}, {'Authorization': accessToken}),
                 params: params
             };
+
             if (typeof data !== 'undefined') {
                 requestParams.data = data;
+                if (data instanceof Uint8Array) {
+                    requestParams.transformRequest = [];
+                }
             }
+
             // $http returns a promise, which has a then function, which also returns a promise
             var promise = $http(requestParams).then(function(response) {
                 // The then function here is an opportunity to modify the response

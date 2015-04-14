@@ -342,10 +342,12 @@ var _tree;
 
         function triggerViewChange(node) {
             var viewController = viewData.views[viewData.current].controller;
-            viewController.trigger = {
-                node: node,
-                sessionKey:  (viewController.trigger.sessionKey + 1)%10,
-                all: true
+            if (viewController) {
+                viewController.trigger = {
+                    node: node,
+                    sessionKey:  (viewController.trigger.sessionKey + 1)%10,
+                    all: true
+                }
             }
         }
 

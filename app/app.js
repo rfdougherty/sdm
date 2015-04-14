@@ -20,7 +20,8 @@ var sdmApp = angular.module('sdm', [
     'sdm.newProject',
     'sdm.upload',
     'sdm.util',
-    'sdm.search'
+    'sdm.search',
+    'sdm.uploadDicom'
 ]).run(['sdmViewManager', 'sdmUserManager',
     function(sdmViewManager, sdmUserManager){
         var userData = sdmUserManager.getAuthData();
@@ -47,11 +48,11 @@ sdmApp.config(['$routeProvider', function($routeProvider) {
     );
     $routeProvider.when('/search',
         {
-            templateUrl: 'components/search/table.html',
+            templateUrl: 'components/search/search.html',
             controller: 'SdmTableViewData',
             controllerAs: 'sdmTableViewData'
         });
-    $routeProvider.when('/upload', {templateUrl: 'components/upload/upload.html'});
+    $routeProvider.when('/upload', {templateUrl: 'components/uploadDicom/uploadDicom.html'});
     $routeProvider.otherwise({redirectTo: '/projects'});
 }]);
 

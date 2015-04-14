@@ -96,7 +96,7 @@
         </span>
     </div>
     <div class="sdm-upload-attachments" ng-show="sdmIMController.loadingState === 0 && sdmIMController.expandedAttachments">
-        <sdm-upload ng-show="sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root">
+        <sdm-upload-attachment ng-show="sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root">
             <div ng-file-drop ng-file-select ng-model="sdmULController.newFiles" class="drop-box"
                 drag-over-class="dragover" ng-multiple="true" allow-dir="true" ng-change="sdmULController.addFiles()">
                 Drop files here or click to upload</div>
@@ -120,7 +120,7 @@
             <div class="error-message" ng-show="sdmULController.errorMessage">
                 {{sdmULController.errorMessage}}
             </div>
-        </sdm-upload>
+        </sdm-upload-attachment>
         <div ng-show="sdmIMController.attachments.length">
             <div class="attachments-header">
                 <table class="table">

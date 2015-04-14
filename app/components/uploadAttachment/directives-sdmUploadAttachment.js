@@ -1,10 +1,10 @@
 'use strict';
 
 (function() {
-    angular.module('sdm.upload.directives.sdmUpload',[
+    angular.module('sdm.upload.directives.sdmUploadAttachment',[
             'angularFileUpload', 'ngCookies',
             'sdm.authentication.services.sdmUserManager'])
-        .directive('sdmUpload', ['$q', '$upload', '$cookieStore', 'sdmUserManager',
+        .directive('sdmUploadAttachment', ['$q', '$upload', '$cookieStore', 'sdmUserManager',
             function ($q, $upload, $cookieStore, sdmUserManager) {
                 return {
                     restrict: 'E',
