@@ -4,11 +4,14 @@
     angular.module('sdm.uploadDicom.directives.sdmUploadDicom',[
         'sdm.util.services.sdmFileUtilities', 'sdm.uploadDicom.services.sdmDicomUploader', 'sdm.services',
         'sdm.authentication.services.sdmUserManager', 'sdm.main.services.sdmViewManager',
+        'sdm.popovers.services.sdmPopoverTrampoline'
         ]).directive('sdmUploadDicom', [
             '$q', 'sdmFileUtilities',
             'sdmDicomUploader', 'makeAPICall',
-            'sdmUserManager', 'sdmViewManager',
-            function ($q, sdmFileUtilities, sdmDicomUploader, makeAPICall, sdmUserManager, sdmViewManager) {
+            'sdmUserManager', 'sdmViewManager','sdmPopoverTrampoline',
+            function ($q, sdmFileUtilities, sdmDicomUploader,
+                      makeAPICall, sdmUserManager, sdmViewManager,
+                      sdmPopoverTrampoline) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -221,6 +224,18 @@
                         sdmULDController.clear = function() {
                             sdmULDController.data.series = {};
                             sdmULDController.data.empty = true;
+                        }
+
+                        sdmULDController.confirmAnonymize = function($event) {
+                            if (!sdmULDController.data.anonymize) {
+                                sdmPopoverTrampoline.trigger(
+                                    'sdm-anonymize-modal',
+                                    'components/uploadDicom/anonymizeModal.html',
+                                    {data: sdmULDController.data}
+                                    );
+                            } else {
+                                sdmULDController.data.anonymize = true;
+                            }
                         }
 
                     }
