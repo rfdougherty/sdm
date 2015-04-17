@@ -8,31 +8,46 @@
              'sdm.APIServices.services.sdmUsers',
              'sdm.popovers.services.sdmPopoverTrampoline',
              'sdm.util.services.sdmHumanReadableSize'])
-        .directive('sdmInfoModal', ['$location', '$document', 'sdmPopoverTrampoline', 'makeAPICall',
+        .directive('sdmInfoModal', ['$location', '$document', '$q', 'sdmPopoverTrampoline', 'makeAPICall',
             'sdmDownloadInterface', 'sdmUserManager', 'sdmViewManager', 'sdmRoles',
             'sdmUsers', 'sdmHumanReadableSize',
-            function($location, $document, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface,
+            function($location, $document, $q, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface,
                 sdmUserManager, sdmViewManager, sdmRoles, sdmUsers, sdmHumanReadableSize) {
                 var tileViewer = function(nodeId) {
-                    var width = 900,
-                        height = 625,
-                        prefix = prefixMatch(["webkit", "ms", "Moz", "O"]);
+                    makeAPICall.async(BASE_URL + 'acquisitions/' + nodeId + '/tile').then(
+                        function(response) {
+                            console.log(response);
+                            console.log(BASE_URL + 'acquisitions/' + nodeId +'/tile');
+                        }
+                    );
+
+                    var margin = {left: 25, right: 25, bottom: 25, top:25},
+                        width = d3.select("div.sdm-d3-map").style('width'),
+                        height = d3.select("div.sdm-d3-map").style('height'),
+                        prefix = prefixMatch(["webkit", "ms", "Moz", "O"]),
+                        rectangle = {},
+                        cacheData = {},
+                        minScale = 1 << 10,
+                        maxScale = 1 << 14;
+
+                    width = +width.substr(0, width.length -2) - margin.left - margin.right;
+                    height = +height.substr(0, height.length -2) - margin.top -margin.bottom;
 
                     var tile = d3.geo.tile()
                         .size([width, height]);
 
 
                     var zoom = d3.behavior.zoom()
+                        .center([width/2, height/2])
                         .scale(1 << 12)
-                        .scaleExtent([1 << 10, 1 << 14])
+                        .scaleExtent([minScale, maxScale])
                         .translate([1 << 11, 1 << 11])
                         .on("zoom", zoomed);
 
                     var map = d3.select("div.sdm-d3-map")
-                        .style("width", width + "px")
-                        .style("height", height + "px")
-                        .style("margin", 25 + "px")
-                        .style("margin-bottom", 50 + "px")
+                        .style('width', width + 'px')
+                        .style('height', height + 'px')
+                        .style('margin', '25px')
                         .call(zoom);
 
                     var layer = map.append("div")
@@ -50,27 +65,128 @@
                                '/tile?' + coordinates;
                     }
 
+                    function getData(z, x, y, timeout) {
+                        return makeAPICall.async(getUrl(z, x, y), null, 'GET', null, null, 'arraybuffer', timeout);
+                    }
+
+                    function calculateRectangle(tiles){
+                        if (tiles.translate) {
+                            var minX = - tiles.translate[0] - 1;
+                            var minY = - tiles.translate[1] - 1;
+                            rectangle = {
+                                maxX: minX + 2 + width/256,
+                                maxY: minY + 2 + height/256,
+                                minX: minX,
+                                minY: minY
+                            }
+                        }
+                        return rectangle
+                    }
+                    function inRectangle(x, y) {
+                        return !(
+                            x > rectangle.maxX || x < rectangle.minX ||
+                            y > rectangle.maxY || y < rectangle.minY
+                        )
+                    }
+
                     function zoomed() {
                         var tiles = tile
                             .scale(zoom.scale())
                             .translate(zoom.translate())
                             ();
-
+                        calculateRectangle(tiles);
                         var image = layer
                             .style(prefix + "transform", matrix3d(tiles.scale, tiles.translate))
-                          .selectAll(".sd-d3-tile")
-                            .data(tiles, function(d) { return d; });
+                          .selectAll(".sdm-d3-tile")
+                            .data(
+                                tiles.filter(
+                                    function(d) {
+                                        return inRectangle(d[0], d[1])
+                                    }
+                                ),
+                                function (d) { return d; }
+                            );
 
-                        image.exit()
-                            .remove();
+                        image.exit().remove().each(function(d){
+                            if (d.abort) {
+                                d.abort.resolve();
+                            }
+                        });
 
-                        image.enter().append("img")
+                        image.enter()
+                            .append("img")
                             .attr("class", "sdm-d3-tile")
-                            .attr("src", function(d) {
-                              return getUrl(d[2], d[0], d[1])
-                            }) //"http://" + ["a", "b", "c", "d"][Math.random() * 4 | 0] + ".tiles.mapbox.com/v3/examples.map-i86nkdio/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
                             .style("left", function(d) { return (d[0] << 8) + "px"; })
-                            .style("top", function(d) { return (d[1] << 8) + "px"; });
+                            .style("top", function(d) { return (d[1] << 8) + "px"; })
+                            .each(
+                                function(d) {
+                                    var _this = this;
+                                    d.abort = $q.defer();
+                                    var cacheKey = [d[2], d[0], d[1]].join(':');
+                                    if (cacheData[cacheKey]) {
+                                        _this.setAttribute('src', cacheData[cacheKey]);
+                                        return;
+                                    }
+                                    getData(d[2], d[0], d[1], d.abort.promise).then(
+                                        function(buffer) {
+                                            if (buffer instanceof ArrayBuffer) {
+                                                var binary = '';
+                                                var bytes = new Uint8Array( buffer );
+                                                var len = bytes.byteLength;
+                                                for (var i = 0; i < len; i++) {
+                                                    binary += String.fromCharCode( bytes[ i ] );
+                                                }
+                                                var base64 = window.btoa( binary );
+                                                cacheData[cacheKey] = 'data:image/png;base64,' + base64;
+                                                _this.setAttribute('src', cacheData[cacheKey] );
+                                            }
+
+                                        }
+                                    );
+                                }
+                            );
+                    }
+
+                    d3.selectAll("button.sdm-d3-reset")
+                        .on("click", reset);
+
+                    function reset() {
+                        zoom.scale(1 << 12).translate([1 << 11, 1 << 11]);
+                        map.call(zoom.event);
+                    }
+
+                    d3.selectAll("button[data-zoom]")
+                        .on("click", clicked);
+
+                    function clicked() {
+                        var newScale = zoom.scale() * Math.pow(2, +this.getAttribute("data-zoom"));
+                        if (newScale > maxScale) {
+                            newScale = maxScale;
+                        }
+                        if (newScale < minScale) {
+                            newScale = minScale;
+                        }
+                        map.call(zoom.event); // https://github.com/mbostock/d3/issues/2387
+
+                        // Record the coordinates (in data space) of the center (in screen space).
+                        var center0 = zoom.center(), translate0 = zoom.translate(), coordinates0 = coordinates(center0);
+                        zoom.scale(newScale);
+
+                        // Translate back to the center.
+                        var center1 = point(coordinates0);
+                        zoom.translate([translate0[0] + center0[0] - center1[0], translate0[1] + center0[1] - center1[1]]);
+
+                        map.transition().duration(750).call(zoom.event);
+                    }
+
+                    function coordinates(point) {
+                        var scale = zoom.scale(), translate = zoom.translate();
+                        return [(point[0] - translate[0]) / scale, (point[1] - translate[1]) / scale];
+                    }
+
+                    function point(coordinates) {
+                        var scale = zoom.scale(), translate = zoom.translate();
+                        return [coordinates[0] * scale + translate[0], coordinates[1] * scale + translate[1]];
                     }
 
 
@@ -86,6 +202,7 @@
                         return "";
                     }
                 }
+
                 return {
                     restrict: 'E',
                     scope: false,
@@ -93,7 +210,7 @@
                     transclude: false,// we want to insert custom content inside the directive
                     controller: function(){},
                     controllerAs: 'sdmIMController',
-                    link: function($scope, $element, $attrs, sdmIMController){
+                    link: function($scope, $element, $attrs, sdmIMController) {
                         $scope.$parent.$parent.hideToolbar(null, 0);
                         var node = $scope.$parent.$parent.data;
                         var APIUrl = BASE_URL + node.level.name + '/' + node.id;
@@ -156,7 +273,9 @@
                         };
 
                         sdmIMController.nodeId = node.id;
-                        sdmIMController.tileViewer = function(){tileViewer(sdmIMController.nodeId)};
+                        sdmIMController.tileViewer = function(){
+                            tileViewer(sdmIMController.nodeId, $element.width(), $element.height());
+                        };
                         sdmIMController.baseUrl = BASE_URL + 'acquisitions/' + node.id + '/file';
                         console.log(path);
                         sdmIMController.path = path.slice(1);
@@ -309,8 +428,10 @@
                         sdmIMController.downloadAttachment= function($index) {
                             var url = APIUrl + '/attachment?name=' + sdmIMController.attachments[$index].name
                                 + sdmIMController.attachments[$index].ext;
+
                             makeAPICall.async(url, null, 'POST', null).then(function(response){
-                                window.open(response.url, '_self');
+
+                                window.open(response.url + '&attach=true', '_self');
                             });
                         };
 

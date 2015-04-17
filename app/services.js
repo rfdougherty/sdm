@@ -13,7 +13,7 @@ var httpServices = angular.module('sdmHttpServices', ['ngCookies', 'sdm.authenti
 httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', function($http, $cookieStore, sdmUserManager) {
 
     var makeAPICall = {
-        async: function(url, params, method, data, headers) {
+        async: function(url, params, method, data, headers, responseType, timeout) {
             console.log("MAKE API CALL\nwith url=", url, " and params=", params);
             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
             if (typeof method === 'undefined') {
@@ -33,7 +33,9 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 method: method,
                 url: url,
                 headers: angular.extend(headers||{}, {'Authorization': accessToken}),
-                params: params
+                params: params,
+                responseType: responseType,
+                timeout: timeout
             };
 
             if (typeof data !== 'undefined') {
@@ -59,7 +61,10 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 console.log('Unhandled problem in the request.');
                 console.log('Status:', reason.status);
                 console.log('Reason', reason);
-                throw new Error(reason.data.code + ' ' + reason.data.detail);
+                if (reason.data) {
+                    throw new Error(reason.data.code + ' ' + reason.data.detail);
+                }
+                return {data: null};
             }).then(function(value) {
                 console.log(value);
                 if (value.data) {
@@ -99,7 +104,7 @@ angular.module('sdmD3Service', [])
             var scriptTag = $document[0].createElement('script');
             scriptTag.type = 'text/javascript';
             scriptTag.async = true;
-            scriptTag.src = '//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js';
+            scriptTag.src = '//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js';
             scriptTag.onreadystatechange = function () {
                 if (this.readyState == 'complete') onScriptLoad();
             }

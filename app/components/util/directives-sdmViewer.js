@@ -33,7 +33,7 @@ angular.module('sdm.util.directives.sdmViewer',
                                     .attr({
                                         'data': displayFile.fileUrl
                                     });
-                if (displayFile.type === 'pdf'){
+                if (displayFile.type.search(/^(pdf|html)$/) > -1){
                     objectEl.attr({
                         width: '90%',
                         height: '90%'
@@ -45,6 +45,7 @@ angular.module('sdm.util.directives.sdmViewer',
                     switch(displayFile.type) {
                         case 'pdf':
                         case 'txt':
+                        case 'html':
                             break;
                         default:
                             resize(objectEl, element.parent());

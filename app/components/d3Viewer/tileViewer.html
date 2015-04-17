@@ -1,3 +1,8 @@
 
 <div class="sdm-d3-map" ng-init="$parent.$parent.sdmIMController.tileViewer()"></div>
-<input type="button" class="sdm-d3-viewer-button btn btn-default btn-xs" value="Close" ng-click="hidePopover($event, 0)">
+<div class="sdm-d3-buttons">
+    <button class="sdm-d3-reset sdm-d3-viewer-button btn btn-default btn-xs">Reset</button>
+    <button class="sdm-d3-zoom sdm-d3-viewer-button btn btn-default btn-xs" data-zoom="+1">Zoom in</button>
+    <button class="sdm-d3-zoom sdm-d3-viewer-button btn btn-default btn-xs" data-zoom="-1">Zoom out</button>
+    <button class="sdm-d3-viewer-button btn btn-default btn-xs" ng-click="hidePopover($event, 0)">Close</button>
+</div>
