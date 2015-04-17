@@ -14,6 +14,7 @@
                     controllerAs: 'sdmULDController',
                     link: function($scope, $element, $attrs, sdmULDController) {
                         sdmULDController.series = {};
+                        sdmULDController.empty = true;
                         sdmULDController.anonymize = true;
 
                         var dicomTags = ['PatientName',
@@ -139,6 +140,7 @@
                                                 seriesData.datetime += ' ' + toTimeString(tags.StudyTime.value[0]);
                                             }
                                         }
+                                        sdmULDController.empty = false;
                                     });
 
                                 }
@@ -183,6 +185,7 @@
 
                         sdmULDController.clear = function() {
                             sdmULDController.series = {};
+                            sdmULDController.empty = true;
                         }
 
                     }

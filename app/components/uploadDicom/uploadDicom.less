@@ -10,9 +10,13 @@
     border: solid 1px black;
     border-top: none;
     table {
-        width: 100%;
+        margin-top: 15px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 96%;
+        table-layout: fixed;
         th:first-child, td:first-child {
-            width: 9%;
+            width: 5%;
         }
         th, td {
             width: 13%;
@@ -23,21 +27,54 @@
         }
     }
 
-    div.message {
-        width: 400px;
-        margin: 20px;
-        margin-bottom: 0px;
+    #sdm-upload-dicom-menu {
+        margin-top: 15px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 96%;
+        #sdm-dicom-form-metadata {
+            width: 30%;
+            select {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+            display: inline-block;
+        }
+        .drop-box {
+            width: 69%;
+            margin-left: 5px;
+            background: #F8F8F8;
+            border: 5px dashed #DDD;
+            height: 100px;
+            text-align: center;
+            vartical-align: middle;
+            display: inline-block;
+            padding-top: 30px;
+            font-size: 20px;
+        }
+
     }
-    .drop-box {
-        background: #F8F8F8;
-        border: 5px dashed #DDD;
-        width: 350px;
-        height: 65px;
-        text-align: center;
-        margin: 40px;
-        padding-top: 15px;
-        display: inline-block;
+
+    #sdm-upload-dicom-buttons {
+        margin-top: 15px;
+        width: 96%;
+        margin-left: auto;
+        margin-right: auto;
+        input.btn {
+            float: right;
+            width: 116px;
+            height: 24px;
+            padding: 1px;
+            margin-left: 5px;
+            background-color: @bgcol1;
+            color: @fgcol1;
+            &[type="button"] {
+                background-color: @bgcol2;
+                color: @fgcol2;
+            }
+        }
     }
+
 
     #sdm-upload-dicom-title {
         position:absolute;
@@ -67,4 +104,5 @@
         bottom: 5px;
         border: solid 1px black;
     }
+
 }
