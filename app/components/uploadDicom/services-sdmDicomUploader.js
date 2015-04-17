@@ -44,7 +44,7 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
             var processDicom = anonymize?sdmFileUtilities.anonymizeDicom:sdmFileUtilities.readFile;
             processDicom(dicom, true).then(
                 function (dicomData) {
-                    sendFile(dicomData, name, _id).then(function(){
+                    return sendFile(dicomData, name, _id).then(function(){
                         deferred.resolve();
                     });
                 }
@@ -59,6 +59,7 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                 seriesD.reject();
                 return seriesD.promise
             }
+            series.progress = 0;
 
             var headerData = buildHeader(overwrite);
             series.abort = function() {
@@ -70,7 +71,9 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                 angular.forEach(series.files, function(dicom, name){
                     var promise = uploadDicom(dicom, name, _id, anonymize).then(
                         function() {
-                            series.progress += dicom.size;
+                            var increment = 100*dicom.size/series.size;
+                            increment -= increment%0.1
+                            series.progress += increment;
                         }
                     );
                     promises.push( promise );
@@ -78,8 +81,13 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                 $q.all(promises).then(function(){
                     sendComplete(_id).then(
                         function(){
-                            seriesD.resolve()
+                            series.progress = 100;
+                            seriesD.resolve();
                         });
+                },
+                function(){
+                    series.progress = 0;
+                    seriesD.reject();
                 });
             });
             return seriesD.promise;

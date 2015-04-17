@@ -2,9 +2,13 @@
 
 (function() {
     angular.module('sdm.uploadDicom.directives.sdmUploadDicom',[
-        'sdm.util.services.sdmFileUtilities', 'sdm.uploadDicom.services.sdmDicomUploader'
-        ]).directive('sdmUploadDicom', ['$q', 'sdmFileUtilities', 'sdmDicomUploader',
-            function ($q, sdmFileUtilities, sdmDicomUploader) {
+        'sdm.util.services.sdmFileUtilities', 'sdm.uploadDicom.services.sdmDicomUploader', 'sdm.services',
+        'sdm.authentication.services.sdmUserManager', 'sdm.main.services.sdmViewManager',
+        ]).directive('sdmUploadDicom', [
+            '$q', 'sdmFileUtilities',
+            'sdmDicomUploader', 'makeAPICall',
+            'sdmUserManager', 'sdmViewManager',
+            function ($q, sdmFileUtilities, sdmDicomUploader, makeAPICall, sdmUserManager, sdmViewManager) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -16,6 +20,7 @@
                         sdmULDController.series = {};
                         sdmULDController.empty = true;
                         sdmULDController.anonymize = true;
+                        var userData = sdmUserManager.getAuthData();
 
                         var dicomTags = ['PatientName',
                             'PatientBirthDate',
@@ -186,6 +191,35 @@
                         sdmULDController.clear = function() {
                             sdmULDController.series = {};
                             sdmULDController.empty = true;
+                        }
+
+                        var getGroups = function() {
+                            makeAPICall.async(BASE_URL + 'projects/groups').then(function(groups){
+                                sdmULDController.groups = groups;
+                                sdmULDController.groups.forEach(function(group){
+                                    group.name = group.name||group._id
+                                });
+                                sdmULDController.groups.sort(naturalSortByName);
+                            });
+                        }
+                        getGroups();
+
+                        sdmULDController.getProjects = function($event, group) {
+                            console.log($event);
+                            if (!group) {
+                                sdmULDController.projects = [];
+                                sdmULDController.selectedProject = null;
+                                return;
+                            }
+                            return makeAPICall.async(BASE_URL + 'projects', {group: group._id}).then(function(projects){
+                                var _projects = userData.root?projects:projects.filter(function(project){
+                                    var p = project.permissions;
+                                    return p && (p.length > 1 || (
+                                        p.length && (p[0].access === 'admin')
+                                    ));
+                                });
+                                sdmULDController.projects = _projects.sort(naturalSortByName);
+                            });
                         }
 
                     }
