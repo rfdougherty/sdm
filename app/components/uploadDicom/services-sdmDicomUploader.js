@@ -83,6 +83,10 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                         function(){
                             series.progress = 100;
                             seriesD.resolve();
+                        },
+                        function(){
+                            series.progress = 0;
+                            seriesD.reject();
                         });
                 },
                 function(){

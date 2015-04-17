@@ -294,7 +294,8 @@ var _tree;
             views: {
                 'projects': {'viewDescription': projectsViewDescription},
                 'collections': {'viewDescription': collectionsViewDescription},
-                'search': {'viewDescription': searchViewDescription}
+                'search': {'viewDescription': searchViewDescription},
+                'upload': {}
             },
             'current': 'projects'
         };
@@ -476,7 +477,7 @@ var _tree;
         };
 
         var initializeView = function(viewDescription, viewID) {
-            if (viewID === 'search') {
+            if (viewID === 'search' || viewID === 'upload') {
                 return;
             }
             var promise = treeInit(viewID);
@@ -629,6 +630,21 @@ var _tree;
                 viewData.views.search.parameters = {};
             }
             return viewData.views.search.parameters;
+        }
+
+        var getUploadData = function() {
+            if (!viewData.views.upload.data) {
+                viewData.views.upload.data = {
+                    series: {},
+                    empty: true,
+                    anonymize: true,
+                    selectedProject: null,
+                    selectedGroup: null,
+                    groups: [],
+                    projects: []
+                }
+            }
+            return viewData.views.upload.data
         }
 
         /*
@@ -978,7 +994,8 @@ var _tree;
             searchAcquisitions: searchAcquisitions,
             breadthFirstFullUntilLevel: breadthFirstFullUntilLevel,
             breadthFirstExpandCheckedGroups: breadthFirstExpandCheckedGroups,
-            getSearchParameters: getSearchParameters
+            getSearchParameters: getSearchParameters,
+            getUploadData: getUploadData
         }
     }
 

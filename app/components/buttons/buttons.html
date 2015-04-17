@@ -1,5 +1,5 @@
 <div class="toolbar" ng-controller="SdmButtonsController as sdmButtonsController">
-    <button id="sdm-refresh-button" type="button" class="refresh disabled btn-xs" ng-click="sdmButtonsController.refreshView($event)" ng-disabled="sdmButtonsController.location() === '/search'">
+    <button id="sdm-refresh-button" type="button" class="refresh disabled btn-xs" ng-click="sdmButtonsController.refreshView($event)" ng-disabled="sdmButtonsController.location().search('/search|/upload') > -1">
         <span class="glyphicon glyphicon-refresh toolbar-icon">
         </span>
         <span class="tooltip"
@@ -19,7 +19,8 @@
         <button type="button"
                 class="btn btn-default table-view"
                 ng-click="sdmButtonsController.layout('table')"
-                ng-class="{active:sdmButtonsController.isActiveButton('table')}">
+                ng-class="{active:sdmButtonsController.isActiveButton('table') && sdmButtonsController.location() !== '/upload'}"
+                ng-disabled="sdmButtonsController.location() === '/upload'">
             <span class="glyphicon glyphicon-th-list toolbar-icon">
             </span>
             <span class="tooltip"
@@ -39,7 +40,7 @@
                 class="btn btn-default tree-view"
                 ng-click="sdmButtonsController.layout('tree')"
                 ng-class="{active:sdmButtonsController.isActiveButton('tree')}"
-                ng-disabled="sdmButtonsController.location() === '/search'">
+                ng-disabled="sdmButtonsController.location().search('/search|/upload') > -1">
             <span class="glyphicon glyphicon-tree-conifer toolbar-icon">
             </span>
             <span class="tooltip"

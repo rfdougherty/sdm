@@ -17,10 +17,40 @@
                     controller: function(){},
                     controllerAs: 'sdmULDController',
                     link: function($scope, $element, $attrs, sdmULDController) {
-                        sdmULDController.series = {};
-                        sdmULDController.empty = true;
-                        sdmULDController.anonymize = true;
+                        sdmULDController.data = sdmViewManager.getUploadData();
+                        var getGroups = function() {
+                            makeAPICall.async(BASE_URL + 'projects/groups').then(function(groups){
+                                sdmULDController.data.groups = groups;
+                                sdmULDController.data.groups.forEach(function(group){
+                                    group.name = group.name||group._id
+                                });
+                                sdmULDController.data.groups.sort(naturalSortByName);
+                            });
+                        }
+                        if (!sdmULDController.data.groups.length) {
+                            getGroups();
+                        }
+
+                        sdmULDController.getProjects = function($event, group) {
+                            console.log($event);
+                            if (!group) {
+                                sdmULDController.data.projects = [];
+                                sdmULDController.data.selectedProject = null;
+                                return;
+                            }
+                            return makeAPICall.async(BASE_URL + 'projects', {group: group._id}).then(function(projects){
+                                var _projects = userData.root?projects:projects.filter(function(project){
+                                    var p = project.permissions;
+                                    return p && (p.length > 1 || (
+                                        p.length && (p[0].access === 'admin')
+                                    ));
+                                });
+                                sdmULDController.data.projects = _projects.sort(naturalSortByName);
+                            });
+                        }
+
                         var userData = sdmUserManager.getAuthData();
+
 
                         var dicomTags = ['PatientName',
                             'PatientBirthDate',
@@ -114,9 +144,9 @@
                                             console.log(patientName);
                                         });
                                         **/
-                                        var seriesData = sdmULDController.series[tags.SeriesInstanceUID.value[0]];
+                                        var seriesData = sdmULDController.data.series[tags.SeriesInstanceUID.value[0]];
                                         if (!seriesData) {
-                                            sdmULDController.series[tags.SeriesInstanceUID.value[0]] = seriesData =
+                                            sdmULDController.data.series[tags.SeriesInstanceUID.value[0]] = seriesData =
                                                 {
                                                     files: {},
                                                     tags: tags,
@@ -145,7 +175,7 @@
                                                 seriesData.datetime += ' ' + toTimeString(tags.StudyTime.value[0]);
                                             }
                                         }
-                                        sdmULDController.empty = false;
+                                        sdmULDController.data.empty = false;
                                     });
 
                                 }
@@ -154,24 +184,24 @@
                         var currentSeries;
                         sdmULDController.upload = function() {
                             var previousSeries;
-                            angular.forEach(sdmULDController.series, function(series, seriesUID) {
+                            angular.forEach(sdmULDController.data.series, function(series, seriesUID) {
                                 var overwrite = {
                                     series_uid: seriesUID,
-                                    group_name: sdmULDController.group || 'Unknown',
-                                    project_name: sdmULDController.project || 'unknown',
+                                    group_name: sdmULDController.data.selectedGroup.name || 'Unknown',
+                                    project_name: sdmULDController.data.selectedProject.name || 'unknown',
                                     manufacturer: series.tags['Manufacturer'].value[0],
                                     acq_no: series.tags['AcquisitionNumber']? series.tags['AcquisitionNumber'].value[0]:1
                                 };
                                 var _uploadSeries = function() {
                                     currentSeries = series;
                                     return sdmDicomUploader.uploadSeries(
-                                        series, seriesUID, overwrite, sdmULDController.anonymize
+                                        series, seriesUID, overwrite, sdmULDController.data.anonymize
                                     );
                                 }
                                 if (!previousSeries) {
                                     currentSeries = series;
                                     previousSeries = sdmDicomUploader.uploadSeries(
-                                        series, seriesUID, overwrite, sdmULDController.anonymize
+                                        series, seriesUID, overwrite, sdmULDController.data.anonymize
                                     );
                                 } else {
                                     if (sdmULDController.abort) {
@@ -189,37 +219,8 @@
                         }
 
                         sdmULDController.clear = function() {
-                            sdmULDController.series = {};
-                            sdmULDController.empty = true;
-                        }
-
-                        var getGroups = function() {
-                            makeAPICall.async(BASE_URL + 'projects/groups').then(function(groups){
-                                sdmULDController.groups = groups;
-                                sdmULDController.groups.forEach(function(group){
-                                    group.name = group.name||group._id
-                                });
-                                sdmULDController.groups.sort(naturalSortByName);
-                            });
-                        }
-                        getGroups();
-
-                        sdmULDController.getProjects = function($event, group) {
-                            console.log($event);
-                            if (!group) {
-                                sdmULDController.projects = [];
-                                sdmULDController.selectedProject = null;
-                                return;
-                            }
-                            return makeAPICall.async(BASE_URL + 'projects', {group: group._id}).then(function(projects){
-                                var _projects = userData.root?projects:projects.filter(function(project){
-                                    var p = project.permissions;
-                                    return p && (p.length > 1 || (
-                                        p.length && (p[0].access === 'admin')
-                                    ));
-                                });
-                                sdmULDController.projects = _projects.sort(naturalSortByName);
-                            });
+                            sdmULDController.data.series = {};
+                            sdmULDController.data.empty = true;
                         }
 
                     }
