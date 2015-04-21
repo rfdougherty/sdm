@@ -38,11 +38,13 @@ angular.module('sdm.util.services.sdmFileUtilities',
                     console.log('Ignoring folder', file.name);
                     file.status = "Not valid";
                     deferred.reject();
+                    return deferred.promise;
                 }
                 if (file.name.substring(0, 1) == '.') {
                     console.log('Ignoring hidden file:', file.name);
                     file.status = "Not valid";
                     deferred.reject();
+                    return deferred.promise;
                 }
                 var fr = new FileReader();
                 var blob = file.slice(128, 132);

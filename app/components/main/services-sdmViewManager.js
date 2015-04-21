@@ -392,6 +392,7 @@ var _tree;
             return refreshView(viewData['current']);
         }
 
+
         var _updateCountersParent = function(node) {
             /*
             ** used in refreshView to update counts
@@ -477,7 +478,11 @@ var _tree;
         };
 
         var initializeView = function(viewDescription, viewID) {
-            if (viewID === 'search' || viewID === 'upload') {
+            if (viewID === 'search') {
+                return;
+            }
+            if (viewID === 'upload') {
+                initializeUploadView();
                 return;
             }
             var promise = treeInit(viewID);
@@ -492,6 +497,8 @@ var _tree;
                 });
             }
         };
+
+
 
         var initialize = function() {
             angular.forEach(viewData.views, initializeView);
@@ -633,18 +640,32 @@ var _tree;
         }
 
         var getUploadData = function() {
+
+            return viewData.views.upload.data
+        }
+
+        var getGroups = function() {
+            makeAPICall.async(BASE_URL + 'projects/groups').then(function(groups){
+                viewData.views.upload.data.groups = groups;
+                viewData.views.upload.data.groups.forEach(function(group){
+                    group.name = group.name||group._id
+                });
+                viewData.views.upload.data.groups.sort(naturalSortByName);
+            });
+        }
+
+        var initializeUploadView = function() {
             if (!viewData.views.upload.data) {
                 viewData.views.upload.data = {
                     series: {},
                     empty: true,
                     anonymize: true,
-                    selectedProject: null,
-                    selectedGroup: null,
                     groups: [],
                     projects: []
                 }
             }
-            return viewData.views.upload.data
+            viewData.views.upload.data.selectedGroup = viewData.views.upload.data.selectedProject = null;
+            getGroups();
         }
 
         /*

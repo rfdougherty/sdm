@@ -21,21 +21,10 @@
                     controllerAs: 'sdmULDController',
                     link: function($scope, $element, $attrs, sdmULDController) {
                         sdmULDController.data = sdmViewManager.getUploadData();
-                        var getGroups = function() {
-                            makeAPICall.async(BASE_URL + 'projects/groups').then(function(groups){
-                                sdmULDController.data.groups = groups;
-                                sdmULDController.data.groups.forEach(function(group){
-                                    group.name = group.name||group._id
-                                });
-                                sdmULDController.data.groups.sort(naturalSortByName);
-                            });
-                        }
-                        if (!sdmULDController.data.groups.length) {
-                            getGroups();
-                        }
+
+                        var userData = sdmUserManager.getAuthData();
 
                         sdmULDController.getProjects = function($event, group) {
-                            console.log($event);
                             if (!group) {
                                 sdmULDController.data.projects = [];
                                 sdmULDController.data.selectedProject = null;
@@ -51,9 +40,6 @@
                                 sdmULDController.data.projects = _projects.sort(naturalSortByName);
                             });
                         }
-
-                        var userData = sdmUserManager.getAuthData();
-
 
                         var dicomTags = ['PatientName',
                             'PatientBirthDate',

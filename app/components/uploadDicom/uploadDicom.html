@@ -7,7 +7,7 @@
                 <div id="sdm-dicom-form-metadata">
                     <select class="form-control" ng-options="group.name||group._id for group in sdmULDController.data.groups" ng-model="sdmULDController.data.selectedGroup" ng-change="sdmULDController.getProjects($event, sdmULDController.data.selectedGroup)" ng-class="{default:!sdmULDController.data.selectedGroup}">
                         <option class="default" value="">Select group of destination project</option></select>
-                    <select class="form-control" ng-disabled="!sdmULDController.data.projects.length" ng-options="project.name for project in sdmULDController.data.projects" ng-model="sdmULDController.data.selectedProject" ng-class="{default:!sdmULDController.data.selectedProject}"><option class="default" value="">Select destination project</option></select>
+                    <select class="form-control" ng-disabled="!sdmULDController.data.projects.length || !sdmULDController.data.selectedGroup" ng-options="project.name for project in sdmULDController.data.projects" ng-model="sdmULDController.data.selectedProject" ng-class="{default:!sdmULDController.data.selectedProject}"><option class="default" value="">Select destination project</option></select>
                     <input type="checkbox" ng-model="sdmULDController.data.anonymize" ng-click="sdmULDController.confirmAnonymize($event)">
                     <label for="sdm-anonymize">Anonymize</label>
                 </div>
