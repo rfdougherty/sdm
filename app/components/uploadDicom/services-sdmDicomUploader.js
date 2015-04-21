@@ -68,17 +68,49 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
 
             sendFile(headerData, 'metadata.json').then(function(_id){
                 var promises = [];
+                var i = 0;
+                var numQueues = 48;
+                var queues = [];
+                var queueCompleteDeferreds = [];
+                for (var i = 0;i < numQueues;i++) {
+                    queues.push([])
+                    queueCompleteDeferreds.push($q.defer());
+                }
+                var queueIndex = 0;
                 angular.forEach(series.files, function(dicom, name){
-                    var promise = uploadDicom(dicom, name, _id, anonymize).then(
-                        function() {
-                            var increment = 100*dicom.size/series.size;
-                            increment -= increment%0.1
-                            series.progress += increment;
-                        }
-                    );
-                    promises.push( promise );
+                    var uploadWrap = function(){
+                        return uploadDicom(dicom, name, _id, anonymize).then(
+                            function() {
+                                var increment = 100*dicom.size/series.size;
+                                increment -= increment%0.1
+                                series.progress += increment;
+                            }
+                        );
+                    }
+                    queueIndex = (queueIndex + 1) % numQueues;
+                    var queue = queues[queueIndex];
+                    var promise;
+                    if (queue.length > 0) {
+                        promise = queue[queue.length - 1].then(uploadWrap);
+                    } else {
+                        promise = uploadWrap();
+                    }
+                    queue.push(promise);
                 });
-                $q.all(promises).then(function(){
+                var queueCompletePromises = []
+                angular.forEach(queueCompleteDeferreds, function(deferred, i){
+                    queueCompletePromises.push(deferred.promise);
+                    var queue = queues[i];
+                    if (queue.length > 0) {
+                        queue[queue.length - 1].then(function() {
+                            deferred.resolve();
+                        });
+                    } else {
+                        deferred.resolve();
+                    }
+                });
+
+                $q.all(queueCompletePromises).then(function(){
                     sendComplete(_id).then(
                         function(){
                             series.progress = 100;

@@ -28,7 +28,7 @@ angular.module('sdm.util.services.sdmFileUtilities',
 
             var parseContent = function(fileContent) {
                 var data = new DataView(fileContent);
-                daikon.Parser.verbose = true;
+                //daikon.Parser.verbose = true;
                 return daikon.Series.parseImage(data);
             }
 
