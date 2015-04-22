@@ -34,8 +34,15 @@
                         <td>{{data.tags.SeriesDescription.value[0]}}</td>
                         <td>{{data.length}}{{data.tags.ImagesInAcquisition.value[0]?'/' + data.tags.ImagesInAcquisition.value[0]:''}}</td>
                         <td>{{data.tags.PatientID.value[0]}}</td>
-                        <td>{{data.size}}</td>
-                        <td>{{data.progress}}%</td>
+                        <td>{{data.hrsize}}</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="{{data.progress}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: data.progress + '%'}">
+                                    {{data.progress | number:2 ||0}}%
+                                </div>
+                            </div>
+                        </td>
+                            <!--{{("" + data.progress).split('.')[0]}}%</td-->
                     </tr>
                     <tr>
                         <td></td>

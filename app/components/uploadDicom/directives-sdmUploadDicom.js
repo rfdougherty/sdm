@@ -4,14 +4,14 @@
     angular.module('sdm.uploadDicom.directives.sdmUploadDicom',[
         'sdm.util.services.sdmFileUtilities', 'sdm.uploadDicom.services.sdmDicomUploader', 'sdm.services',
         'sdm.authentication.services.sdmUserManager', 'sdm.main.services.sdmViewManager',
-        'sdm.popovers.services.sdmPopoverTrampoline'
+        'sdm.popovers.services.sdmPopoverTrampoline', 'sdm.util.services.sdmHumanReadableSize'
         ]).directive('sdmUploadDicom', [
             '$q', 'sdmFileUtilities',
             'sdmDicomUploader', 'makeAPICall',
-            'sdmUserManager', 'sdmViewManager','sdmPopoverTrampoline',
+            'sdmUserManager', 'sdmViewManager','sdmPopoverTrampoline', 'sdmHumanReadableSize',
             function ($q, sdmFileUtilities, sdmDicomUploader,
                       makeAPICall, sdmUserManager, sdmViewManager,
-                      sdmPopoverTrampoline) {
+                      sdmPopoverTrampoline, sdmHumanReadableSize) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -150,6 +150,7 @@
                                         if (!seriesData.files[file.uid]) {
                                             seriesData.length++;
                                             seriesData.size += file.size;
+                                            seriesData.hrsize = sdmHumanReadableSize(seriesData.size);
                                         }
                                         seriesData.files[file.uid] = file;
 

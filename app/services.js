@@ -63,8 +63,9 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 console.log('Reason', reason);
                 if (reason.data) {
                     throw new Error(reason.data.code + ' ' + reason.data.detail);
+                } else {
+                    throw new Error('Unhandled problem in the request');
                 }
-                return {data: null};
             }).then(function(value) {
                 console.log(value);
                 if (value.data) {

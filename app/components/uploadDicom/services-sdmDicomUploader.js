@@ -14,7 +14,7 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
             var headerData = sdmFileUtilities.createFile(JSON.stringify(header));
             return headerData;
         }
-
+        var _counter = 0;
         var sendFile = function(data, filename, _id) {
             var URL = uploadURL + '?filename=' + filename;
             if (_id) {
@@ -30,7 +30,13 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                     {'Content-MD5': sha1Hash}
                 ).then(function(response) {
                     deferred.resolve(response)
+                },
+                function() {
+                    deferred.reject();
                 });
+            },
+            function() {
+                deferred.reject();
             });
             return deferred.promise
         }
@@ -44,9 +50,13 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
             var processDicom = anonymize?sdmFileUtilities.anonymizeDicom:sdmFileUtilities.readFile;
             processDicom(dicom, true).then(
                 function (dicomData) {
-                    return sendFile(dicomData, name, _id).then(function(){
-                        deferred.resolve();
-                    });
+                    return sendFile(dicomData, name, _id).then(
+                        function(){
+                            deferred.resolve();
+                        },
+                        function() {
+                            deferred.reject();
+                        });
                 }
             );
 
@@ -69,7 +79,7 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
             sendFile(headerData, 'metadata.json').then(function(_id){
                 var promises = [];
                 var i = 0;
-                var numQueues = 48;
+                var numQueues = 12;
                 var queues = [];
                 var queueCompleteDeferreds = [];
                 for (var i = 0;i < numQueues;i++) {
@@ -77,13 +87,14 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                     queueCompleteDeferreds.push($q.defer());
                 }
                 var queueIndex = 0;
+                series.completedFiles = 0;
                 angular.forEach(series.files, function(dicom, name){
                     var uploadWrap = function(){
                         return uploadDicom(dicom, name, _id, anonymize).then(
                             function() {
                                 var increment = 100*dicom.size/series.size;
-                                increment -= increment%0.1
                                 series.progress += increment;
+                                series.completedFiles++;
                             }
                         );
                     }
@@ -104,6 +115,9 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                     if (queue.length > 0) {
                         queue[queue.length - 1].then(function() {
                             deferred.resolve();
+                        },
+                        function() {
+                            deferred.reject();
                         });
                     } else {
                         deferred.resolve();
@@ -111,15 +125,21 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                 });
 
                 $q.all(queueCompletePromises).then(function(){
-                    sendComplete(_id).then(
-                        function(){
-                            series.progress = 100;
-                            seriesD.resolve();
-                        },
-                        function(){
-                            series.progress = 0;
-                            seriesD.reject();
-                        });
+                    if (series.completedFiles === series.length) {
+                        sendComplete(_id).then(
+                            function(){
+                                series.progress = 100;
+                                seriesD.resolve();
+                            },
+                            function(){
+                                series.progress = 0;
+                                seriesD.reject();
+                            });
+                    } else {
+                        series.progress = 0;
+                        seriesD.reject();
+                    }
+
                 },
                 function(){
                     series.progress = 0;
