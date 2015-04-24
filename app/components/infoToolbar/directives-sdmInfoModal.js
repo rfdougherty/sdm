@@ -343,7 +343,11 @@
                             function (apiData) {
                                 console.log('apiData', apiData);
                                 sdmIMController.data = node.level.getModalData(node, apiData);
+                                sdmIMController.data.forEach(function(field){
+                                    field.originalValue = field.value;
+                                });
                                 sdmIMController.attachments = apiData.attachments||[];
+                                sdmIMController.editables = node.level.editables ||{};
 
                                 sdmIMController.files = apiData.files||[];
                                 if (sdmIMController.files.length) {
@@ -423,7 +427,11 @@
 
                         sdmIMController.close = function ($event) {
                             var areNotesChanged = sdmIMController.apiData && apiDataNotes !== sdmIMController.apiData.notes;
-                            if (sdmIMController.arePermissionsChanged || areNotesChanged) {
+                            var isApiDataChanged = !sdmIMController.data.every(
+                                function (field) {
+                                    return field.value === field.originalValue;
+                                });
+                            if (sdmIMController.arePermissionsChanged || areNotesChanged || isApiDataChanged) {
                                 sdmIMController.confirmDismiss = true;
                             } else {
                                 $scope.$parent.enableEvents();
@@ -520,7 +528,21 @@
                             });
                         }
 
+                        sdmIMController.updateValue = function(field) {
+                            var values = [];
+                            field.optionsSelected.forEach(
+                                function(o){
+                                    values.push(sdmIMController.editables[field.key].dropdown[o]);
+                                }
+                            );
+                            field.value = values.join(',');
+                        }
 
+                        sdmIMController.edit = function(field) {
+                            if (sdmIMController.editables[field.key]){
+                                field.editing = true;
+                            }
+                        }
 
                         sdmIMController.addUser = function ($event, form) {
                             if (!sdmIMController.selectedUID) {
@@ -573,7 +595,11 @@
 
                         sdmIMController.save = function ($event) {
                             var areNotesChanged = apiDataNotes !== sdmIMController.apiData.notes;
-                            if (!sdmIMController.arePermissionsChanged && !areNotesChanged) {
+                            var isApiDataChanged = !sdmIMController.data.every(
+                                function (field) {
+                                    return !field.editing;
+                                });
+                            if (!sdmIMController.arePermissionsChanged && !areNotesChanged && !isApiDataChanged) {
                                 $scope.$parent.enableEvents();
                                 $scope.$parent._hidePopover($event, 0);
                                 return;
@@ -582,6 +608,17 @@
                             var payload = {notes: sdmIMController.apiData.notes};
                             if (sdmIMController.arePermissionsChanged) {
                                 payload.permissions = sdmIMController.apiData.permissions;
+                            }
+                            if (isApiDataChanged) {
+                                console.log(sdmIMController.data);
+                                sdmIMController.data.filter(function(field){
+                                    return field.editing;
+                                }).forEach(
+                                    function (field){
+                                        console.log(field);
+                                        sdmIMController.editables[field.key].update(payload, field.value);
+                                    }
+                                )
                             }
                             makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(function(){
                                     var currentPath = $location.path();

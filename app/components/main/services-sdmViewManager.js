@@ -3,13 +3,26 @@ var _tree;
 
 (function(){
 
-    var projectsViewDescription = (function(){
-        function objectAccessor(field){
-            return function (o){
-                return o[field];
-            }
-        };
 
+    var updater = function(fields) {
+        var _fields = fields.split('.');
+        return function(o, value) {
+            var _o = o;
+            for (var i = 0; i < _fields.length - 1; i++) {
+                o[_fields[i]] = o[_fields[i]]||{}
+                _o = o[_fields[i]];
+            }
+            _o[_fields[_fields.length - 1]] = value;
+        }
+    };
+
+    var objectAccessor = function (field) {
+        return function (o){
+            return o[field];
+        }
+    };
+
+    var projectsViewDescription = (function(){
         var roots = {
             name: 'roots',
             next_level: 'sites',
@@ -60,6 +73,12 @@ var _tree;
             properties: {
                 name: objectAccessor('name')
             },
+            editables: {
+                Name: {
+                    type: 'text',
+                    update: updater('name')
+                }
+            },
             headers: ['Project'],
             urlToExpand: function (node) {
                 return {
@@ -68,8 +87,14 @@ var _tree;
             },
             getModalData: function (node, apiData) {
                 return [
-                    ['Name', node.name],
-                    ['Group', node.parent.name]
+                    {
+                        key: 'Name',
+                        value: node.name
+                    },
+                    {
+                        key: 'Group',
+                        value: node.parent.name
+                    }
                 ]
             }
         };
@@ -87,6 +112,12 @@ var _tree;
                         return o.subject.code;
                     }
             },
+            editables: {
+                Subject: {
+                    type: 'text',
+                    update: updater('subject.code')
+                }
+            },
             headers: ['Session', 'Subject'],
             urlToExpand: function (node) {
                 return {
@@ -95,11 +126,18 @@ var _tree;
             },
             getModalData: function (node, apiData) {
                 return [
-                    ['Name', node.name],
-                    ['Subject', node.subject]
+                    {
+                        key: 'Name',
+                        value: node.name
+                    },
+                    {
+                        key: 'Subject',
+                        value: node.subject
+                    }
                 ]
             }
         };
+
 
         var acquisitions = {
             name: 'acquisitions',
@@ -115,15 +153,30 @@ var _tree;
                     }).join(', ');
                 }
             },
+            editables: {
+                Description: {
+                    type: 'text',
+                    update: updater('description')
+                }
+            },
             headers: ['Acquisition', 'Description', 'Data Type'],
             urlToExpand: function (node) {
                 return;
             },
             getModalData: function (node, apiData) {
                 return [
-                    ['Name', node.name],
-                    ['Description', node.description],
-                    ['Data Type', node['data type']]
+                    {
+                        key: 'Name',
+                        value: node.name
+                    },
+                    {
+                        key: 'Description',
+                        value: node.description
+                    },
+                    {
+                        key: 'Data Type',
+                        value: node['data type']
+                    }
                 ]
             }
         }
@@ -206,10 +259,22 @@ var _tree;
                     path: 'collections/' + node.id + '/sessions'
                 }
             },
+            editables: {
+                'Name': {
+                    type: 'text',
+                    update: updater('name')
+                }
+            },
             getModalData: function (node, apiData) {
                 return [
-                    ['Name', node.name],
-                    ['Curator', node.parent.name]
+                    {
+                        key: 'Name',
+                        value: node.name
+                    },
+                    {
+                        key: 'Curator',
+                        value: node.parent.name
+                    }
                 ]
             }
         };
@@ -227,6 +292,12 @@ var _tree;
                         return o.subject.code;
                     }
             },
+            editables: {
+                Subject: {
+                    type: 'text',
+                    update: updater('subject.code')
+                }
+            },
             headers: ['Session', 'Subject'],
             urlToExpand: function (node){
                 return {
@@ -236,8 +307,14 @@ var _tree;
             },
             getModalData: function (node, apiData) {
                 return [
-                    ['Name', node.name],
-                    ['Subject', node.subject]
+                    {
+                        key: 'Name',
+                        value: node.name
+                    },
+                    {
+                        key: 'Subject',
+                        value: node.subject
+                    }
                 ]
             }
         };
@@ -256,15 +333,30 @@ var _tree;
                     }).join(', ');
                 }
             },
+            editables: {
+                Description: {
+                    type: 'text',
+                    update: updater('description')
+                }
+            },
             headers: ['Acquisition', 'Description', 'Data Type'],
             urlToExpand: function (node){
                 return;
             },
             getModalData: function (node, apiData) {
                 return [
-                    ['Name', node.name],
-                    ['Description', node.description],
-                    ['Data Type', node['data type']]
+                    {
+                        key: 'Name',
+                        value: node.name
+                    },
+                    {
+                        key: 'Description',
+                        value: node.description
+                    },
+                    {
+                        key: 'Data Type',
+                        value: node['data type']
+                    }
                 ]
             }
         }

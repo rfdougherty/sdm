@@ -124,15 +124,6 @@
                                             }
                                         }
 
-                                        /**
-                                        var nameSlice = file.slice(
-                                            file.tags.PatientName.offsetStart + 8,
-                                            file.tags.PatientName.offsetEnd
-                                        )
-                                        sdmFileUtilities.readFile(nameSlice).then(function(patientName) {
-                                            console.log(patientName);
-                                        });
-                                        **/
                                         var seriesData = sdmULDController.data.series[tags.SeriesInstanceUID.value[0]];
                                         if (!seriesData) {
                                             sdmULDController.data.series[tags.SeriesInstanceUID.value[0]] = seriesData =

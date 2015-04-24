@@ -1,8 +1,8 @@
-var BASE_URL = 'https://cni-sdm.scitran.stanford.edu/api/';
-var VERIFICATION_ENDPOINT  = 'https://oauth2.scitran.stanford.edu/webauth-oauth2/verify_token.php';
-var AUTHENTICATION_ENDPOINT = 'https://oauth2.scitran.stanford.edu/webauth-oauth2/issue_token.php';
-var AUTHENTICATION_PROVIDER = 'Stanford';
-var CLIENT_ID = '1052740023071-ilsnog03s885vmjeb9l9ppsplsadnfa1.apps.googleusercontent.com';
+var BASE_URL = 'https://cni.scitran.stanford.edu/api/';
+var VERIFICATION_ENDPOINT  = 'https://www.googleapis.com/oauth2/v1/tokeninfo';
+var AUTHENTICATION_ENDPOINT = 'https://accounts.google.com/o/oauth2/auth';
+var AUTHENTICATION_PROVIDER = 'Google';
+var CLIENT_ID = '1052740023071-n20pk8h5uepdua3r8971pc6jrf25lvee.apps.googleusercontent.com';
 var POPUP_OPTIONS = {
     openParams: {
         width: 306,

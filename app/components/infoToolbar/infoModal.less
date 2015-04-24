@@ -181,8 +181,40 @@ sdm-info-modal {
     div.info-modal-body {
         padding-left: 10px;
         padding-right: 10px;
+        .sdm-editable {
+            padding-top: 1px;
+            padding-bottom: 1px;
+            cursor: text;
+            border: 1px solid transparent;
+            &.sdm-hover {
+                background-color: #e6e6e6;
+                border: 1px solid #adadad;
+            }
 
-
+        }
+        button.sdm-edit {
+            position: relative;
+            top: -1px;
+            height: 20px;
+            width: 22px;
+            &.sdm-hover {
+                background-color: #e6e6e6;
+                border-color: #adadad;
+            }
+            &:focus, &:active {
+                outline-style: none;
+                outline-width: 0px;
+                background-color: white;
+                border-color: #ccc;
+                &.sdm-hover {
+                    background-color: #e6e6e6;
+                    border-color: #adadad;
+                }
+            }
+        }
+        input.sdm-edit {
+            height: 20px;
+        }
     }
 
 
