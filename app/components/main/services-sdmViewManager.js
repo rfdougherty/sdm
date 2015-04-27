@@ -532,12 +532,12 @@ var _tree;
                                 site._id,
                                 levelDescription['sites']
                             );
-
                             if (site.onload) {
                                 getChildrenFromAPI(siteNode, $q.defer(), viewID).then(
                                     function(children){
                                         children.forEach(function (child) {
                                             child.checked = siteNode.checked;
+                                            child.parent = siteNode;
                                         });
                                         siteNode.children = children;
                                         siteNode._children = null;
@@ -552,17 +552,19 @@ var _tree;
                         });
                     $q.all(promises).then(function(sites){
                         sites.sort(naturalSortByName);
+                        var rootNode = new DataNode(
+                            {name: 'root'},
+                            null,
+                            levelDescription['roots'],
+                            sites
+                        )
                         sites.forEach(
                             function(site, i){
                                 site.index = i;
+                                site.parent = rootNode;
                             });
                         deferred.resolve(
-                            new DataNode(
-                                {name: 'root'},
-                                null,
-                                levelDescription['roots'],
-                                sites
-                            )
+                            rootNode
                         );
                     })
                 });
@@ -653,12 +655,6 @@ var _tree;
             var levelDescription = headers(viewID);
             makeAPICall.async(sites_url).then(function(sites){
                 sites = sites.filter(function(s){return s.onload});
-                var tree =  new DataNode(
-                    {name: 'root'},
-                    null,
-                    levelDescription['roots'],
-                    sites
-                );
                 var promises = sites.map(function(site) {
                     var deferred = $q.defer();
                     console.log(parameters);
@@ -683,16 +679,17 @@ var _tree;
                 });
                 $q.all(promises).then(function(sites){
                     sites.sort(naturalSortByName);
-                    sites.forEach(
-                        function(site, i){
-                            site.index = i;
-                        });
                     var tree = new DataNode(
                             {name: 'root'},
                             null,
                             levelDescription['roots'],
                             sites
                         );
+                    sites.forEach(
+                        function(site, i){
+                            site.index = i;
+                            site.parent = tree;
+                        });
                     sortTree(tree);
                     setData('search', tree);
                     triggerViewChange(tree);
@@ -1041,6 +1038,7 @@ var _tree;
 
                     _children.forEach(function (child, i) {
                         child.index = i;
+                        child.parent = node;
                     });
                     deferred.resolve(_children);
                 }, function(reason){
@@ -1055,6 +1053,7 @@ var _tree;
         var expandNode = function(node) {
             var deferred = $q.defer();
             var newNode = angular.copy(node);
+            newNode.parent = node.parent;
             var promise;
             node.parent.children[node.index] = newNode;
             node = newNode;
@@ -1099,7 +1098,6 @@ var _tree;
             setCurrentViewData: setCurrentViewData,
             refreshView: refreshView,
             refreshCurrentView: refreshCurrentView,
-            treeInit: treeInit,
             expandNode: expandNode,
             headers: headers,
             breadthFirstFull: breadthFirstFull,
