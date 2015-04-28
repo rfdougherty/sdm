@@ -8,13 +8,13 @@
     var user;
 
     angular.module('sdm.dataVisualizations.directives.sdmTableView',
-        ['sdm.services', 'sdm.dataFiltering.services.sdmFilterTree',
+        ['sdm.services', 'sdm.dataFiltering.services.sdmFilterTree', 'sdm.main.services.sdmDataManager',
         'sdm.main.services.sdmViewManager', 'sdm.authentication.services.sdmUserManager'])
     .directive('sdmTableView',
         ['$compile', '$location', '$rootScope',
-        'sdmD3Service',  'sdmUserManager',
+        'sdmD3Service',  'sdmUserManager', 'sdmDataManager',
         'sdmFilterTree', 'sdmViewManager', 'sdmTextWidthCalculator',
-        function($compile, $location, $rootScope, sdmD3Service, sdmUserManager,
+        function($compile, $location, $rootScope, sdmD3Service, sdmUserManager, sdmDataManager,
                  sdmFilterTree, sdmViewManager, sdmTextWidthCalculator) {
             user = sdmUserManager.getAuthData();
             return {
@@ -37,12 +37,13 @@
                     post: function($scope, $element, $attrs) {
                         scope = $scope;
                         var currentPath = $location.path();
-                        sdmFilterTree.setView(currentPath.substring(1, currentPath.length));
+                        var viewID = currentPath.substring(1, currentPath.length)
+                        sdmFilterTree.setView(viewID);
                         var containerElement = $element[0]
                             .getElementsByClassName('sdm-table-content')[0]
                             .getElementsByClassName('container')[0];
 
-                        $scope.headersTitles = getHeaderTitles(sdmViewManager.headers());
+                        $scope.headersTitles = getHeaderTitles(sdmDataManager.headers(viewID));
 
                         sdmCellOnHover = function(data) {
                             if (typeof this.parentElement.sdmCellCompiled === 'undefined') {
@@ -55,7 +56,12 @@
                         };
 
                         var actions = {
-                            expandNode: sdmViewManager.expandNode,
+                            expandNode: function(node){
+                                sdmDataManager.expandNode(node)
+                                    .then(function(newNode){
+                                        sdmViewManager.triggerViewChange(newNode);
+                                    });
+                            },
                             getLeaves: sdmFilterTree.filter,
                             selector: sdmFilterTree.selector
                         };

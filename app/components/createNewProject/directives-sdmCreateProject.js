@@ -70,7 +70,7 @@
                             makeAPICall.async(projectsURL, null, 'POST', payload).then(function(result) {
                                 console.log(result);
                                 selectCreatedProject(result._id);
-                                sdmViewManager.refreshCurrentView();
+                                sdmViewManager.refreshView();
                                 $scope.$parent._hidePopover($event, 0);
                             });
                         }

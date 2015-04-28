@@ -88,7 +88,7 @@
                                         }
                                         sdmMSController.isFailed = false;
                                         sdmMSController.loadingState = 0;
-                                        sdmViewManager.refreshCurrentView();
+                                        sdmViewManager.refreshView();
                                         $scope.$parent._hidePopover($event, 0);
                                         $scope.$parent.enableEvents();
                                     },
