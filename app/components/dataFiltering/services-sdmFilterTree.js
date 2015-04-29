@@ -1,5 +1,5 @@
 'use strict';
-var _nodes = {};
+
 (function(){
 
     var sdmFilterTree = function () {
@@ -13,7 +13,9 @@ var _nodes = {};
 
         var cachedFilters = {
             'projects': {},
-            'collections': {}
+            'collections': {},
+            'search': {},
+            'admin': {}
         };
 
         var setView = function (_viewID) {
@@ -82,7 +84,6 @@ var _nodes = {};
             var n = iterator.next();
             var counts = {};
             while (!n.done) {
-                _nodes[n.value.name] = n.value;
                 counts[n.value.level.name] = counts[n.value.level.name]?counts[n.value.level.name] + 1:1;
                 if (n.value.isLeaf) {
                     nodes.push(n.value);

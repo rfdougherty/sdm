@@ -43,7 +43,15 @@
             <span>&nbsp;{{userData.firstname}}&nbsp;{{userData.lastname}}&nbsp;</span>
         </button>
 
-        <button type="button" class="btn btn-default admin">
+        <button type="button" class="btn btn-default admin"
+            sdm-popover
+            sdm-popover-template-content="components/admin/adminModal.html"
+            sdm-popover-class="sdm-admin-modal"
+            sdm-popover-show="click"
+            sdm-popover-show-timeout="0"
+            sdm-popover-style-width="900px"
+            sdm-popover-style-height="700px"
+            sdm-append-to-body ng-disabled="!userData.root">
             <span class="glyphicon glyphicon-cog"></span>
             <span class="tooltip"
                 sdm-popover

@@ -191,11 +191,6 @@
         })();
 
         var collectionsViewDescription = (function(){
-            function objectAccessor(field){
-                return function (o){
-                    return o[field];
-                }
-            };
 
             var roots = {
                 name: 'roots',
@@ -374,10 +369,49 @@
         angular.forEach(searchViewDescription, function(levelDescription){
             delete levelDescription.urlToExpand;
         });
+
+        var adminViewDescription = (function(){
+
+            var roots = {
+                name: 'roots',
+                next_level: 'groups',
+                properties: {
+                }
+            };
+
+            var groups = {
+                name: 'groups',
+                next_level: 'users',
+                properties: {
+                    name: objectAccessor('name')
+                },
+                headers: ['Group']
+            };
+
+            var users = {
+                name: 'users',
+                properties: {
+                    name: function(o){
+                        return o.firstname + ' ' + o.lastname;
+                    },
+                    userId: objectAccessor('_id'),
+                    admin: objectAccessor('wheel')
+                },
+                headers: ['User', 'User Id', 'Admin']
+            }
+
+            return {
+                roots: roots,
+                groups: groups,
+                users: users
+            }
+        })();
+
         return {
             projects: projectsViewDescription,
             collections: collectionsViewDescription,
-            search: searchViewDescription
+            search: searchViewDescription,
+            admin: adminViewDescription
         }
     }
 

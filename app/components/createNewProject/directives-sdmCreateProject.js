@@ -29,7 +29,7 @@
                             if (!group) {
                                 return;
                             }
-                            makeAPICall.async(BASE_URL + 'projects', {group: group._id}).then(function(projects){
+                            return makeAPICall.async(BASE_URL + 'projects', {group: group._id}).then(function(projects){
                                 sdmNPController.projects = projects.map(function(p) {
                                     return p.name;
                                 });

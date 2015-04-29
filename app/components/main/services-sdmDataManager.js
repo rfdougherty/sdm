@@ -14,6 +14,32 @@
             }
         };
 
+        var getHeaderTitles = function(viewID) {
+            var _headers = headers(viewID);
+            var headerTitles = [];
+            angular.forEach(_headers, function(value, key){
+                if (value.headers) {
+                    var newTitles = value.headers.map(function(header, i, a){
+                        var result = {
+                            title: header,
+                            name: header.toLowerCase() + 's',
+                            nospace: i !== a.length - 1,
+                            showcount: i === 0,
+                            excluded: false
+                        };
+                        if (result.name === value.name) {
+                            result.accessor = function(node){ return node.name;};
+                        } else if (value.properties[header.toLowerCase()]) {
+                            result.accessor = function(node){ return node[header.toLowerCase()]; };
+                        }
+                        return result;
+                    });
+                    this.push.apply(this, newTitles);
+                }
+            }, headerTitles);
+            return headerTitles;
+        };
+
         function refreshViewTree(tree, viewID) {
             var iterator;
 
@@ -454,14 +480,39 @@
             }
             return promise;
         };
+
+        var sortTree = function(tree) {
+            var queue = [tree];
+            var node, _children;
+
+            while (queue.length > 0) {
+                node = queue.pop();
+                if (node.children || node._children) {
+                    _children = node.children || node._children;
+                    _children.sort(naturalSortByName);
+                    _children.forEach(function(child, i) {
+                        child.index = i;
+                        queue.unshift(child);
+                    });
+                    if (node.children) {
+                        node.children = _children;
+                    } else {
+                        node._children = _children;
+                    }
+                }
+            }
+        };
+
         return {
             refreshViewTree: refreshViewTree,
             expandNode: expandNode,
             headers: headers,
+            getHeaderTitles: getHeaderTitles,
             breadthFirstFull: breadthFirstFull,
             breadthFirstFullUntilLevel: breadthFirstFullUntilLevel,
             breadthFirstExpandCheckedGroups: breadthFirstExpandCheckedGroups,
-            treeInit: treeInit
+            treeInit: treeInit,
+            sortTree: sortTree
         }
     }
 

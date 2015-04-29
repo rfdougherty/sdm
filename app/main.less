@@ -115,13 +115,17 @@ div#navigation>ul.nav.nav-tabs {
         right: 15px;
         color: @fgcol1;
     }
-    a, button, button:hover, a:hover, button:active, button:focus {
+    a, button, button:hover, a:hover, button:active, button:focus, button:disabled {
         color: @fgcol1;
         background-color: @bgcol1;
         text-decoration: none;
         border-color: @fgcol1;
         height: 24px;
         bottom: 1px;
+        opacity: 1;
+        &:disabled {
+            color: fade(color(@fgcol1), 69%);
+        }
         span {
             position: relative;
             top: 2px;

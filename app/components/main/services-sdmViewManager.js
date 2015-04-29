@@ -14,7 +14,8 @@ var _tree;
                 'projects': {},
                 'collections': {},
                 'search': {},
-                'upload': {}
+                'upload': {},
+                'admin': {}
             },
             'current': 'projects'
         };
@@ -25,9 +26,16 @@ var _tree;
             return viewAppearances;
         };
 
-        function setCurrentView() {
-            var currentPath = $location.path();
-            viewData.current = currentPath.substring(1, currentPath.length);
+        function setCurrentView(viewID) {
+            if (viewID) viewData.current = viewID;
+            else {
+                var currentPath = $location.path();
+                viewData.current = currentPath.substring(1, currentPath.length);
+            }
+        }
+
+        function getCurrentView() {
+            return viewData.current;
         }
 
         function updateViewAppearanceKey(key, value) {
@@ -81,7 +89,7 @@ var _tree;
         }
 
         var initializeView = function(viewDescription, viewID) {
-            if (viewID === 'search') {
+            if (viewID === 'search' || viewID === 'admin') {
                 return;
             }
             if (viewID === 'upload') {
@@ -199,7 +207,7 @@ var _tree;
                             site.index = i;
                             site.parent = tree;
                         });
-                    sortTree(tree);
+                    sdmDataManager.sortTree(tree);
                     setData('search', tree);
                     triggerViewChange(tree);
                     deferred.resolve(tree);
@@ -207,28 +215,6 @@ var _tree;
             });
             return deferred.promise;
         }
-
-        var sortTree = function(tree) {
-            var queue = [tree];
-            var node, _children;
-
-            while (queue.length > 0) {
-                node = queue.pop();
-                if (node.children || node._children) {
-                    _children = node.children || node._children;
-                    _children.sort(naturalSortByName);
-                    _children.forEach(function(child, i) {
-                        child.index = i;
-                        queue.unshift(child);
-                    });
-                    if (node.children) {
-                        node.children = _children;
-                    } else {
-                        node._children = _children;
-                    }
-                }
-            }
-        };
 
         var getSearchParameters = function() {
             if (!viewData.views.search.parameters) {
@@ -266,6 +252,7 @@ var _tree;
         }
 
         return {
+            getCurrentView: getCurrentView,
             setCurrentView: setCurrentView,
             getViewAppearance: getViewAppearance,
             updateViewAppearanceKey: updateViewAppearanceKey,
