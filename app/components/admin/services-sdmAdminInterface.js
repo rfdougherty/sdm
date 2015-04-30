@@ -30,9 +30,10 @@
                     makeAPICall.async(userURL + '/' + role._id).then(function(user) {
                         var userNode = new DataNode(
                             user,
-                            user._id,
+                            null,
                             levelDescription['users']
                         );
+                        userNode.role = role.access;
                         deferred.resolve(userNode);
                     });
                     return deferred.promise;
@@ -41,10 +42,11 @@
                     users.sort(naturalSortByName);
                     var groupNode = new DataNode(
                         group,
-                        group._id,
+                        null,
                         levelDescription['groups'],
                         users
                     );
+                    groupNode.roles = group.roles;
                     users.forEach(
                         function(user, i){
                             user.index = i;
@@ -82,11 +84,20 @@
                 });
             });
             return result.promise;
+        };
+
+        var editGroup = function(method, groupId, payload) {
+            var URL = BASE_URL + 'groups';
+            if (method === 'PUT' || method === 'DELETE') {
+               URL += ('/' + groupId);
+            }
+            return makeAPICall.async(URL, null, method, payload);
         }
 
         return {
             createNewUser: createNewUser,
-            loadGroupsAndUsers: loadGroupsAndUsers
+            loadGroupsAndUsers: loadGroupsAndUsers,
+            editGroup: editGroup
         }
     };
 

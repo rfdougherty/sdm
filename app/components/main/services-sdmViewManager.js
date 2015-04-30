@@ -68,8 +68,9 @@ var _tree;
             setData(viewData.current, data, _controller);
         }
 
-        function triggerViewChange(node) {
-            var viewController = viewData.views[viewData.current].controller;
+        function triggerViewChange(node, viewID) {
+            viewID = viewID || viewData.current;
+            var viewController = viewData.views[viewID].controller;
             if (viewController) {
                 viewController.trigger = {
                     node: node,
@@ -83,7 +84,7 @@ var _tree;
             var tree = viewID?getData(viewID):getCurrentViewData();
             var promise = sdmDataManager.refreshViewTree(tree, viewID);
             promise.then(function(){
-                triggerViewChange(tree);
+                triggerViewChange(tree, viewID);
             });
             return promise;
         }

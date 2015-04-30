@@ -1,9 +1,56 @@
+@import (less) "../../active_config/variables.less";
+
 sdm-admin-modal {
     div#sdm-table-root {
+        top: 120px;
         min-width: 600px;
         border-style: none;
     }
-    button {
+    div.admin-header {
+        background-color: @bgcol1;
+        color: @fgcol1;
+        border-bottom: solid white 1px;
+        height: 21px;
+        span.glyphicon.glyphicon-remove {
+            float: right;
+            padding-right: 5px;
+            padding-top: 4px;
+            font-size: 11px;
+        }
+    }
+
+    div.admin-title {
+        //background-color: lightgrey;
+        padding-left: 10px;
+        padding-right:10px;
+        margin-top: 0px;
+        font-size: 24px;
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-variant: small-caps;
+        background-color: @bgcol2;
+        color: @fgcol2;
+    }
+    .navbar {
+        margin-left: 20px;
+        margin-right: 20px;
+        background-color: @bgcol1;
+        border-color: black;
+        button, button:focus, button:visited, button:active {
+            background-color: @bgcol2;
+            color: @fgcol2;
+            border-color: @fgcol2;
+            outline: none;
+            &.active, &:hover {
+                background-color: @bgcol1;
+                color: @fgcol1;
+                border-color: @fgcol1;
+                outline: none;
+            }
+        }
+    }
+
+    button.btn-xs {
         position: absolute;
         bottom: 10px;
         right: 20px;
@@ -20,4 +67,109 @@ div.sdm-admin-modal {
     .popover-overlay {
         background-color: lightgray;
     }
+}
+
+div.sdm-edit-groups {
+    position: absolute;
+    top: 120px;
+    left: 20px;
+    right: 20px;
+    bottom: 41px;
+    border: 1px solid black;
+    padding: 10px;
+    .form-control.default {
+        font-style: italic;
+        color: grey;
+    }
+    div#permissions {
+        margin-top: 6px;
+        input.typeahead {
+            width: 287px;
+        }
+        div.tt-dataset-users {
+            padding-left: 10px;
+            border: 1px solid lightgrey;
+            height: 120px;
+            width: 287px;
+            background: white;
+            overflow: scroll;
+        }
+        select {
+            position: relative;
+            top: 6px;
+        }
+        span.add-user {
+            position: relative;
+            top: 10px;
+            font-size: 20px;
+            margin-left: 5px;
+        }
+    }
+
+    .sdm-input-label {
+        float: left;
+        width: 200px;
+        font-weight: bold;
+    }
+    div#group-permissions {
+        margin-top: 5px;
+
+        div.permissions-header table {
+            border: 1px solid lightgrey;
+
+            margin-bottom: 0px;
+            td {
+                width: 33%;
+            }
+        }
+        div.permissions-body {
+            height: 208px;
+            overflow: scroll;
+            border: 1px solid lightgrey;
+
+            border-top: none;
+            table.table {
+                margin-top: 0px;
+                margin-bottom: 0px;
+                table-layout: fixed;
+                td {
+                    border-top: none;
+                    width: 33%;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    .glyphicon.disabled {
+                        color: lightgrey;
+                    }
+                    &.permissions-access {
+                        padding-left: 0px;
+                        select {
+                            margin-bottom: 0px;
+                            width: 103px;
+                        }
+                    }
+                    vertical-align: middle;
+                }
+
+            }
+        }
+    }
+    input.btn {
+        margin-top: 9px;
+    }
+}
+
+div.sdm-edit-users {
+    position: absolute;
+    top: 120px;
+    left: 20px;
+    right: 20px;
+    bottom: 41px;
+    border: 1px solid black;
+    form {
+        margin: 0 10px;
+    }
+    input.btn-sm {
+        margin-top: 10px;
+    }
+
 }

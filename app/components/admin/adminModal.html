@@ -1,4 +1,115 @@
 <sdm-admin-modal>
-    <sdm-table-view sdm-data="sdmAMController.sdmData" sdm-trigger="sdmAMController.trigger" sdm-view-id="sdmAMController.viewID"></sdm-table-view>
+    <div class="admin-header">
+        <span class="glyphicon glyphicon-remove" ng-click="sdmAMController.close($event)"></span>
+    </div>
+    <div class="admin-title">Admin Tasks
+        <!--span class="spinner" ng-show="sdmAMController.loadingState > 0"></span--></div>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+            <button class="btn btn-default navbar-btn" ng-class="{active: sdmAMController.adminView === 'main'}" ng-click="sdmAMController.adminView = 'main'">
+                View Groups
+            </button>
+            <button class="btn btn-default navbar-btn" ng-class="{active: sdmAMController.adminView === 'edit groups'}" ng-click="sdmAMController.adminView = 'edit groups'">
+                Create or Edit Groups
+            </button>
+            <button class="btn btn-default navbar-btn" ng-class="{active: sdmAMController.adminView === 'edit users'}"  ng-click="sdmAMController.adminView = 'edit users'">
+                Create Users
+            </button>
+        </div>
+      </div>
+    </nav>
+    <sdm-table-view sdm-data="sdmAMController.sdmData" sdm-trigger="sdmAMController.trigger" sdm-view-id="sdmAMController.viewID" ng-show="sdmAMController.adminView === 'main'"></sdm-table-view>
+
+    <!-- start of edit groups -->
+    <form name="formGroup" class="create-group">
+        <div class="sdm-edit-groups" ng-show="sdmAMController.adminView === 'edit groups'">
+            <select class="form-control" ng-class="{default:!sdmAMController.selectedGroup}" ng-options="group.id for group in sdmAMController.existingGroups" ng-model="sdmAMController.selectedGroup" ng-change="sdmAMController.selectGroup()">
+                <option class="default" value="">{{sdmAMController.defaultSelectText}}</option>
+            </select>
+            <div class="sdm-input-label">Group ID</div>
+            <input class="form-control" type="text" ng-model="sdmAMController.groupId" placeholder="{{sdmAMController.groupPlaceholder}}" name="groupId">
+            </input>
+            <div class="sdm-input-label">Name (optional)</div>
+            <input type="text" class="form-control" ng-model="sdmAMController.groupName">
+            </inpu>
+            <div id="permissions" class="form-inline">
+                <div class="sdm-input-label">Add user</div><br>
+                <input class="typeahead form-control" type="email" placeholder="{{sdmAMController.permissionPlaceholder}}" ng-model="sdmAMController.selectedUID" name="newPermission"></input>
+                <select class="form-control" ng-init="" ng-options="role.name for role in sdmAMController.roles" ng-model="sdmAMController.selectedRole"></select>
+                <span class="add-user" ng-click="sdmAMController.addUser($event, formGroup)">
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+                    <span class="tooltip"
+                        sdm-popover
+                        sdm-popover-template-text="Add User"
+                        sdm-popover-class="sdm-tooltip"
+                        sdm-popover-show="mouseenter"
+                        sdm-popover-hide="mouseleave"
+                        sdm-popover-show-timeout="400"
+                        sdm-popover-hide-timeout="0"
+                        sdm-tooltip-style
+                        sdm-tooltip-x="10"
+                        sdm-tooltip-y="32">
+                    </span>
+                </span>
+            </div>
+            <div id="group-permissions">
+                <div class="sdm-input-label">Users in Group</div><br>
+                <div class="permissions-header">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td>User ID</td>
+                                <td>Role</td>
+                                <td>Remove</td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="permissions-body">
+                    <table class="table">
+                        <tbody>
+                            <tr class="user-permission" ng-repeat="permission in sdmAMController.addedPermissions">
+                                <td>{{permission._id}}</td>
+                                <td class="permissions-access"><select class="form-control" ng-options="role.rid as role.name for role in sdmAMController.roles" ng-model="permission.access" ng-disabled="false"></select></td>
+                                <td>
+                                    <span class="glyphicon glyphicon-remove" ng-click="sdmAMController.removeUser($index, formGroup)" ng-if="true"></span>
+                                    <span class="glyphicon glyphicon-remove disabled" ng-if="false"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="create-group-confirm-buttons">
+                <input id="create-group-save" type="submit" class="btn btn-default btn-sm" ng-click="sdmAMController.saveGroup($event, formGroup)" value="Save Group"></input>
+                <input id="delete-group" type="submit" class="btn btn-default btn-sm" ng-click="sdmAMController.deleteGroup($event, formGroup)" ng-show="!sdmAMController.showConfirmGroup" value="Delete Group"></input>
+                <input id="confirm-delete-user" type="submit" class="btn btn-default btn-sm btn-danger" ng-click="sdmAMController.confirmDeleteGroup($event, formGroup)" ng-show="sdmAMController.showConfirmGroup" value="Confirm Deletion"></input>
+            </div>
+        </div>
+    </form>
+    <!-- end of edit groups -->
+
+    <div class="sdm-edit-users" ng-show="sdmAMController.adminView === 'edit users'">
+        <form name="form" class="create-user">
+            <div create-user-body>
+                <div class="sdm-input-label">First Name</div>
+                <input class="form-control" type="text" ng-model="sdmAMController.userFirstName" placeholder="{{sdmAMController.firstNamePlaceholder}}" required name="userFirstName">
+                </input>
+                <div class="sdm-input-label">Last Name</div>
+                <input class="form-control" type="text" ng-model="sdmAMController.userLastName" placeholder="{{sdmAMController.lastNamePlaceholder}}" required name="userLastName">
+                </input>
+                <div class="sdm-input-label">User ID</div>
+                <input class="form-control" type="email" ng-model="sdmAMController.userID" placeholder="{{sdmAMController.userIDPlaceholder}}" required name="userID">
+                </input>
+                <div class="sdm-input-label">Email</div>
+                <input class="form-control" type="email" ng-model="sdmAMController.email" placeholder="{{sdmAMController.emailPlaceholder}}" name="userID">
+                </input>
+                <input type="checkbox" ng-model="sdmAMController.superuser" name="superuser"> Create as superuser
+            </div>
+            <div class="create-user-confirm-buttons">
+                <input id="create-user-save" type="submit" class="btn btn-default btn-sm" ng-click="sdmAMController.saveUser($event, formGroup)" value="Create User"></input>
+            </div>
+        </form>
+    </div>
     <button type="button" class="btn btn-default btn-xs" ng-click="sdmAMController.close($event)">Close</button>
 </sdm-admin-modal>

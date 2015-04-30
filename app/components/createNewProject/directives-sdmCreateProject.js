@@ -61,7 +61,7 @@
                                 return;
                             }
                             var payload = {
-                                group_id: sdmNPController.selectedGroup._id,
+                                group: sdmNPController.selectedGroup._id,
                                 name: sdmNPController.newProject
                             };
 

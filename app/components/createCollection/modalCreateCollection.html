@@ -52,7 +52,7 @@
                 <div class="permissions-body">
                     <table class="table">
                         <tbody>
-                            <tr class='user-permission' ng-repeat="permission in sdmCCController.addedPermissions">
+                            <tr class="user-permission" ng-repeat="permission in sdmCCController.addedPermissions">
                                 <td>{{permission._id}}</td>
                                 <td class="permissions-access"><select class="form-control" ng-options="role.rid as role.name for role in sdmCCController.roles" ng-model="permission.access" ng-disabled="permission._id===sdmCCController.curator.user_uid && !sdmCCController.curator.root"></select></td>
                                 <td>

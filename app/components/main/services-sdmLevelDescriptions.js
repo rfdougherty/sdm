@@ -394,10 +394,10 @@
                     name: function(o){
                         return o.firstname + ' ' + o.lastname;
                     },
-                    userId: objectAccessor('_id'),
-                    admin: objectAccessor('wheel')
+                    'user id': objectAccessor('_id'),
+                    role: objectAccessor('role')
                 },
-                headers: ['User', 'User Id', 'Admin']
+                headers: ['User', 'User ID', 'Role']
             }
 
             return {
