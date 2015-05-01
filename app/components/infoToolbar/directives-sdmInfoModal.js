@@ -503,6 +503,7 @@
                             if (sdmIMController.hasPapayaViewer(attachment)) {
                                 callback = function(response) {
                                     papayaParams.images = [response.url];
+                                    papayaParams.showOrientation = false;
                                     papaya.Container.startPapaya();
                                 };
                             } else {
@@ -524,6 +525,7 @@
                             };
                             sdmDownloadInterface.getDownloadURL(_node, true, false).then(function(response){
                                 papayaParams.images = [response.url];
+                                papayaParams.showOrientation = false;
                                 papaya.Container.startPapaya();
                             });
                         }
