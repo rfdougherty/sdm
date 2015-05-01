@@ -5,8 +5,8 @@
         'sdm.admin.services.sdmAdminInterface', 'sdm.main.services.sdmViewManager',
         'sdm.dataFiltering.services.sdmFilterTree', 'sdm.authentication.services.sdmUserManager',
         'sdm.APIServices.services.sdmRoles', 'sdm.APIServices.services.sdmUsers',
-    ]).directive('sdmAdminModal', ['sdmAdminInterface', 'sdmViewManager', 'sdmFilterTree', 'sdmUserManager', 'sdmRoles', 'sdmUsers',
-            function(sdmAdminInterface, sdmViewManager, sdmFilterTree, sdmUserManager, sdmRoles, sdmUsers) {
+    ]).directive('sdmAdminModal', ['$timeout', 'sdmAdminInterface', 'sdmViewManager', 'sdmFilterTree', 'sdmUserManager', 'sdmRoles', 'sdmUsers',
+            function($timeout, sdmAdminInterface, sdmViewManager, sdmFilterTree, sdmUserManager, sdmRoles, sdmUsers) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -30,6 +30,41 @@
                         sdmAMController.user = sdmUserManager.getAuthData();
                         sdmAMController.addedPermissions = [{'_id': sdmAMController.user.user_uid, 'access': 'admin'}];
                         sdmAMController.isGroupExisting = false;
+
+
+
+                        var addTypeahead = function(selector, property) {
+                            var typeaheadElement = $element.find(selector);
+
+                            sdmUsers.getUsers().then(function(users) {
+                                sdmAMController.users = users;
+                                typeaheadElement.typeahead({
+                                        hint: true,
+                                        highlight: true,
+                                        minLength: 3
+                                    },
+                                    {
+                                        name: 'users',
+                                        displayKey: 'value',
+                                        source: substringMatcher(sdmAMController.users, '_id')
+                                    });
+                                typeaheadElement.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
+                                    console.log(selectedUID);
+                                    sdmAMController[property] = selectedUID.value;
+                                });
+                            });
+                            return typeaheadElement;
+                        };
+
+                        var groupsth = addTypeahead('#permissions .typeahead', 'selectedUID');
+                        var usersth = addTypeahead('.sdm-edit-users .typeahead', 'existingUserID');
+
+                        var refreshTypeahead = function() {
+                            groupsth.typeahead('destroy');
+                            usersth.typeahead('destroy');
+                            groupsth = addTypeahead('#permissions .typeahead', 'selectedUID');
+                            usersth = addTypeahead('.sdm-edit-users .typeahead', 'existingUserID');
+                        }
 
                         function loadData() {
                             sdmAdminInterface.loadGroupsAndUsers().then(
@@ -58,6 +93,7 @@
                         sdmAMController.userIDPlaceholder = 'Enter user ID';
                         sdmAMController.emailPlaceholder = 'Enter user email (optional)';
                         sdmAMController.permissionPlaceholder = 'Enter User ID';
+                        sdmAMController.existingUserPlaceholder = 'Enter User ID';
                         sdmAMController.groupPlaceholder = 'Create New Group';
 
                         function clearUserFields(){
@@ -79,8 +115,77 @@
                                 sdmAMController.userLastName,
                                 sdmAMController.userID,
                                 sdmAMController.email,
-                                sdmAMController.superuser
-                            ).then(loadData).then(clearUserFields);
+                                sdmAMController.wheel
+                            ).then(loadData).then(clearUserFields).then(refreshTypeahead)
+                                .then(function(){
+                                    sdmAMController.userIDPlaceholder = 'User Created';
+                                    setTimeout(function(){
+                                        sdmAMController.userIDPlaceholder = 'Enter User ID';
+                                        $scope.$apply();
+                                    }, 2000);
+                                });
+                        }
+
+                        sdmAMController.updateUser = function($event, form) {
+                            $event.stopPropagation();
+                            if (!form.$valid) {
+                                console.log('form', form);
+                                return;
+                            }
+                            sdmAdminInterface.updateUser(
+                                sdmAMController.existingUser
+                            ).then(loadData).then(function(){
+                                sdmAMController.existingUser = {};
+                                sdmAMController.existingUserID = null;
+                                sdmAMController.existingUserLoaded = false;
+                                usersth.typeahead('val', '');
+                                refreshTypeahead();
+                                sdmAMController.existingUserPlaceholder = 'User Updated';
+                                setTimeout(function(){
+                                    sdmAMController.existingUserPlaceholder = 'Enter User ID';
+                                    $scope.$apply();
+                                }, 2000);
+                            });
+                        }
+                        sdmAMController.deleteUser = function($event, form) {
+                            sdmAMController.existingUser.confirmDelete = true;
+                        }
+
+                        sdmAMController.confirmDeleteUser = function($event, form) {
+                            $event.stopPropagation();
+                            if (!form.$valid) {
+                                console.log('form', form);
+                                return;
+                            }
+                            sdmAdminInterface.deleteUser(
+                                sdmAMController.existingUser
+                            ).then(loadData).then(function(){
+                                sdmAMController.existingUser = {};
+                                sdmAMController.existingUserID = null;
+                                sdmAMController.existingUserLoaded = false;
+                                sdmAMController.existingUser.confirmDelete = false;
+                                usersth.typeahead('val', '');
+                                refreshTypeahead();
+                                sdmAMController.existingUserPlaceholder = 'User Deleted';
+                                setTimeout(function(){
+                                    sdmAMController.existingUserPlaceholder = 'Enter User ID';
+                                    $scope.$apply();
+                                }, 2000);
+                            });
+                        }
+
+                        sdmAMController.getUser = function($event) {
+                            if ($event.which === 13) {
+                                $event.preventDefault();
+                                console.log($event);
+                                console.log(sdmAMController.existingUserID);
+                                sdmAdminInterface.getUser(sdmAMController.existingUserID).then(function(user){
+                                    console.log($event);
+                                    sdmAMController.existingUser = user;
+                                    $timeout(function () { $event.target.blur() }, 0, false);
+                                    sdmAMController.existingUserLoaded = true;
+                                });
+                            }
                         }
 
                         sdmRoles().then(function(roles){
@@ -104,23 +209,6 @@
                                 sdmAMController.defaultSelectText = 'Select Existing Group';
                             }
                         };
-                        var typeaheadElement = $element.find('#permissions .typeahead');
-                        sdmUsers.getUsers().then(function(users) {
-                            sdmAMController.users = users;
-                            typeaheadElement.typeahead({
-                                    hint: true,
-                                    highlight: true,
-                                    minLength: 3
-                                },
-                                {
-                                    name: 'users',
-                                    displayKey: 'value',
-                                    source: substringMatcher(sdmAMController.users, '_id')
-                                });
-                            $element.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
-                                sdmAMController.selectedUID = selectedUID.value;
-                            });
-                        });
 
                         sdmAMController.addUser = function ($event, form) {
                             console.log(form);
@@ -162,7 +250,7 @@
                                 });
                             }, 2000);
                             sdmAMController.permissionPlaceholder = 'Permission added. Save to confirm.';
-                            typeaheadElement.typeahead('val', '');
+                            groupsth.typeahead('val', '');
                         };
 
                         sdmAMController.removeUser = function ($index, form) {
@@ -213,6 +301,11 @@
                                     sdmAMController.showConfirmGroup = false;
                                     loadData();
                                     sdmViewManager.refreshView('projects');
+                                    sdmAMController.groupPlaceholder = isNewGroup?'Group Created':'Group Updated';
+                                    setTimeout(function() {
+                                        sdmAMController.groupPlaceholder = 'Create New Group';
+                                        $scope.$apply();
+                                    }, 2000);
                                 }
                             );
                         };
@@ -242,6 +335,11 @@
                                     sdmAMController.showConfirmGroup = false;
                                     loadData();
                                     sdmViewManager.refreshView('projects');
+                                    sdmAMController.groupPlaceholder = 'Group Deleted';
+                                    setTimeout(function() {
+                                        sdmAMController.groupPlaceholder = 'Create New Group';
+                                        $scope.$apply();
+                                    }, 2000);
                                 }
                             );
                         }
