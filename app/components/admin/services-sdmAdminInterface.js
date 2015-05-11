@@ -53,7 +53,7 @@
             var userURL = BASE_URL + 'users';
             console.log(group);
             makeAPICall.async(groupURL + '/' + group._id).then(function(group){
-
+                group.roles = group.roles||[];
                 var promises = group.roles.map(function(role) {
                     var deferred = $q.defer();
                     makeAPICall.async(userURL + '/' + role._id).then(function(user) {
