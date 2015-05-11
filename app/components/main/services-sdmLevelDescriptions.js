@@ -383,7 +383,9 @@
                 name: 'groups',
                 next_level: 'users',
                 properties: {
-                    name: objectAccessor('name')
+                    name: function(node){
+                        return node.name || node._id
+                    }
                 },
                 headers: ['Group']
             };

@@ -1,10 +1,18 @@
 @import (less) "../../active_config/variables.less";
 
+@sdm-content-top: 95px;
+
 sdm-admin-modal {
     div#sdm-table-root {
-        top: 120px;
+        top: 5px;
+        left: 5px;
+        right: 5px;
+        bottom: 5px;
         min-width: 600px;
         border-style: none;
+    }
+    div#sdm-main-table-content {
+        padding-bottom: 10px;
     }
     div.admin-header {
         background-color: @bgcol1;
@@ -20,7 +28,6 @@ sdm-admin-modal {
     }
 
     div.admin-title {
-        //background-color: lightgrey;
         padding-left: 10px;
         padding-right:10px;
         margin-top: 0px;
@@ -31,25 +38,10 @@ sdm-admin-modal {
         background-color: @bgcol2;
         color: @fgcol2;
     }
-    .navbar {
-        margin-left: 20px;
-        margin-right: 20px;
-        background-color: @bgcol1;
-        border-color: black;
-        button, button:focus, button:visited, button:active {
-            background-color: @bgcol2;
-            color: @fgcol2;
-            border-color: @fgcol2;
-            outline: none;
-            &.active, &:hover {
-                background-color: @bgcol1;
-                color: @fgcol1;
-                border-color: @fgcol1;
-                outline: none;
-            }
-        }
+    ul.nav.nav-tabs {
+        margin-left: 15px;
+        margin-right: 15px;
     }
-
     button.btn-xs {
         position: absolute;
         bottom: 10px;
@@ -69,14 +61,24 @@ div.sdm-admin-modal {
     }
 }
 
-div.sdm-edit-groups {
+div#sdm-admin-content {
     position: absolute;
-    top: 120px;
-    left: 20px;
-    right: 20px;
+    top: @sdm-content-top;
+    left: 15px;
+    right: 15px;
     bottom: 41px;
     border: 1px solid black;
-    padding: 10px;
+    border-top: none;
+
+}
+
+div.sdm-edit-groups {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    padding-top: 10px;
     .form-control.default {
         font-style: italic;
         color: grey;
@@ -105,7 +107,9 @@ div.sdm-edit-groups {
             margin-left: 5px;
         }
     }
-
+    form {
+        margin: 0 10px;
+    }
     .sdm-input-label {
         float: left;
         width: 200px;
@@ -115,8 +119,9 @@ div.sdm-edit-groups {
         margin-top: 5px;
 
         div.permissions-header table {
-            border: 1px solid lightgrey;
-
+            border: 1px solid black;
+            background-color: @bgcol2;
+            color: @fgcol2;
             margin-bottom: 0px;
             td {
                 width: 33%;
@@ -125,7 +130,7 @@ div.sdm-edit-groups {
         div.permissions-body {
             height: 208px;
             overflow: scroll;
-            border: 1px solid lightgrey;
+            border: 1px solid black;
 
             border-top: none;
             table.table {
@@ -160,11 +165,11 @@ div.sdm-edit-groups {
 
 div.sdm-edit-users {
     position: absolute;
-    top: 120px;
-    left: 20px;
-    right: 20px;
-    bottom: 41px;
-    border: 1px solid black;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    padding-top: 10px;
     form {
         margin: 0 10px;
     }
