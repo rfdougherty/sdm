@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('sdm.createCollection.services.sdmGetSelection', [
-    'sdm.main.services.sdmViewManager'])
-    .factory('sdmGetSelection', ['$q', '$location', 'sdmViewManager',
-        function($q, $location, sdmViewManager) {
+    'sdm.main.services.sdmViewManager', 'sdm.main.services.sdmDataManager'])
+    .factory('sdmGetSelection', ['$q', '$location', 'sdmViewManager', 'sdmDataManager',
+        function($q, $location, sdmViewManager, sdmDataManager) {
 
             var getSelection = function () {
                 var deferred = $q.defer();
@@ -20,7 +20,7 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
 
             var getSelectionInProjects = function (tree, deferred) {
                 deferred = deferred || $q.defer()
-                var iterator = sdmViewManager.breadthFirstExpandCheckedGroups(tree, 'projects');
+                var iterator = sdmDataManager.breadthFirstExpandCheckedGroups(tree, 'projects');
                 var selection = [];
                 var nodeInSelection = function(node) {
                     return node && node.checked && node.level.name.search(/^(sessions|projects|acquisitions)$/) >= 0;
@@ -41,49 +41,10 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
                 iterate();
                 return deferred.promise;
             };
-/*                var selected = [];
-                var action = function (node) {
-                    var nodeInSelection = function(node){
-                        return node.checked && node.level.name.search(/^(sessions|projects|acquisitions)$/) >= 0;
-                    };
-                    if (nodeInSelection(node) && (!node.parent || !nodeInSelection(node.parent))) {
-                        selected.push(node);
-                    }
-                }
-                var iterator = _fullDepthFirst(tree);
-                var node = iterator.next();
-                while (!node.done){
-                    action(node.value);
-                    node = iterator.next();
-                }
-                return selected;
-            };
 
-            var _fullDepthFirst = function(tree) {
-                var elements = [tree];
-                function next() {
-                    var children;
-                    var node = elements.pop();
-                    if (typeof node === 'undefined') {
-                        return {done: true};
-                    } else if (children = node._children || node.children) {
-                        for (var i = 0; i < children.length; i++) {
-                            elements.push(children[i]);
-                        }
-                    }
-                    return {
-                        value: node,
-                        done: false
-                    }
-                }
-                return {
-                    next: next
-                };
-            };
-*/
             var getSelectionInCollectionsOrSearch = function (tree, deferred) {
                 deferred = deferred || $q.defer()
-                var iterator = sdmViewManager.breadthFirstFull(tree);
+                var iterator = sdmDataManager.breadthFirstFull(tree);
                 var selection = [];
                 var iterate = function () {
                     var element = iterator.next();
@@ -105,7 +66,7 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
             var _getSelectionOnLevel = function (tree, levelName, deferred) {
                 deferred = deferred || $q.defer();
                 var selection = [];
-                var iterator = sdmViewManager.breadthFirstFullUntilLevel(tree, 'projects', levelName);
+                var iterator = sdmDataManager.breadthFirstFullUntilLevel(tree, 'projects', levelName);
                 var iterate = function() {
                     var element = iterator.next();
                     if (element){

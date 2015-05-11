@@ -13,7 +13,9 @@
 
         var cachedFilters = {
             'projects': {},
-            'collections': {}
+            'collections': {},
+            'search': {},
+            'admin': {}
         };
 
         var setView = function (_viewID) {
@@ -109,7 +111,6 @@
                     for (var i = element.children.length - 1; i >= 0; i--){
                         thisChild = element.children[i];
                         if (checkGlobalFilter(thisChild) && getLevelFilter(thisChild.level)(thisChild)){
-                            thisChild.parent = element;
                             filteredChildren.push(thisChild);
                         }
                     }

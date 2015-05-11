@@ -165,7 +165,6 @@ sdm-info-modal {
         margin-top: 0px;
         font-size: 24px;
         margin-bottom: 10px;
-        //padding-bottom: 0px;
         font-weight: bold;
         font-variant: small-caps;
         text-transform: capitalize;
@@ -182,10 +181,15 @@ sdm-info-modal {
         padding-left: 10px;
         padding-right: 10px;
         .sdm-editable {
-            padding-top: 1px;
-            padding-bottom: 1px;
             cursor: text;
+            position: relative;
+            top: -1px;
             border: 1px solid transparent;
+            width: 80%;
+            height: 20px;
+            padding-left: 2px;
+            vertical-align: top;
+            display: inline-block;
             &.sdm-hover {
                 background-color: #e6e6e6;
                 border: 1px solid #adadad;
@@ -214,6 +218,7 @@ sdm-info-modal {
         }
         input.sdm-edit {
             height: 20px;
+            width: 80%;
         }
     }
 
@@ -293,7 +298,9 @@ sdm-info-modal {
         }
 
         div.permissions-header table {
-            border: 1px solid lightgrey;
+            border: 1px solid black;
+            background-color: @bgcol2;
+            color: @fgcol2;
 
             margin-bottom: 0px;
             td {
@@ -304,7 +311,7 @@ sdm-info-modal {
 
             height: 100px;
             overflow: scroll;
-            border: 1px solid lightgrey;
+            border: 1px solid black;
 
             border-top: none;
             table.table {

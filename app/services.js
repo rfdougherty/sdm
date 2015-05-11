@@ -61,6 +61,9 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 console.log('Unhandled problem in the request.');
                 console.log('Status:', reason.status);
                 console.log('Reason', reason);
+                if (reason.status == '404') {
+                    throw reason;
+                }
                 if (reason.data) {
                     throw new Error(reason.data.code + ' ' + reason.data.detail);
                 } else {
@@ -73,6 +76,8 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                 } else {
                     return makeAPICall.async(url, params, method, data);
                 }
+            }, function(reason){
+                console.log(reason);
             }).then(function(finalResult){
                 return finalResult;
             });

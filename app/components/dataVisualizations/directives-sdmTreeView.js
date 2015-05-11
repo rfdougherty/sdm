@@ -5,9 +5,10 @@
 
 
     angular.module('sdm.dataVisualizations.directives.sdmTreeView',
-        ['sdmD3Service', 'sdm.main.services.sdmViewManager'])
-    .directive('sdmTreeView', ['sdmD3Service', 'sdmViewManager',
-        function(sdmD3Service, sdmViewManager){
+        ['sdmD3Service', 'sdm.main.services.sdmViewManager',
+        'sdm.main.services.sdmDataManager'])
+    .directive('sdmTreeView', ['sdmD3Service', 'sdmViewManager', 'sdmDataManager',
+        function(sdmD3Service, sdmViewManager, sdmDataManager){
 
             // Runs during compile
             return {
@@ -37,7 +38,12 @@
                             $scope.$watch('trigger', function(newValue, oldValue){
                                 var source = (newValue === oldValue)?null:newValue.node;
                                 if (typeof source !== 'undefined' && typeof $scope.sdmData !== 'undefined'){
-                                    updateView($scope.sdmData.data, source, sdmViewManager.expandNode);
+                                    var expandNode = function(node){
+                                        sdmDataManager.expandNode(node).then(function(newNode){
+                                            sdmViewManager.triggerViewChange(newNode);
+                                        });
+                                    }
+                                    updateView($scope.sdmData.data, source, expandNode);
                                 }
                             });
                         });

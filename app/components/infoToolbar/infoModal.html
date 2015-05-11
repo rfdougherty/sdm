@@ -8,12 +8,12 @@
     <div class="info-modal-body" ng-show="sdmIMController.loadingState === 0">
         <div class="sdm-field-line" ng-repeat="field in sdmIMController.data">
             <span class="field-name">{{field.key}}:</span>
-            <span class="sdm-value" ng-show="!field.editing" ng-click="sdmIMController.edit(field)" ng-class="{'sdm-editable': sdmIMController.editables[field.key], 'sdm-hover': field.hover}" ng-mouseenter="field.hover=true" ng-mouseleave="field.hover=false">
+            <span class="sdm-value" ng-show="!field.editing" ng-click="sdmIMController.edit($event, field)" ng-class="{'sdm-editable': sdmIMController.editables[field.key], 'sdm-hover': field.hover}" ng-mouseenter="field.hover=true" ng-mouseleave="field.hover=false">
                 {{field.value}}
             </span>
-            <input type="text" class="sdm-edit" ng-model="field.value" ng-if="field.editing && sdmIMController.editables[field.key].type === 'text'">
+            <input type="text" class="sdm-edit" ng-model="field.value" ng-show="field.editing && sdmIMController.editables[field.key].type === 'text'">
             </input>
-            <button class="sdm-edit btn btn-xs btn-default" ng-class="{'sdm-hover': field.hover}" ng-show="sdmIMController.editables[field.key]" ng-click="field.editing=!field.editing" ng-mouseenter="field.hover=true" ng-mouseleave="field.hover=false">
+            <button class="sdm-edit btn btn-xs btn-default" ng-class="{'sdm-hover': field.hover}" ng-show="sdmIMController.editables[field.key]" ng-click="sdmIMController.edit($event, field)" ng-mouseenter="field.hover=true" ng-mouseleave="field.hover=false">
                 <span class="glyphicon glyphicon-pencil"></span>
             </button>
         </div>

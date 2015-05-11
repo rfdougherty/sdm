@@ -1,9 +1,11 @@
 'use strict';
 
 (function() {
-    var SdmTableViewData = function($scope, sdmUserManager, sdmViewManager) {
+    var SdmTableViewData = function($location, sdmViewManager) {
         var _this = this;
         var existingData;
+        var path = $location.path();
+        _this.viewID = path.substring(1, path.length);
         _this.trigger = {
             node: null,
             sessionKey: 1
@@ -16,12 +18,10 @@
         console.log('controller initialized');
     }
 
-    SdmTableViewData.$inject = ['$scope', 'sdmUserManager', 'sdmViewManager'];
+    SdmTableViewData.$inject = ['$location', 'sdmViewManager'];
 
     var controller = angular.module('sdm.dataVisualizations.controllers.sdmTableViewData', [
-        'sdm.main.services.sdmViewManager',
-        'sdm.authentication.services.sdmUserManager'
-        ])
-        .controller('SdmTableViewData', SdmTableViewData);
+        'sdm.main.services.sdmViewManager'
+    ]).controller('SdmTableViewData', SdmTableViewData);
 
 })()

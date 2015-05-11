@@ -1,5 +1,5 @@
 'use strict';
-
+var _inputEl;
 (function() {
     angular.module('sdm.infoToolbar.directives.sdmInfoModal',
             ['sdm.services', 'sdm.download.services.sdmDownloadInterface',
@@ -540,9 +540,13 @@
                             field.value = values.join(',');
                         }
 
-                        sdmIMController.edit = function(field) {
+                        sdmIMController.edit = function($event, field) {
                             if (sdmIMController.editables[field.key]){
-                                field.editing = true;
+                                field.editing = !field.editing;
+                                var inputEl = $event.currentTarget.parentElement.getElementsByTagName('input')[0];
+                                setTimeout(function(){
+                                    inputEl.focus()
+                                }, 0);
                             }
                         }
 
