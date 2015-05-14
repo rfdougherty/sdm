@@ -3,9 +3,10 @@
 (function() {
     angular.module('sdm.upload.directives.sdmUploadAttachment',[
             'angularFileUpload', 'ngCookies',
-            'sdm.authentication.services.sdmUserManager'])
-        .directive('sdmUploadAttachment', ['$q', '$upload', '$cookieStore', 'sdmUserManager',
-            function ($q, $upload, $cookieStore, sdmUserManager) {
+            'sdm.authentication.services.sdmUserManager',
+            'sdm.upload.services.SdmMD5'])
+        .directive('sdmUploadAttachment', ['$q', '$upload', '$cookieStore', 'sdmUserManager', 'SdmMD5',
+            function ($q, $upload, $cookieStore, sdmUserManager, SdmMD5) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -17,61 +18,6 @@
                         console.log('upload', sdmULController);
                         console.log($scope);
                         sdmULController.files = [];
-                        var shaWorker, jobid, deferreds;
-                        var initializeShaWorker = function(){
-                            shaWorker = new Worker('utils/rusha.js');
-                            jobid = 0;
-                            deferreds = {};
-
-                            shaWorker.onmessage = function(e) {
-                                console.log(e);
-                                if (typeof e.data.progress !== 'undefined') {
-                                    sdmULController.progressPercentage = e.data.progress;
-                                    $scope.$apply();
-                                    return;
-                                }
-                                var deferred = deferreds[e.data.id];
-                                if (deferred) {
-                                    deferreds[e.data.id] = null;
-                                    deferred.resolve(e.data.hash);
-                                } else {
-                                    console.warn('this message has already been resolved: ', e);
-                                }
-                            };
-                            shaWorker.onerror = function(e, filename, lineno) {
-                                console.log(e);
-                            };
-                        }
-                        initializeShaWorker();
-                        var calculateSHA1 = function(file, deferred) {
-                            deferred = deferred || $q.defer();
-                            var _jobid = jobid++;
-                            deferreds[_jobid] = deferred;
-                            shaWorker.postMessage({
-                                id: _jobid,
-                                data: file
-                            });
-                            return deferred.promise;
-                        }
-                        var calculateMetadata = function(files) {
-                            var metadata = [];
-                            var m;
-                            for (var i = 0; i < files.length; i++) {
-                                m = {
-                                    name: files[i].name,
-                                    size: files[i].size,
-                                    ext: '',
-                                    kinds: ['other']
-                                };
-                                metadata.push(m);
-                            }
-                            return metadata;
-                        }
-                        var createFile = function(json) {
-                            var s = JSON.stringify(json);
-                            var b = new Blob([s], {type: 'plain/text'});
-                            return b;
-                        }
 
                         sdmULController.addFiles = function() {
                             sdmULController.errorMessage = null;
@@ -114,66 +60,55 @@
                             });
                         }
                         var currentShaPromise;
+                        var sdmMD5;
                         var uploadFile = function(file) {
                             var deferred = $q.defer();
-                            var url = BASE_URL + [$scope.node.level.name, $scope.node.id, 'attachment'].join('/');
+                            var url = BASE_URL + [$scope.node.level.name,
+                                $scope.node.id,
+                                'file',
+                                file.name + '?flavor=attachment'].join('/');
                             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
                             var accessToken = typeof accessData !== undefined? accessData.access_token:undefined;
-                            var metadataFile = createFile(calculateMetadata([file]));
-                            var fileFormDataName = ['metadata'];
-                            var shaPromises = [];
-                            shaPromises.push(calculateSHA1(metadataFile));
-                            shaPromises.push(calculateSHA1(file));
-                            sdmULController.calculatingSHA1 = true;
-                            fileFormDataName.push(file.name);
-
-                            fileFormDataName.push('sha');
-                            $q.all(shaPromises).then(function(results) {
-                                sdmULController.calculatingSHA1 = false;
-                                var shaList = results.map(function(sha, i){
-                                    if (i === 0) {
-                                        return {
-                                            name: metadataFile.name = 'metadata',
-                                            sha1: sha
-                                        }
-                                    }
-                                    return {
-                                        name: file.name,
-                                        sha1: sha
-                                    }
-                                })
-                                sdmULController.progressPercentage = 0;
-                                console.log(shaList);
-                                var shaFile = createFile(shaList);
-                                shaFile.name = 'sha';
-                                sdmULController.currentFile = uploadToAPI(
-                                    url,
-                                    [metadataFile, file, shaFile],
-                                    accessToken,
-                                    fileFormDataName,
-                                    deferred
-                                );
-                            });
+                            sdmMD5 = new SdmMD5(file);
+                            sdmULController.calculatingMD5 = true;
+                            sdmMD5.promise.then(function(md5){
+                                    console.log(md5);
+                                    sdmULController.calculatingMD5 = false;
+                                    sdmULController.progressPercentage = 0;
+                                    sdmULController.currentFile = uploadToAPI(
+                                        url,
+                                        file,
+                                        accessToken,
+                                        md5,
+                                        deferred
+                                    );
+                                },
+                                null,
+                                function(progress){
+                                    sdmULController.progressPercentage = progress;
+                                }
+                            );
                             return deferred.promise;
                         }
 
-                        var uploadToAPI = function(url, files, accessToken, fileFormDataName, deferred, retry) {
-                            $upload.upload({
+                        var uploadToAPI = function(url, file, accessToken, md5, deferred, retry) {
+                            return $upload.http({
                                 url: url,
-                                file: files,
+                                data: file,
                                 headers: {
-                                    Authorization: accessToken
+                                    'Content-Type': file.type,
+                                    //'Content-Disposition': 'attachment; filename="' + file.name + '"',
+                                    Authorization: accessToken,
+                                    'Content-MD5': md5
                                 },
-                                method: 'PUT',
-                                fileFormDataName: fileFormDataName
+                                method: 'PUT'
                             }).progress(function (evt) {
-                                sdmULController.progressPercentage = parseInt(95.0 * evt.loaded / evt.total);
+                                sdmULController.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
                             }).success(function (data, status, headers, config) {
                                 console.log(data);
                                 sdmULController.progressPercentage = 100;
-                                $scope.sdmIMController.updateAttachments();
+                                $scope.sdmIMController.updateAttachmentsAndFiles();
                                 deferred.resolve();
-                                console.log('file ' + config.file[1].name + 'uploaded. Response: ' + data);
                                 sdmULController.currentFile = null;
                             }).error(function(data, status, headers, config){
                                 sdmULController.currentFile = null
@@ -189,7 +124,7 @@
                                             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
                                             var accessToken = typeof accessData !== undefined? accessData.access_token:undefined;
                                             var retry = retry?(retry + 1):1;
-                                            uploadToAPI(url, files, accessToken, fileFormDataName, deferred, retry);
+                                            uploadToAPI(url, file, accessToken, sha, deferred, retry);
                                         });
                                 } else {
                                     addError('Error during upload. Please contact an administrator.');
@@ -205,9 +140,7 @@
                             if (sdmULController.currentFile) {
                                 sdmULController.currentFile.abort();
                             } else {
-                                shaWorker.terminate();
-                                shaWorker = undefined;
-                                initializeShaWorker();
+                                sdmMD5.abort();
                             }
                             addError('Upload aborted.');
                             sdmULController.abortedUpload = true;
@@ -218,12 +151,9 @@
                         }
                         sdmULController.skipFile = function($event) {
                             if (sdmULController.currentFile) {
-                                console.log(sdmULController.currentFile);
                                 sdmULController.currentFile.abort();
                             } else {
-                                shaWorker.terminate();
-                                shaWorker = undefined;
-                                initializeShaWorker();
+                                sdmMD5.abort();
                             }
                             addError('Upload skipped.');
                             sdmULController.abortedUpload = true;

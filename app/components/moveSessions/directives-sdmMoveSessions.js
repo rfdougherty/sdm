@@ -17,20 +17,26 @@
                     link: function($scope, $element, $attrs, sdmMSController){
                         sdmMSController.loadingState = 2;
                         var userData = sdmUserManager.getAuthData();
-                        makeAPICall.async(BASE_URL + 'projects/groups').then(function(groups){
-                            sdmMSController.groups = groups;
-                            sdmMSController.groups.forEach(function(group){
-                                group.name = group.name||group._id
-                            });
-                            sdmMSController.groups.sort(naturalSortByName);
+                        sdmMSController.getGroups = function () {
+                            return makeAPICall.async(BASE_URL + 'projects/groups').then(function(groups){
+                                sdmMSController.groups = groups;
+                                sdmMSController.groups.forEach(function(group){
+                                    group.name = group.name||group._id
+                                });
+                                sdmMSController.groups.sort(naturalSortByName);
+                            })
+                        }
+                        sdmMSController.getGroups().then(function(){
                             sdmMSController.loadingState--;
                         });
                         sdmMSController.projects = [];
                         sdmMSController.getProjects = function ($event, group) {
                             if (!group) {
+                                var deferred = $q.defer();
                                 sdmMSController.projects = [];
                                 sdmMSController.selectedProject = null;
-                                return;
+                                deferred.resolve()
+                                return deferred.promise;
                             }
                             return makeAPICall.async(BASE_URL + 'projects', {group: group._id}).then(function(projects){
                                 var _projects = userData.root?projects:projects.filter(function(project){

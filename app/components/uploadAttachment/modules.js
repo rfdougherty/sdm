@@ -2,5 +2,6 @@
 
 angular.module('sdm.upload',
     [
-        'sdm.upload.directives.sdmUploadAttachment'
+        'sdm.upload.directives.sdmUploadAttachment',
+        'sdm.upload.services.SdmMD5'
     ]);

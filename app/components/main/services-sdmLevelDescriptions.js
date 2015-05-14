@@ -102,19 +102,13 @@
                 name: 'sessions',
                 next_level: 'acquisitions',
                 properties: {
-                    name: objectAccessor(['label']),
-                    subject:
-                        function(o){
-                            if (!o.subject) {
-                                return '';
-                            }
-                            return o.subject.code;
-                        }
+                    name: objectAccessor('label'),
+                    subject: objectAccessor('subject_code')
                 },
                 editables: {
                     Subject: {
                         type: 'text',
-                        update: updater('subject.code')
+                        update: updater('subject_code')
                     }
                 },
                 headers: ['Session', 'Subject'],
@@ -143,14 +137,7 @@
                 properties: {
                     name: objectAccessor('label'),
                     description: objectAccessor('description'),
-                    'data type': function (o){
-                        if (!o.types) {
-                            return '';
-                        }
-                        return o.types.map(function(d){
-                            return d.kind
-                        }).join(', ');
-                    }
+                    'data type': objectAccessor('datatype')
                 },
                 editables: {
                     Description: {
@@ -277,19 +264,13 @@
                 name: 'sessions',
                 next_level: 'acquisitions',
                 properties: {
-                    name: objectAccessor(['label']),
-                    subject:
-                        function(o){
-                            if (!o.subject) {
-                                return '';
-                            }
-                            return o.subject.code;
-                        }
+                    name: objectAccessor('label'),
+                    subject: objectAccessor('subject_code')
                 },
                 editables: {
                     Subject: {
                         type: 'text',
-                        update: updater('subject.code')
+                        update: updater('subject_code')
                     }
                 },
                 headers: ['Session', 'Subject'],
@@ -318,14 +299,7 @@
                 properties: {
                     name: objectAccessor('label'),
                     description: objectAccessor('description'),
-                    'data type': function (o){
-                        if (!o.types) {
-                            return '';
-                        }
-                        return o.types.map(function(d){
-                            return d.kind
-                        }).join(', ');
-                    }
+                    'data type': objectAccessor('datatype')
                 },
                 editables: {
                     Description: {

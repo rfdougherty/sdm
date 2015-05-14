@@ -59,18 +59,18 @@
                 <table class="table">
                     <tbody>
                         <tr class='file' ng-repeat="file in sdmIMController.files">
-                            <td><a href ng-click="sdmIMController.download(file)">{{file.type}}: {{file.kinds.join(', ')}}</a></td>
-                            <td>{{sdmIMController.formatSize(file.size)}}</td>
+                            <td><a href ng-click="sdmIMController.download(file)">{{file.filetype}}: {{file.datatypes.join(', ')}}</a></td>
+                            <td>{{sdmIMController.formatSize(file.filesize)}}</td>
                             <td>
                                 <span class="glyphicon glyphicon-eye-open"
-                                      ng-show="file.type === 'zip' && file.kinds.length === 1 && file.kinds[0] === 'montage'"
+                                      ng-show="file.filetype === 'montage'"
                                       sdm-popover sdm-popover-template-content="components/d3Viewer/tileViewer.html"
                                       sdm-popover-class="sdm-info-modal" sdm-popover-show="click"
                                       sdm-popover-show-timeout="0" sdm-popover-style-width="90%"
                                       sdm-popover-style-height="90%" sdm-append-to-body>
                                 </span>
                                 <span class="glyphicon glyphicon-eye-open"
-                                    ng-show="file.type === 'nifti'"
+                                    ng-show="file.filetype === 'nifti'"
                                     sdm-popover
                                     sdm-popover-template-content="components/papayaViewer/papayaViewer.html"
                                     sdm-popover-class="sdm-papaya-viewer"
@@ -114,7 +114,7 @@
                     <span class="upload-desc-wrap">
                         <span class="upload-desc">{{sdmULController.processingFileName}}</span>
                     </span>
-                    <span  class="sha-alert">{{sdmULController.calculatingSHA1?'Calculating hash...':'Uploading file...'}}</span>
+                    <span  class="sha-alert">{{sdmULController.calculatingMD5?'Calculating hash...':'Uploading file...'}}</span>
                     <input type="button" id="info-modal-upload-skip" class="btn btn-default btn-xs" ng-click="sdmULController.skipFile()" value="Skip">
                 </div>
                 <div class="progress">
@@ -147,12 +147,12 @@
                 <table class="table">
                     <tbody>
                         <tr class='attachment' ng-repeat="attachment in sdmIMController.attachments">
-                            <td><a href ng-click="sdmIMController.downloadAttachment($index)">{{attachment.name + attachment.ext}}</a></td>
-                            <td>{{sdmIMController.formatSize(attachment.size)}}</td>
+                            <td><a href ng-click="sdmIMController.downloadAttachment($index)">{{attachment.filename}}</a></td>
+                            <td>{{sdmIMController.formatSize(attachment.filesize)}}</td>
                             <td>
                                 <a href >
                                     <span class="glyphicon glyphicon-eye-open"
-                                        ng-show="sdmIMController.hasPapayaViewer(attachment)"
+                                        ng-show="attachment.filetype === 'nifti'"
                                         sdm-popover
                                         sdm-popover-template-content="components/papayaViewer/papayaViewer.html"
                                         sdm-popover-class="sdm-papaya-viewer"
@@ -161,7 +161,7 @@
                                         sdm-append-to-body ng-click="sdmIMController.viewAttachment(attachment)">
                                     </span>
                                     <span class="glyphicon glyphicon-eye-open"
-                                        ng-show="!sdmIMController.hasPapayaViewer(attachment)"
+                                        ng-show="attachment.filetype !== 'nifti'"
                                         sdm-popover
                                         sdm-popover-template-content="components/genericViewer/genericViewer.html"
                                         sdm-popover-class="sdm-generic-viewer"

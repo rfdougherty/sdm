@@ -28,12 +28,12 @@ angular.module('sdm.util.directives.sdmViewer',
         return function (displayFile) {
             element.empty();
             if (displayFile) {
-                console.log(displayFile.type)
+                console.log(displayFile.mimetype)
                 var objectEl = angular.element('<object>')
                                     .attr({
                                         'data': displayFile.fileUrl
                                     });
-                if (displayFile.type.search(/^(pdf|html)$/) > -1){
+                if (displayFile.mimetype.search(/^(application\/pdf|text\/html)$/) > -1){
                     objectEl.attr({
                         width: '90%',
                         height: '90%'
@@ -42,10 +42,10 @@ angular.module('sdm.util.directives.sdmViewer',
                     objectEl.css('visibility', 'hidden');
                 }
                 objectEl[0].onload = function(){
-                    switch(displayFile.type) {
-                        case 'pdf':
-                        case 'txt':
-                        case 'html':
+                    switch(displayFile.mimetype) {
+                        case 'application/pdf':
+                        case 'text/plain':
+                        case 'text/html':
                             break;
                         default:
                             resize(objectEl, element.parent());

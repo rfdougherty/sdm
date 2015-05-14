@@ -38,13 +38,15 @@
                         console.log($scope.$parent.$parent);
                         var selectCreatedProject = function(projectId) {
                             var sdmMSController = $scope.$parent.$parent.sdmMSController;
-                            sdmMSController.selectedGroup = sdmMSController.groups.filter(function(g){
-                                return g._id === sdmNPController.selectedGroup._id;
-                            })[0];
-                            sdmMSController.getProjects(null, sdmMSController.selectedGroup).then(function(){
-                                sdmMSController.selectedProject = sdmMSController.projects.filter(function(p){
-                                    return p._id === projectId;
+                            sdmMSController.getGroups().then(function(){
+                                sdmMSController.selectedGroup = sdmMSController.groups.filter(function(g){
+                                    return g._id === sdmNPController.selectedGroup._id;
                                 })[0];
+                                sdmMSController.getProjects(null, sdmMSController.selectedGroup).then(function(){
+                                    sdmMSController.selectedProject = sdmMSController.projects.filter(function(p){
+                                        return p._id === projectId;
+                                    })[0];
+                                });
                             });
                         }
                         sdmNPController.save = function($event, form) {

@@ -14,6 +14,7 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
 
     var makeAPICall = {
         async: function(url, params, method, data, headers, responseType, timeout) {
+            console.log(data);
             console.log("MAKE API CALL\nwith url=", url, " and params=", params);
             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
             if (typeof method === 'undefined') {

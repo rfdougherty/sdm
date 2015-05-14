@@ -2,9 +2,9 @@
 var _q;
 
 angular.module('sdm.util.services.sdmFileUtilities',
-    [])
+    ['sdm.upload.services.SdmMD5'])
     .factory('sdmFileUtilities',
-        ['$q', function($q) {
+        ['$q', 'SdmMD5', function($q, SdmMD5) {
             _q = $q;
             var subDict;
             daikon.reverseDict = {};
@@ -84,40 +84,12 @@ angular.module('sdm.util.services.sdmFileUtilities',
                 fr.readAsArrayBuffer(file);
                 return deferred.promise;
             };
-
-            var shaWorker, jobid, deferreds;
-            var initializeShaWorker = function(){
-                shaWorker = new Worker('utils/rusha.js');
-                jobid = 0;
-                deferreds = {};
-
-                shaWorker.onmessage = function(e) {
-                    console.log(e);
-                    if (typeof e.data.progress !== 'undefined') {
-                        sdmULController.progressPercentage = e.data.progress;
-                        $scope.$apply();
-                        return;
-                    }
-                    var deferred = deferreds[e.data.id];
-                    if (deferred) {
-                        deferreds[e.data.id] = null;
-                        deferred.resolve(e.data.hash);
-                    } else {
-                        console.warn('this message has already been resolved: ', e);
-                    }
-                };
-                shaWorker.onerror = function(e, filename, lineno) {
-                    console.log(e);
-                };
-            }
-            initializeShaWorker();
-            var calculateSHA1 = function(file, deferred) {
+            var sdmMD5;
+            var calculateMD5= function(file, deferred) {
                 deferred = deferred || $q.defer();
-                var _jobid = jobid++;
-                deferreds[_jobid] = deferred;
-                shaWorker.postMessage({
-                    id: _jobid,
-                    data: file
+                sdmMD5 = new SdmMD5(file);
+                sdmMD5.promise.then(function(md5){
+                    deferred.resolve(md5);
                 });
                 return deferred.promise;
             }
@@ -187,7 +159,7 @@ angular.module('sdm.util.services.sdmFileUtilities',
                 validateDicomFile: validateDicomFile,
                 anonymizeDicom: anonymizeDicom,
                 getDicomTag: getDicomTag,
-                calculateSHA1: calculateSHA1
+                calculateMD5: calculateMD5
             }
 
         }]

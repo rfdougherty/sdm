@@ -54,6 +54,8 @@
                 deferred.resolve();
                 return deferred.promise;
             }
+            tree.indeterminate = false;
+            tree.checked = false;
             iterator = breadthFirstRefresh(tree, viewID);
             tree.indeterminate = tree.checked = false;
 

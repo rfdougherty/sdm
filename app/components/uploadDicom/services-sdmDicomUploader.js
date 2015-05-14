@@ -4,7 +4,7 @@
 angular.module('sdm.uploadDicom.services.sdmDicomUploader',
     ['sdm.services', 'sdm.util.services.sdmFileUtilities'])
     .factory('sdmDicomUploader', ['$q', 'makeAPICall', 'sdmFileUtilities', function($q, makeAPICall, sdmFileUtilities) {
-        var uploadURL = BASE_URL + 'incremental';
+        var uploadURL = BASE_URL + 'upload';
         var buildHeader = function(overwrite) {
             var header = {
                 filetype: 'dicom',
@@ -21,13 +21,14 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                 URL += '&_id=' + _id;
             }
             var deferred = $q.defer();
-            sdmFileUtilities.calculateSHA1(data).then(function(sha1Hash){
+            console.log(data);
+            sdmFileUtilities.calculateMD5(data).then(function(md5){
                 makeAPICall.async(
                     URL,
                     null,
                     'POST',
                     data,
-                    {'Content-MD5': sha1Hash}
+                    {'Content-MD5': md5}
                 ).then(function(response) {
                     deferred.resolve(response)
                 },
@@ -76,7 +77,7 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                 seriesD.reject('promise aborted for', seriesUID);
             }
 
-            sendFile(headerData, 'metadata.json').then(function(_id){
+            sendFile(headerData, 'METADATA.json').then(function(_id){
                 var promises = [];
                 var i = 0;
                 var numQueues = 12;
