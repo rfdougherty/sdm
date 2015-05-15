@@ -14,7 +14,12 @@
             }
         };
 
+        var _headerTitles = {};
+
         var getHeaderTitles = function(viewID) {
+            if (_headerTitles[viewID]){
+                return _headerTitles[viewID];
+            }
             var _headers = headers(viewID);
             var headerTitles = [];
             angular.forEach(_headers, function(value, key){
@@ -37,6 +42,7 @@
                     this.push.apply(this, newTitles);
                 }
             }, headerTitles);
+            _headerTitles[viewID] = headerTitles;
             return headerTitles;
         };
 
