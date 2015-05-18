@@ -1,7 +1,7 @@
 'use strict';
 var _inputEl;
 (function() {
-    angular.module('sdm.infoToolbar.directives.sdmInfoModal',
+    angular.module('sdm.infoModal.directives.sdmInfoModal',
             ['sdm.services', 'sdm.download.services.sdmDownloadInterface',
              'sdm.authentication.services.sdmUserManager', 'sdm.main.services.sdmViewManager',
              'sdm.APIServices.services.sdmRoles',
@@ -259,7 +259,6 @@ var _inputEl;
                     controller: function(){},
                     controllerAs: 'sdmIMController',
                     link: function($scope, $element, $attrs, sdmIMController) {
-                        $scope.$parent.$parent.hideToolbar(null, 0);
                         var node = $scope.$parent.$parent.data;
                         var APIUrl = BASE_URL + node.level.name + '/' + node.id;
                         var level = node.level.name;

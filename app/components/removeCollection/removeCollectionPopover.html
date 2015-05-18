@@ -8,13 +8,13 @@
                 <span class="description">{{collection.name}}{{collection.count}}</span>
                 <div class="indented">
                     <input type="checkbox" ng-if="collection.selection" ng-model="collection.selection.checked" ng-disabled="collection.selection.disabled" ng-click="collection.checked = collection.checked?collection.selection.checked:collection.checked" ng-class="collection.selection.disabled?'':'has-access'"></input>
-                    <span ng-if="collection.selection" class="description">{{collection.selection.length}} acquisition(s)</span>
+                    <span ng-if="collection.selection" class="description">{{collection.selection.length}} acquisition(s) selected</span>
                 </div>
             </div>
         </div>
     </div>
     <div class="remove-collection-message">
-        <div class="warning" ng-show="!sdmRCController.removeEnabled">
+        <div class="warning" ng-show="sdmRCController.loadingState === 0 && !sdmRCController.removeEnabled">
             No permissions on collections
         </div>
         <div class="success" ng-show="sdmRCController.completed">

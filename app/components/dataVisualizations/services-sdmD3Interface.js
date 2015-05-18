@@ -207,15 +207,11 @@
                         if (d.level.name.search(/^(sessions|projects|collections|acquisitions)$/) >= 0 && (d.userAccess.search(/^no$/) === -1 || user.root) ){
                             d3Text.attr({
                                 'sdm-popover': '',
-                                'sdm-popover-class': 'sdm-info-toolbar',
-                                'sdm-popover-template-content': 'components/infoToolbar/infoToolbarPopover.html',
-                                'sdm-popover-dynamic-position': 'false',
-                                'sdm-popover-style-width': '46px',
-                                'sdm-popover-style-height': '28px',
-                                'sdm-popover-style-top': '24px',
-                                'sdm-popover-show': 'mouseenter',
-                                'sdm-popover-hide': 'mouseleave',
-                                'sdm-popover-show-timeout': '400'
+                                'sdm-popover-class': 'sdm-info-modal',
+                                'sdm-popover-template-content': 'components/infoModal/infoModal.html',
+                                'sdm-popover-show': 'click',
+                                'sdm-popover-show-timeout': '0',
+                                'sdm-append-to-body': ''
                             }).on('mouseover', sdmCellOnHover, true);
                         }
 

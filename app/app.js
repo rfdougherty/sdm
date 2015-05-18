@@ -13,7 +13,7 @@ var sdmApp = angular.module('sdm', [
     'sdm.createCollection',
     'sdm.APIServices',
     'sdm.dataVisualizations',
-    'sdm.infoToolbar',
+    'sdm.infoModal',
     'sdm.download',
     'sdm.admin',
     'sdm.moveSessions',
