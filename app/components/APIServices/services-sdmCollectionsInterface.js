@@ -30,6 +30,35 @@
                 return nodes;
             };
 
+            var splitSelection = function(selection) {
+                var collections = {};
+                selection.forEach(function(element) {
+                    collections[element.collection.id] = collections[element.collection.id] ||
+                        {
+                            selection: [],
+                            id: element.collection.id,
+                            name: element.collection.name,
+                            notes: element.collection.notes,
+                            checked: element.collection.checked,
+                            userAccess: element.collection.userAccess
+                        };
+                    collections[element.collection.id].selection.push(element);
+                });
+                if (selection.collections) {
+                    selection.collections.forEach(function(collection){
+                        collections[collection.id] = collections[collection.id] ||
+                            {
+                                id: collection.id,
+                                name: collection.name,
+                                notes: collection.notes,
+                                checked: collection.checked,
+                                userAccess: collection.userAccess
+                            };
+                    });
+                }
+                return collections;
+            }
+
             var createCollection = function (name, notes, permissions) {
                 var d = $q.defer();
                 var url = BASE_URL + 'collections';
@@ -53,7 +82,7 @@
                 }
                 var nodes = [];
                 selection.forEach(function(dataNode) {
-                    if (!dataNode.id) {
+                    if (!dataNode.id) { //see explanation on _addProjectNodes
                         _addProjectNodes(dataNode, nodes);
                     } else {
                         var node = {};
@@ -66,12 +95,14 @@
                 var data = {
                     name: name,
                     notes: notes,
-                    permissions: permissions,
                     contents: {
                         operation: operation,
                         nodes: nodes
                     }
                 };
+                if (permissions) {
+                    data.permissions = permissions;
+                }
                 makeAPICall.async(url, null, 'PUT', data).then(function(response){
                     d.resolve(response);
                 });
@@ -120,7 +151,8 @@
                 getCollections: getCollections,
                 getCollection: getCollection,
                 deleteCollection: deleteCollection,
-                deleteAllCollections: deleteAllCollections
+                deleteAllCollections: deleteAllCollections,
+                splitSelection: splitSelection
             }
         }]);
 

@@ -7,7 +7,6 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
 
             var getSelection = function () {
                 var deferred = $q.defer();
-                var selection;
                 var data = sdmViewManager.getCurrentViewData();
                 var currentPath = $location.path();
                 if (currentPath === '/collections' || currentPath === '/search') {
@@ -44,14 +43,23 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
 
             var getSelectionInCollectionsOrSearch = function (tree, deferred) {
                 deferred = deferred || $q.defer()
+                var currentPath = $location.path();
                 var iterator = sdmDataManager.breadthFirstFull(tree);
                 var selection = [];
                 var iterate = function () {
                     var element = iterator.next();
                     if (element) {
                         element.then(function(element){
-                            if (element && element.checked && element.level.name === 'acquisitions') {
-                                selection.push(element);
+                            if (element && element.checked) {
+                                if (element.level.name === 'acquisitions') {
+                                    if (currentPath === '/collections') {
+                                        element.collection = element.parent.parent;
+                                    }
+                                    selection.push(element);
+                                } else if (element.level.name === 'collections'){
+                                    selection.collections = selection.collections || [];
+                                    selection.collections.push(element);
+                                }
                             }
                             iterate();
                         });

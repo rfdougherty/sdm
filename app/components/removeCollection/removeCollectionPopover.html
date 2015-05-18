@@ -1,0 +1,28 @@
+<sdm-remove-collection>
+    <div class="remove-collection-header"></div>
+    <div class="remove-collection-title">Remove from collections<span class="spinner" ng-show="sdmRCController.loadingState > 0"></span></div>
+    <div class="remove-collection-body">
+        <div class="remove-collection-list">
+            <div ng-repeat="collection in sdmRCController.updates">
+                <input type="checkbox" ng-model="collection.checked" ng-disabled="collection.disabled" ng-class="collection.disabled?'':'has-access'" ng-click="collection.selection?(collection.selection.checked = collection.checked?true:collection.selection.checked):''"></input>
+                <span class="description">{{collection.name}}{{collection.count}}</span>
+                <div class="indented">
+                    <input type="checkbox" ng-if="collection.selection" ng-model="collection.selection.checked" ng-disabled="collection.selection.disabled" ng-click="collection.checked = collection.checked?collection.selection.checked:collection.checked" ng-class="collection.selection.disabled?'':'has-access'"></input>
+                    <span ng-if="collection.selection" class="description">{{collection.selection.length}} acquisition(s)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="remove-collection-message">
+        <div class="warning" ng-show="!sdmRCController.removeEnabled">
+            No permissions on collections
+        </div>
+        <div class="success" ng-show="sdmRCController.completed">
+            Selected items removed
+        </div>
+    </div>
+    <div class="remove-collection-confirm-buttons">
+        <input type="button" id="remove-collection-cancel" class="btn btn-default btn-xs" ng-click="sdmRCController.close($event)" value="Close"></input>
+        <input type="button"  id="remove-collection-confirm" class="btn btn-default btn-xs btn-danger"  value="Remove" ng-click="sdmRCController.remove($event)" ng-disabled="sdmRCController.loadingState > 0 || !sdmRCController.removeEnabled"></input>
+    </div>
+</sdm-remove-collection>

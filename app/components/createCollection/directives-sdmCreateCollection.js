@@ -255,7 +255,7 @@
                                             for (var i = 0; i < collection.permissions.length; i++) {
                                                 if (collection.permissions[i]._id === sdmCCController.curator.user_uid) {
                                                     collection.userAccess = collection.permissions[i].access;
-                                                    return collection.userAccess.search(/read-write$|admin$/) === 0;
+                                                    return collection.userAccess.search(/rw$|admin$/) === 0;
                                                 }
                                             }
                                             return false;

@@ -55,6 +55,8 @@
                 return deferred.promise;
             }
             iterator = breadthFirstRefresh(tree, viewID);
+            tree.indeterminate = tree.checked = false;
+
 
             var iterate = function() {
                 var element = iterator.next();

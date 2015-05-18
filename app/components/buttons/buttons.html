@@ -74,7 +74,7 @@
                 sdm-tooltip-y="32">
             </span>
         </button>
-        <button type="button" class="btn btn-default" sdm-popover sdm-popover-template-content="components/download/modalDownload.html" sdm-popover-class="sdm-download" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="67px" sdm-popover-style-left="initial"sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
+        <button type="button" class="btn btn-default" sdm-popover sdm-popover-template-content="components/download/modalDownload.html" sdm-popover-class="sdm-download" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="42px" sdm-popover-style-left="initial"sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
             <span class="glyphicon glyphicon-cloud-download toolbar-icon">
             </span>
             <span class="tooltip"
@@ -90,7 +90,7 @@
                 sdm-tooltip-y="32">
             </span>
         </button>
-        <button type="button" class="btn btn-default" ng-show="sdmButtonsController.location() === '/projects'" sdm-popover sdm-popover-template-content="components/moveSessions/moveSessionsPopover.html" sdm-popover-class="sdm-move-sessions" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="42px" sdm-popover-style-left="initial" sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
+        <button type="button" class="btn btn-default" ng-show="sdmButtonsController.location() === '/projects'" sdm-popover sdm-popover-template-content="components/moveSessions/moveSessionsPopover.html" sdm-popover-class="sdm-move-sessions" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="17px" sdm-popover-style-left="initial" sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
             <span class="glyphicon glyphicon-arrow-right toolbar-icon">
             </span>
             <span class="tooltip"
@@ -106,23 +106,8 @@
                 sdm-tooltip-y="32">
             </span>
         </button>
-        <button type="button" class="btn btn-default" ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
-            <span class="glyphicon glyphicon-trash toolbar-icon" ng-show="sdmButtonsController.location() !== '/collections'">
-            </span>
-            <span class="tooltip"
-                sdm-popover
-                sdm-popover-template-text="Trash"
-                sdm-popover-class="sdm-tooltip"
-                sdm-popover-show="mouseenter"
-                sdm-popover-hide="mouseleave"
-                sdm-popover-show-timeout="400"
-                sdm-popover-hide-timeout="0"
-                sdm-tooltip-style
-                sdm-tooltip-x="12"
-                sdm-tooltip-y="32"
-                ng-show="sdmButtonsController.location() === '/projects'">
-            </span>
-            <span class="glyphicon glyphicon-remove-circle toolbar-icon" ng-show="sdmButtonsController.location() === '/collections'">
+        <button type="button" class="btn btn-default" ng-show="sdmButtonsController.location() === '/collections'" sdm-popover sdm-popover-template-content="components/removeCollection/removeCollectionPopover.html" sdm-popover-class="sdm-remove-collection" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="17px" sdm-popover-style-left="initial" sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
+            <span class="glyphicon glyphicon-remove-circle toolbar-icon" >
             </span>
             <span class="tooltip"
                 sdm-popover
@@ -133,10 +118,8 @@
                 sdm-popover-show-timeout="400"
                 sdm-tooltip-style
                 sdm-tooltip-x="12"
-                sdm-tooltip-y="32"
-                ng-show="sdmButtonsController.location() === '/collections'">
+                sdm-tooltip-y="32">
             </span>
-
         </button>
     </div>
 </div>

@@ -1,0 +1,122 @@
+@import (less) "../../active_config/variables.less";
+
+@min-width-table: 1170px;
+@min-width-body: @min-width-table + 30;
+
+div.sdm-remove-collection {
+    .popover-overlay {
+        background-color: lightgray;
+    }
+    .popover-dialog {
+        padding: 0px;
+        transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+    }
+    .popover-dialog:after {
+        border-bottom-color: @bgcol1;
+    }
+    .popover-dialog:before, .popover-dialog:after {
+        top: 0px;
+        left: 95%;
+    }
+    &.popover {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        min-width: @min-width-body;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+sdm-remove-collection {
+    white-space: normal;
+    div.remove-collection-header {
+        background-color: @bgcol1;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        height: 5px;
+    }
+    div.remove-collection-title {
+        padding-left: 10px;
+        padding-right:10px;
+        margin-top: 0px;
+        font-size: 16px;
+        margin-bottom: 6px;
+        font-weight: bold;
+        font-variant: small-caps;
+        background-color: @bgcol1;
+        color: @fgcol1;
+        .spinner:before {
+            margin-top: 2px;
+        }
+        .spinner:not(:required):before {
+            border-top-color: @fgcol1;
+        }
+    }
+    div.remove-collection-body {
+        padding-left: 10px;
+        padding-right:10px;
+        font-size: 14px;
+        height: 90px;
+        overflow: scroll;
+        border-bottom: 1px solid black;
+        .remove-collection-list {
+            div.indented {
+                margin-left: 10px;
+                display: block;
+            }
+            input[type=checkbox] {
+                display: inline;
+                &::before {
+                    content: '✔';
+                    visibility: hidden;
+                }
+                margin: 0;
+                margin-top: 4px;
+                font-size: 9px;
+                -webkit-appearance: none;
+                background-color: fade(color(@bgcol4), 50%);
+                color: @fgcol3;
+                border: 1px solid black;
+                border-radius: 2px;
+                height: 12px;
+                width: 12px;
+                padding: 0px 1px;
+                outline:none;
+                box-shadow: inset 0px 1px 0px fade(color(black), 20%);
+                &:checked {
+                    &::before {
+                        content: '✔';
+                        visibility: visible;
+                    }
+                    font-size: 9px;
+                    font-weight: 400;
+                }
+            }
+            input.has-access[type=checkbox] {
+                background-color: fade(color(@bgcol1), 75%);
+                color: @fgcol1;
+            }
+        }
+    }
+    div.remove-collection-confirm-buttons {
+        position: absolute;
+        bottom: 6px;
+        right: 10px;
+        text-align: right;
+    }
+    div.remove-collection-message {
+        position: absolute;
+        bottom: 6px;
+        left: 10px;
+        text-align: left;
+        .warning {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    }
+}
