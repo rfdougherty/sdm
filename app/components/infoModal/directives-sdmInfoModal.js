@@ -394,7 +394,7 @@ var _inputEl;
                                 file: file
                             };
                             sdmDownloadInterface.getDownloadURL(_node, true, false).then(function(response){
-                                window.open(response.url, '_self');
+                                window.open(response.url + '&attach=true', '_self');
                             });
                         };
 
