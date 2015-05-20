@@ -1,5 +1,48 @@
 @import (less) "../../active_config/variables.less";
 
+//style for the tooltip
+div.popover.sdm-note-tooltip {
+    position: relative;
+    overflow: visible;
+    top: 0px;
+    left: 0px;
+    height: 32px;
+    .popover-dialog.sdm-note-tooltip{
+        padding: 5px;
+        top: 22px;
+        left: -4px;
+        overflow: visible;
+        transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+        background-color: @bgcol3;
+        &:before {
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-bottom: 7px solid black;
+            top: 0px;
+            left: 10px;
+        }
+        &:after {
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid @bgcol3;
+            top: 0px;
+            left: 10px;
+        }
+
+    }
+    div.notes-tooltip {
+        height: 100%;
+        width: 100%;
+        font-size: 1.5ex;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        overflow: scroll;
+        word-wrap: break-word;
+    }
+}
+
+//style for the info modal
 div.sdm-info-modal {
     .popover-dialog {
         height: 600px;

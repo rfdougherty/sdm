@@ -91,6 +91,9 @@
                 .classed(self.viewID, true)
                 .on('mouseenter', function (leaf){
                     if (self.rowEntered.leaf) {
+                        if (self.rowEntered.leaf === leaf) {
+                            return;
+                        }
                         self.rowEntered.leaf.fullLine = false;
                         self.updateRow().call(self.rowEntered.element, self.rowEntered.leaf);
                     }
@@ -235,15 +238,15 @@
                                         icon = 'glyphicon-ban-circle';
                                     }
                                     return 'glyphicon nav-glyph expander ' + icon;
-                                }).on('click', actions.expandNode);
+                                }).on('mouseup', actions.expandNode);
                         }
-                        if (i === 0 && d.notes) {
+                        if (i === 0 && d.notes && !d.hideGlyphs) {
                             d3DivContent.style({'width':'70%'});
                             // IMPORTANT: data in this tooltip is added to its scope in the sdmCellOnHover function
                             d3Element.append('div').append('span').attr({
                                 'class': 'glyphicon nav-glyph expander glyphicon-comment',
                                 'sdm-popover': '',
-                                'sdm-popover-class': 'sdm-info-toolbar sdm-note-tooltip',
+                                'sdm-popover-class': 'sdm-note-tooltip',
                                 'sdm-popover-template-text': function(d){return '<div class="notes-tooltip sdm-notes">' + _parseNote(d.notes) + '</div>'},
                                 'sdm-popover-dynamic-position': 'false',
                                 'sdm-popover-style-width': '250px',
@@ -252,6 +255,7 @@
                                 'sdm-popover-show': 'mouseenter',
                                 'sdm-popover-hide': 'mouseleave',
                                 'sdm-popover-show-timeout': '400',
+                                'sdm-popover-show-after': '400'
                             }).on('mouseenter', sdmCellOnHover, true);;
                         }
                     }

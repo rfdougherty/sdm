@@ -433,7 +433,6 @@ var _inputEl;
                             if (sdmIMController.arePermissionsChanged || areNotesChanged || isApiDataChanged) {
                                 sdmIMController.confirmDismiss = true;
                             } else {
-                                $scope.$parent.enableEvents();
                                 $scope.$parent._hidePopover($event, 0);
                             }
                         };
@@ -605,7 +604,6 @@ var _inputEl;
                                     return !field.editing;
                                 });
                             if (!sdmIMController.arePermissionsChanged && !areNotesChanged && !isApiDataChanged) {
-                                $scope.$parent.enableEvents();
                                 $scope.$parent._hidePopover($event, 0);
                                 return;
                             }

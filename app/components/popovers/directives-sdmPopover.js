@@ -108,28 +108,38 @@
                     }
 
                     $scope.enableEvents = function(){
+                        console.log('enableEvents', $attrs.sdmPopoverClass);
                         $scope.hidePopover = $scope._hidePopover;
                         if ($attrs.sdmPopoverShow) {
-                            $element.on($attrs.sdmPopoverShow, function($event){
+                            $attrs.sdmPopoverShowMethod = function($event){
                                 return $scope.showPopover($event, $attrs.sdmPopoverShowTimeout)
-                            });
+                            }
+                            $element[0].addEventListener($attrs.sdmPopoverShow, $attrs.sdmPopoverShowMethod);
                         }
                         if ($attrs.sdmPopoverHide) {
-                            $element.on($attrs.sdmPopoverHide, function($event) {
-                                $scope.hidePopover($event, $attrs.sdmPopoverHideTimeout)
-                            });
+                            $attrs.sdmPopoverHideMethod = function($event){
+                                return $scope.hidePopover($event, $attrs.sdmPopoverHideTimeout)
+                            }
+                            $element[0].addEventListener($attrs.sdmPopoverHide, $attrs.sdmPopoverHideMethod);
                         }
                     }
 
                     $scope.disableEvents = function() {
                         $scope._hidePopover = $scope.hidePopover;
                         $scope.hidePopover = function(){};
-                        $element.off();
+                        if ($attrs.sdmPopoverHide) {
+                            $element[0].removeEventListener($attrs.sdmPopoverHide, $attrs.sdmPopoverHideMethod);
+                        }
+                        if ($attrs.sdmPopoverShow) {
+                            $element[0].removeEventListener($attrs.sdmPopoverShow, $attrs.sdmPopoverShowMethod);
+                        }
                     }
 
                     $scope.enableEvents();
                     if (typeof $attrs.sdmPopoverShowImmediately !== 'undefined') {
                         $scope.showPopover(null, 0);
+                    } else if (typeof $attrs.sdmPopoverShowAfter !== 'undefined') {
+                        $scope.showPopover(null, $attrs.sdmPopoverShowAfter);
                     }
                 }
             }};
