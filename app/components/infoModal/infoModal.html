@@ -161,7 +161,16 @@
                                         sdm-append-to-body ng-click="sdmIMController.viewAttachment(attachment)">
                                     </span>
                                     <span class="glyphicon glyphicon-eye-open"
-                                        ng-show="attachment.filetype !== 'nifti'"
+                                        ng-show="sdmIMController.hasBbrowserViewer(attachment)"
+                                        sdm-popover
+                                        sdm-popover-template-content="components/brainbrowser/brainbrowser.html"
+                                        sdm-popover-class="sdm-bbrowser-viewer"
+                                        sdm-popover-show="click"
+                                        sdm-popover-show-timeout="0"
+                                        sdm-append-to-body ng-click="sdmIMController.viewAttachment(attachment)">
+                                    </span>
+                                    <span class="glyphicon glyphicon-eye-open"
+                                        ng-show="attachment.filetype !== 'nifti' && !sdmIMController.hasBbrowserViewer(attachment)"
                                         sdm-popover
                                         sdm-popover-template-content="components/genericViewer/genericViewer.html"
                                         sdm-popover-class="sdm-generic-viewer"

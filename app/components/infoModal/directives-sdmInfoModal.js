@@ -502,10 +502,27 @@ var _inputEl;
                             return filename.search(/\.nii(\.gz)?$/) >= 0;
                         }
 
+                        sdmIMController.hasBbrowserViewer = function(attachment) {
+                            var filename = attachment.name + attachment.ext;
+                            return filename.search(/\.obj$/) >= 0;
+                        }
+
                         sdmIMController.viewAttachment = function(attachment) {
                             var url = APIUrl + '/file/' + attachment.filename;
                             var callback;
-                            if (sdmIMController.hasPapayaViewer(attachment)) {
+                            if (sdmIMController.hasBbrowserViewer(attachment)) {
+                                callback = function(response) {
+                                    $("#bbrowser-viewer").html("");
+                                    $("#bbrowser-viewer").load(
+                                      "https://brainbrowser.cbrain.mcgill.ca/surface-viewer-widget?" +
+                                      "version=2.3.0&" +
+                                      "model=" + response.url + "&" +
+                                      "width=600&" +
+                                      "height=600&" +
+                                      "format=wavefrontobj"
+                                    );
+                                };
+                            } else if (sdmIMController.hasPapayaViewer(attachment)) {
                                 callback = function(response) {
                                     console.log(response.ticket);
                                     papayaParams.images = [url + '?ticket=' + response.ticket + '&view=true'];
