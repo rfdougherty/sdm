@@ -5,14 +5,20 @@
         <div id="sdm-upload-dicom-body">
             <div id="sdm-upload-dicom-menu">
                 <div id="sdm-dicom-form-metadata">
+                    <div class="sdm-dicom-comment">Your DICOM files will be directly uploaded to the Project you specify.</div>
                     <select class="form-control" ng-options="group.name||group._id for group in sdmULDController.data.groups" ng-model="sdmULDController.data.selectedGroup" ng-change="sdmULDController.getProjects($event, sdmULDController.data.selectedGroup)" ng-class="{default:!sdmULDController.data.selectedGroup}">
-                        <option class="default" value="">Select group of destination project</option></select>
-                    <select class="form-control" ng-disabled="!sdmULDController.data.projects.length || !sdmULDController.data.selectedGroup" ng-options="project.name for project in sdmULDController.data.projects" ng-model="sdmULDController.data.selectedProject" ng-class="{default:!sdmULDController.data.selectedProject}"><option class="default" value="">Select destination project</option></select>
+                        <option class="default" value="">Select Group</option></select>
+                    <select class="form-control" ng-disabled="!sdmULDController.data.projects.length || !sdmULDController.data.selectedGroup" ng-options="project.name for project in sdmULDController.data.projects" ng-model="sdmULDController.data.selectedProject" ng-class="{default:!sdmULDController.data.selectedProject}"><option class="default" value="">Select Project</option></select>
                     <input type="checkbox" ng-model="sdmULDController.data.anonymize" ng-click="sdmULDController.confirmAnonymize($event)">
                     <label for="sdm-anonymize">Anonymize</label>
                 </div>
                 <div ng-file-drop ng-file-select class="drop-box" ng-model="sdmULDController.newFiles" drag-over-class="dragover" ng-multiple="true" allow-dir="true" ng-change="sdmULDController.addFiles()">
-                    Drop Dicom files here or click to upload
+                    <span class="glyphicon glyphicon-picture"></span>
+                    <span class="sdm-message-dropbox">
+                        <div>Drop your files here</div>
+                        <div class="small">Or click to</div>
+                        <div class="small with-border">Browse</div>
+                    </span>
                 </div>
             </div>
             <div>
@@ -25,9 +31,9 @@
                         <th>Slices</th>
                         <th>PatientID</th>
                         <th>Size</th>
-                        <th>Progress</th>
+                        <th></th>
                     </tr>
-                    <tr ng-repeat="(seriesID, data) in sdmULDController.data.series">
+                    <tr ng-repeat="(seriesID, data) in sdmULDController.data.series" class="sdm-table-row">
                         <td><input type="checkbox" ng-model="data.selected"></td>
                         <td>{{data.datetime}}</td>
                         <td>{{data.tags.StudyID.value[0]}}</td>
@@ -37,25 +43,17 @@
                         <td>{{data.hrsize}}</td>
                         <td>
                             <div class="progress" ng-class="{'progress-error':data.progress && data.progress < 0 }">
-                                <div class="progress-bar" role="progressbar" aria-valuenow="{{data.progress}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: data.progress + '%'}" >
-                                    {{data.progress?(data.progress>=0?data.progress:0):0 | number:0 }}%
+                                <div class="progress-bar" role="progressbar" aria-valuenow="{{data.progress}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: data.progress + '%'}">
+                                    {{data.progress | number:0 ||0}}%
                                 </div>
                             </div>
                         </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+
                     </tr>
                 </table>
+                <div ng-if="sdmULDController.data.empty" class="sdm-upload-no-files">No files uploaded</div>
             </div>
-            <div id="sdm-upload-dicom-buttons">
+            <div id="sdm-upload-dicom-buttons" ng-if="!sdmULDController.data.empty">
                 <input type="submit" class="btn btn-default" value="Upload" ng-disabled="sdmULDController.data.empty || !sdmULDController.data.selectedProject" ng-click="sdmULDController.upload()">
                 <input type="button" class="btn btn-default" value="Clear" ng-disabled="sdmULDController.data.empty" ng-click="sdmULDController.clear()">
             </div>

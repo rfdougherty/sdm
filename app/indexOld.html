@@ -1,0 +1,179 @@
+<!doctype html>
+<html xmlns:ng="http://angularjs.org" ng-app="sdm" lang="en">
+
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDM</title>
+
+
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet/less" href="main.less" />
+    <link rel="stylesheet/less" href="components/popovers/popover.less" />
+    <link rel="stylesheet/less" href="components/userPreferences/userPreferences.less" />
+    <link rel="stylesheet/less" href="components/infoModal/infoModal.less" />
+    <link rel="stylesheet/less" href="components/createCollection/createCollection.less" />
+    <link rel="stylesheet/less" href="components/download/modalDownload.less" />
+    <link rel="stylesheet/less" href="components/authentication/authModals.less" />
+    <link rel="stylesheet/less" href="components/admin/createUserModal.less" />
+    <link rel="stylesheet/less" href="components/moveSessions/moveSessionsPopover.less" />
+    <link rel="stylesheet/less" href="components/popovers/tooltip.less" />
+    <link rel="stylesheet/less" href="components/createNewProject/createNewProjectModal.less" />
+    <link rel="stylesheet/less" href="components/d3Viewer/tileViewer.less" />
+    <link rel="stylesheet/less" href="components/papayaViewer/papayaViewer.less" />
+    <link rel="stylesheet/less" href="components/genericViewer/genericViewer.less" />
+    <link rel="stylesheet/less" href="components/search/search.less" />
+    <link rel="stylesheet/less" href="components/uploadDicom/uploadDicom.less" />
+    <link rel="stylesheet/less" href="components/uploadDicom/anonymizeModal.less" />
+    <link rel="stylesheet/less" href="components/admin/adminModal.less" />
+    <link rel="stylesheet/less" href="components/removeCollection/removeCollectionPopover.less" />
+    <link rel="stylesheet" href="utils/papaya.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.0.0/less.min.js"></script>
+
+</head>
+
+<body>
+
+
+    <div id="sdm-main" class="main-content">
+        <div class="header">
+            <div id="header-logo" ng-include="'active_config/header-logo.html'">
+            </div>
+
+            <div id="header-text" ng-include="'active_config/header-main-text.html'">
+            </div>
+
+            <div id="header-toolbar" ng-include src="'components/authentication/login-box.html'" ng-controller="LoginController">
+            </div>
+        </div>
+        <!--div id="navigation"
+             ng-controller="SdmNavigationController as sdmNavigationController"
+             ng-include="'components/navigation/navigation.html'">
+        </div>
+        <div ng-view>
+        </div>
+        <div class="footer">
+            <div id="footer-links">
+                <span class="scitran" ng-include="scitran.html">
+                </span>
+                <span class="divider"></span>
+                <span class="customizable" ng-include="'active_config/footer-links.html'">
+                </span>
+                <span class="divider"></span>
+
+                <span id="footer-copyright" ng-include="'active_config/footer-copyright.html'">
+                </span>
+            </div>
+
+
+        </div-->
+    </div>
+    <script>
+        if (navigator.userAgent.search(/Chrome\//i) < 0 || navigator.userAgent.search(/OPR\//) >= 0) {
+            alert("Only Chrome is currently supported. Some of the functionalities may not be working in your current browser.")
+        }
+    </script>
+
+    <script src="utils/papaya.js"></script>
+    <script src="utils/pdf.js"></script>
+    <!--script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script-->
+    <script src="//twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular-route.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular-cookies.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular-sanitize.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/danialfarid-angular-file-upload/3.1.2/angular-file-upload.js"></script>
+
+
+    <!-- main app and services that are used globally -->
+    <script src="active_config/config.js"></script>
+    <script src="app.js"></script>
+    <script src="services.js"></script>
+    <script src="directives.js"></script>
+    <script src="components/main/services-sdmViewManager.js"></script>
+    <script src="components/main/services-sdmDataManager.js"></script>
+    <script src="components/main/services-sdmLevelDescriptions.js"></script>
+    <script src="components/main/modules.js"></script>
+
+    <script src="components/APIServices/services-sdmRoles.js"></script>
+    <script src="components/APIServices/services-sdmUsers.js"></script>
+    <script src="components/APIServices/services-sdmCollectionsInterface.js"></script>
+    <script src="components/APIServices/modules.js"></script>
+
+    <!-- Authentication component -->
+    <script src="components/authentication/modules.js"></script>
+    <script src="components/authentication/angularOauth.js"></script>
+    <script src="components/authentication/siteOauth.js"></script>
+    <script src="components/authentication/nimsAuthController.js"></script>
+    <script src="components/authentication/services-sdmUserManager.js"></script>
+    <script src="components/authentication/directives-sdmLoginModal.js"></script>
+    <script src="components/authentication/directives-sdmNewUser.js"></script>
+
+    <script src="components/dataVisualizations/controllers-sdmTableViewData.js"></script>
+
+    <script src="components/buttons/controllers-sdmButtons.js"></script>
+    <script src="components/buttons/modules.js"></script>
+
+    <script src="components/navigation/controllers-sdmNavigation.js"></script>
+    <script src="components/navigation/modules.js"></script>
+
+    <script src="components/dataFiltering/services-sdmFilterTree.js"></script>
+    <script src="components/dataFiltering/modules.js"></script>
+
+    <script src="components/popovers/services-sdmPopoverTrampoline.js"></script>
+    <script src="components/popovers/directives-sdmPopover.js"></script>
+    <script src="components/popovers/directives-sdmTooltipStyle.js"></script>
+    <script src="components/popovers/modules.js"></script>
+
+    <script src="components/userPreferences/directives-sdmUpdateUserPreferences.js"></script>
+    <script src="components/userPreferences/modules.js"></script>
+
+    <script src="components/createCollection/services-sdmGetSelection.js"></script>
+    <script src="components/createCollection/directives-sdmCreateCollection.js"></script>
+    <script src="components/createCollection/modules.js"></script>
+
+    <script src="components/dataVisualizations/services-sdmD3Interface.js"></script>
+    <script src="components/dataVisualizations/directives-sdmTableView.js"></script>
+    <script src="components/dataVisualizations/directives-sdmTreeView.js"></script>
+    <script src="components/dataVisualizations/modules.js"></script>
+
+    <script src="components/infoModal/directives-sdmInfoModal.js"></script>
+    <script src="components/infoModal/modules.js"></script>
+
+    <script src="components/download/directives-sdmDownloadModal.js"></script>
+    <script src="components/download/services-sdmDownloadInterface.js"></script>
+    <script src="components/download/modules.js"></script>
+
+    <script src="components/admin/modules.js"></script>
+    <script src="components/admin/services-sdmAdminInterface.js"></script>
+    <script src="components/admin/directives-sdmCreateUser.js"></script>
+    <script src="components/admin/directives-sdmAdminModal.js"></script>
+
+    <script src="components/moveSessions/modules.js"></script>
+    <script src="components/moveSessions/directives-sdmMoveSessions.js"></script>
+
+    <script src="components/createNewProject/directives-sdmCreateProject.js"></script>
+    <script src="components/createNewProject/modules.js"></script>
+
+    <script src="components/util/services-sdmHumanReadableSize.js"></script>
+    <script src="components/util/services-sdmFileUtilities.js"></script>
+    <script src="components/util/directives-sdmViewer.js"></script>
+    <script src="components/util/modules.js"></script>
+
+    <script src="components/uploadAttachment/directives-sdmUploadAttachment.js"></script>
+    <script src="components/uploadAttachment/modules.js"></script>
+
+    <script src="components/search/controllers-sdmSearchBoxController.js"></script>
+    <script src="components/search/modules.js"></script>
+
+    <script src="components/uploadDicom/directives-sdmUploadDicom.js"></script>
+    <script src="components/uploadDicom/directives-sdmConfirmAnonymize.js"></script>
+    <script src="components/uploadDicom/services-sdmDicomUploader.js"></script>
+    <script src="components/uploadDicom/modules.js"></script>
+
+    <script src="components/removeCollection/directives-sdmRemoveCollection.js"></script>
+    <script src="components/removeCollection/modules.js"></script>
+
+</body>
+
+</html>

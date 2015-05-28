@@ -55,9 +55,11 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                 function (dicomData) {
                     return sendFile(dicomData, name, _id).then(
                         function(){
+                            console.log(name, 'uploaded');
                             deferred.resolve();
                         },
                         function() {
+                            console.log(name, 'rejected');
                             deferred.reject();
                         });
                 }
@@ -78,7 +80,6 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
 
             sendFile(headerData, 'METADATA.json').then(function(response){
                 var _id = response.ticket;
-                var promises = [];
                 var i = 0;
                 var numQueues = 12;
                 var queues = [];
@@ -129,6 +130,7 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                     if (series.completedFiles === series.length) {
                         sendComplete(_id).then(
                             function(){
+                                console.log('series completed');
                                 series.progress = 100;
                                 seriesD.resolve();
                                 queues = null;

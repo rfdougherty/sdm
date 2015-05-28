@@ -22,7 +22,8 @@ var sdmApp = angular.module('sdm', [
     'sdm.util',
     'sdm.search',
     'sdm.uploadDicom',
-    'sdm.removeCollection'
+    'sdm.removeCollection',
+    'ui.bootstrap'
 ]).run(['sdmViewManager', 'sdmUserManager',
     function(sdmViewManager, sdmUserManager){
         var userData = sdmUserManager.getAuthData();

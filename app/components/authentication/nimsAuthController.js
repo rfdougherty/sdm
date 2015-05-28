@@ -17,11 +17,6 @@ nimsAuthControllers.controller('LoginController', [
                 sdmViewManager.updateViewAppearance($scope.userData.preferences)
             });
         };
-        $scope.toggleSuperUser = function(){
-            sdmUserManager.toggleSuperUser().then(function(){
-                sdmViewManager.initialize();
-            });
-        }
         $scope.logout = function(){
             sdmUserManager.logout();
             sdmViewManager.initialize();

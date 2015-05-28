@@ -1,9 +1,11 @@
-<ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" ng-repeat="tab in sdmNavigationController.tabs" ng-class="{active:sdmNavigationController.isActiveTab(tab)}">
-        <a href="#{{tab.path}}">
-            <span class="glyphicon glyphicon-{{tab.glyphicon}}"></span>
-            {{tab.title}}
-        </a>
-    </li>
-    <li role="presentation" id="buttons" ng-include="'components/buttons/buttons.html'"></li>
-</ul>
+<span ng-repeat="tab in sdmNavigationController.tabs" class="nav-tab">
+    <a ng-href="#{{tab.path}}" class="nav-name" ng-class="{active:sdmNavigationController.isActiveTab(tab)}">
+        {{tab.title}}
+    </a>
+    <span class="nav-name virtual">
+        {{tab.title}}
+    </span>
+</span>
+<span>
+    <span class="glyphicon glyphicon-refresh" ng-click="sdmNavigationController.refreshView($event)"></span>
+</span>

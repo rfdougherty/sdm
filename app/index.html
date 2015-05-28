@@ -7,6 +7,7 @@
 
 
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link rel="stylesheet/less" href="main.less" />
     <link rel="stylesheet/less" href="components/popovers/popover.less" />
     <link rel="stylesheet/less" href="components/userPreferences/userPreferences.less" />
@@ -28,6 +29,7 @@
     <link rel="stylesheet/less" href="components/removeCollection/removeCollectionPopover.less" />
     <link rel="stylesheet/less" href="components/brainbrowser/brainbrowser.less" />
     <link rel="stylesheet" href="utils/papaya.css" />
+
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.0.0/less.min.js"></script>
 
 </head>
@@ -37,22 +39,22 @@
 
     <div id="sdm-main" class="main-content">
         <div class="header">
-            <div id="header-logo" ng-include="'active_config/header-logo.html'">
+            <div class="logo" ng-include="'active_config/header-logo.html'">
             </div>
 
-            <div id="header-text" ng-include="'active_config/header-main-text.html'">
+            <div class="auth" ng-include src="'components/authentication/login-box.html'" ng-controller="LoginController">
             </div>
-
-            <div id="header-toolbar" ng-include src="'components/authentication/login-box.html'" ng-controller="LoginController">
+            <div class="logo-divider"></div>
+            <div class="stanford" ng-include="'active_config/header-stanford.html'">
             </div>
         </div>
-        <div id="navigation"
+        <div class="navigation-bar"
              ng-controller="SdmNavigationController as sdmNavigationController"
              ng-include="'components/navigation/navigation.html'">
         </div>
         <div ng-view>
         </div>
-        <div class="footer">
+        <!--div class="footer">
             <div id="footer-links">
                 <span class="scitran" ng-include="scitran.html">
                 </span>
@@ -66,7 +68,7 @@
             </div>
 
 
-        </div>
+        </div-->
     </div>
     <script>
         if (navigator.userAgent.search(/Chrome\//i) < 0 || navigator.userAgent.search(/OPR\//) >= 0) {
@@ -84,6 +86,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular-cookies.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular-sanitize.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/danialfarid-angular-file-upload/3.1.2/angular-file-upload.js"></script>
+    <script src="bootstrap/js/ui-bootstrap-custom-tpls-0.13.0.js"></script>
 
 
     <!-- main app and services that are used globally -->

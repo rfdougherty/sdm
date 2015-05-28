@@ -1,11 +1,33 @@
-<div ng-if='!userData.logged_in' id="logged-out" class="btn-group btn-group-xs">
+<div ng-if='!userData.logged_in' id="logged-out">
     <!-- Only show stuff to authenticate when user is not logged in -->
-    <button type="button" class="btn btn-default" ng-click="authenticate()" data-title="Login" data-type="info" data-placement="bottom" bs-tooltip> Login <span class="glyphicon glyphicon-log-in"></span>
-
-    </button>
+    <a id="login" class="login" ng-click="authenticate()">Login</a>
 </div>
 <div ng-if="userData.logged_in != null" id="logged-in">
-    <div id="user-preferences-buttons" class="btn-group btn-group-xs">
+    <img ng-src="{{gravatarURL + userData.email_hash}}?s=50"></img>
+    <div class="user-text">{{userData.firstname}} {{userData.lastname}}</div>
+    <a id="logout" class="logout" ng-click="logout()">Logout</a>
+    <span class="glyphicon glyphicon-cog" sdm-popover
+        sdm-popover-template-content="components/admin/adminModal.html"
+        sdm-popover-class="sdm-admin-modal"
+        sdm-popover-show="click"
+        sdm-popover-show-timeout="0"
+        sdm-popover-style-width="900px"
+        sdm-popover-style-height="700px"
+        sdm-append-to-body>
+        <span class="tooltip"
+            sdm-popover
+            sdm-popover-template-text="Admin"
+            sdm-popover-class="sdm-tooltip"
+            sdm-popover-show="mouseenter"
+            sdm-popover-hide="mouseleave"
+            sdm-popover-show-timeout="400"
+            sdm-popover-hide-timeout="0"
+            sdm-tooltip-style
+            sdm-tooltip-x="12"
+            sdm-tooltip-y="32">
+        </span>
+    </span>
+    <!--div id="user-preferences-buttons" class="btn-group btn-group-xs">
         <button type="button" ng-if="userData.wheel && userData.root" class="btn btn-default superuser"  ng-click="toggleSuperUser()">
             <span class="glyphicon glyphicon-eye-open"> </span>
             <span class="tooltip"
@@ -82,7 +104,7 @@
                 sdm-tooltip-y="32">
             </span>
         </button>
-    </div>
+    </div-->
 </div>
 
 

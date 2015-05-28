@@ -1,13 +1,16 @@
 'use strict';
 (function(){
     var isBoxExpanded = true;
+    var showSearchResults = false;
     var SdmSearchBoxController = function(makeAPICall, sdmViewManager) {
         var _this = this;
         _this.parameters = sdmViewManager.getSearchParameters();
         _this.isBoxExpanded = isBoxExpanded;
+        _this.showSearchResults = showSearchResults;
         _this.toggleBox = function(){
             _this.isBoxExpanded = isBoxExpanded = !_this.isBoxExpanded;
-            angular.element('#sdm-table-root.sdm-table-search').toggleClass('hidden-box');
+            //angular.element('#sdm-table-root.sdm-table-search').toggleClass('hidden-box');
+            //angular.element('.sdm-buttons.sdm-search').toggleClass('hidden-box');
         }
         _this.search = function() {
             var params = {};
@@ -36,6 +39,7 @@
                 refreshButton.removeClass('loading');
                 //_this.toggleBox();
             });
+            _this.showSearchResults = showSearchResults = true;
         }
         _this.isEmpty = function() {
             for (var prop in _this.parameters){
@@ -57,7 +61,7 @@
             if (_this.parameters.scan_type || _this.parameters.scan_type === 0) {
                 _this.selectScanTypeDefault = '';
             } else {
-                _this.selectScanTypeDefault = 'Enter scan type';
+                _this.selectScanTypeDefault = 'Select';
             }
         }
         _this.changeScanTypeDefault();

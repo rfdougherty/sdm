@@ -2,25 +2,21 @@
 
 (function(){
 
-    var SdmNavigationController = function($location){
+    var SdmNavigationController = function($location, sdmViewManager){
         this.tabs = [
             {
-                'glyphicon': 'folder-open',
                 'path': '/projects',
                 'title': 'Projects'
             },
             {
-                'glyphicon': 'briefcase',
                 'path': '/collections',
                 'title': 'Collections'
             },
             {
-                'glyphicon': 'search',
                 'path': '/search',
                 'title': 'Search'
             },
             {
-                'glyphicon': 'upload',
                 'path': '/upload',
                 'title': 'Upload'
             }
@@ -31,11 +27,20 @@
             return tab.path === $location.path().substring(0, length);
         };
 
+        this.refreshView = function($event) {
+            var element = angular.element($event.currentTarget);
+            console.log(element);
+            element.addClass('loading');
+            sdmViewManager.refreshView().then(function(){
+                element.removeClass('loading');
+            });
+        };
+
     };
 
-    SdmNavigationController.$inject = ['$location'];
+    SdmNavigationController.$inject = ['$location', 'sdmViewManager'];
 
-    angular.module('sdm.navigation.controllers.sdmNavigation', [])
+    angular.module('sdm.navigation.controllers.sdmNavigation', ['sdm.main.services.sdmViewManager'])
         .controller('SdmNavigationController', SdmNavigationController);
 
 

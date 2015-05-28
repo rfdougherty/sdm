@@ -1,43 +1,44 @@
 @import (less) "../../active_config/variables.less";
 
-@search-box-position: 71px;
-@search-box-height: 232px;
+@search-buttons-position: 110px;
+@search-box-position: 165px;
+@search-box-height: 162px;
+@input-width: 200px;
 
 #sdm-search-box {
     position: absolute;
     top: @search-box-position;
     right: 15px;
     left: 15px;
-    border-right: solid 1px black;
-    border-left: solid 1px black;
     min-width: 1170px;
     height: @search-box-height;
     #sdm-search-box-title {
         position:absolute;
         top: 5px;
-        left:5px;
-        right:5px;
-        border: solid 1px black;
-        font-variant: small-caps;
-        background-color: @bgcol2;
-        color: @fgcol2;
-        text-align: center;
-        font-size: 22px;
+        left:0px;
+        right:0px;
+        background-color: @softGray;
+        font-size: 16px;
         padding-left: 20px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        color: @darkGray;
+        font-weight: 900;
         span {
             float: right;
             margin-right: 5px;
-            margin-top: 4px;
-            font-size: 16px;
+            margin-top: 2px;
+            font-size: 14px;
+            color: @darkGray;
         }
     }
     #sdm-search-box-body {
         position:absolute;
-        top: 37px;
-        left: 5px;
-        right:5px;
+        top: 36px;
+        left: 0px;
+        right: 0px;
         bottom: 0px;
-        border: solid 1px black;
+        border: solid 1px @softGray;
         &.hidden-box {
             height: 0;
             border: none;
@@ -49,19 +50,20 @@
             flex-wrap: wrap;
             justify-content: space-around;
             .sdm-search-group {
-                flex: 1 33%;
-                padding-left: 10px;
+                flex: 1 25%;
+                padding-left: 0px;
                 text-align: center;
                 label {
                     width: 120px;
                     text-align: left;
+                    font-weight: normal;
                 }
                 .input-group {
-                    width: 300px;
+                    width: 220px;
                     display: inline;
                     select {
-                        width: 240px;
-                        height: 40px;
+                        width: @input-width;
+                        height: 30px;
                         margin-left: 2px;
                         margin-right: 2px;
                         float: none;
@@ -70,10 +72,12 @@
                         }
                     }
                     input {
-                        width: 240px;
-                        height: 40px;
+                        width: @input-width;
+                        height: 30px;
                         margin-left: 2px;
                         margin-right: 2px;
+                        border-radius: 3px;
+                        border: solid 1px @softGray;
                         &:focus {
                             outline: none;
                         }
@@ -86,18 +90,18 @@
                     }
                     &.age {
                         input[type="number"] {
-                            width: 116px;
+                            width: @input-width/2 - 4;
                         }
                     }
                     input.btn {
-                        width: 116px;
-                        height: 24px;
+                        width: @input-width/2 - 4;
+                        height: 30px;
                         padding: 1px;
-                        background-color: @bgcol1;
-                        color: @fgcol1;
+                        background-color: @blue;
+                        color: white;
                         &[type="button"] {
-                            background-color: @bgcol2;
-                            color: @fgcol2;
+                            background-color: white;
+                            color: black;
                         }
                     }
                 }
@@ -112,9 +116,14 @@
     }
 
 }
+.sdm-buttons.sdm-search {
+    top: @search-buttons-position;
+    border-bottom: none;
+}
+
 #sdm-table-root.sdm-table-search {
-    top: @search-box-position + @search-box-height;
+    top: @search-box-position + @search-box-height + 20;
     &.hidden-box {
-        top: @search-box-position + @search-box-height - 195;
+        top: @search-box-position + 20 + 40;
     }
 }

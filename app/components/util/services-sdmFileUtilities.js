@@ -84,6 +84,7 @@ angular.module('sdm.util.services.sdmFileUtilities',
                 fr.readAsArrayBuffer(file);
                 return deferred.promise;
             };
+
             var sdmMD5;
             var calculateMD5= function(file, deferred) {
                 deferred = deferred || $q.defer();
@@ -117,7 +118,6 @@ angular.module('sdm.util.services.sdmFileUtilities',
                         );
                     }
                     if (dicom.PatientAge && dicom.PatientAge.value) {
-                        console.log(dicom.PatientAge);
                         setField(
                             view,
                             dicom.PatientAge.offsetStart + 8,

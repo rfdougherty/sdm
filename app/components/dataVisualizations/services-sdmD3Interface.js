@@ -227,17 +227,17 @@
                             .text(value||UNDEFINED_PLACEHOLDER);
 
                         if (i === a.length - 1 && !d.hideGlyphs){
-                            d3Element.append('span').attr('class',
+                            d3Element.append('i').attr('class',
                                 function(d){
                                     var icon;
                                     if (d.hasData){
                                         icon = (d&&d.level.next_level&&d.hasData)?
-                                            d.children?'glyphicon-chevron-down':'glyphicon-chevron-right'
+                                            d.children?'fa-chevron-down':'fa-chevron-right'
                                             :'';
                                     } else {
-                                        icon = 'glyphicon-ban-circle';
+                                        icon = 'fa-ban';
                                     }
-                                    return 'glyphicon nav-glyph expander ' + icon;
+                                    return 'fa nav-glyph expander ' + icon;
                                 }).on('mouseup', actions.expandNode);
                         }
                         if (i === 0 && d.notes && !d.hideGlyphs) {

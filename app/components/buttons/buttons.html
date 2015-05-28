@@ -1,125 +1,53 @@
-<div class="toolbar" ng-controller="SdmButtonsController as sdmButtonsController">
-    <button id="sdm-refresh-button" type="button" class="refresh disabled btn-xs" ng-click="sdmButtonsController.refreshView($event)" ng-disabled="sdmButtonsController.location().search('/search|/upload') > -1">
-        <span class="glyphicon glyphicon-refresh toolbar-icon">
-        </span>
-        <span class="tooltip"
+<div class="sdm-actions" ng-show="sdmButtonsController.location() !== '/upload'">
+    <div class="btn-group" dropdown is-open="sdmButtonsController.status.isopen">
+      <button type="button" class="btn btn-default dropdown-toggle" dropdown-toggle ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
+        Actions <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-right" role="menu">
+        <li><a href=""
             sdm-popover
-            sdm-popover-template-text="Refresh"
-            sdm-popover-class="sdm-tooltip"
-            sdm-popover-show="mouseenter"
-            sdm-popover-hide="mouseleave"
-            sdm-popover-show-timeout="400"
-            sdm-popover-hide-timeout="0"
-            sdm-tooltip-style
-            sdm-tooltip-x="12"
-            sdm-tooltip-y="32">
-        </span>
-    </button>
-    <div class="btn-group btn-group-xs" role="group">
-        <button type="button"
-                class="btn btn-default table-view"
-                ng-click="sdmButtonsController.layout('table')"
-                ng-class="{active:sdmButtonsController.isActiveButton('table') && sdmButtonsController.location() !== '/upload'}"
-                ng-disabled="sdmButtonsController.location() === '/upload'">
-            <span class="glyphicon glyphicon-th-list toolbar-icon">
-            </span>
-            <span class="tooltip"
-                sdm-popover
-                sdm-popover-template-text="Table View"
-                sdm-popover-class="sdm-tooltip"
-                sdm-popover-show="mouseenter"
-                sdm-popover-hide="mouseleave"
-                sdm-popover-show-timeout="400"
-                sdm-popover-hide-timeout="0"
-                sdm-tooltip-style
-                sdm-tooltip-x="12"
-                sdm-tooltip-y="32">
-            </span>
-        </button>
-        <button type="button"
-                class="btn btn-default tree-view"
-                ng-click="sdmButtonsController.layout('tree')"
-                ng-class="{active:sdmButtonsController.isActiveButton('tree')}"
-                ng-disabled="sdmButtonsController.location().search('/search|/upload') > -1">
-            <span class="glyphicon glyphicon-tree-conifer toolbar-icon">
-            </span>
-            <span class="tooltip"
-                sdm-popover
-                sdm-popover-template-text="Tree View"
-                sdm-popover-class="sdm-tooltip"
-                sdm-popover-show="mouseenter"
-                sdm-popover-hide="mouseleave"
-                sdm-popover-show-timeout="400"
-                sdm-popover-hide-timeout="0"
-                sdm-tooltip-style
-                sdm-tooltip-x="12"
-                sdm-tooltip-y="32">
-            </span>
-        </button>
+            sdm-popover-template-content="components/createCollection/modalCreateCollection.html"
+            sdm-popover-class="sdm-create-collection"
+            sdm-popover-show="click"
+            sdm-popover-show-timeout="0"
+            sdm-append-to-body>Create Collection</a></li>
+        <li><a href=""
+            sdm-popover sdm-popover-template-content="components/download/modalDownload.html" sdm-popover-class="sdm-download" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="42px" sdm-popover-style-left="initial"sdm-popover-show-timeout="0" sdm-append-to-body>Download</a></li>
+        <li><a href="" ng-show="sdmButtonsController.location() === '/projects'" sdm-popover sdm-popover-template-content="components/moveSessions/moveSessionsPopover.html" sdm-popover-class="sdm-move-sessions" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="17px" sdm-popover-style-left="initial" sdm-popover-show-timeout="0" sdm-append-to-body>Move sessions</a></li>
+        <li><a href="" ng-show="sdmButtonsController.location() === '/collections'" sdm-popover sdm-popover-template-content="components/removeCollection/removeCollectionPopover.html" sdm-popover-class="sdm-remove-collection" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="17px" sdm-popover-style-left="initial" sdm-popover-show-timeout="0" sdm-append-to-body>Remove</a></li>
+      </ul>
     </div>
-    <div class="btn-group btn-group-xs" role="group">
-        <button type="button" class="btn btn-default" sdm-popover sdm-popover-template-content="components/createCollection/modalCreateCollection.html" sdm-popover-class="sdm-create-collection" sdm-popover-show="click" sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
-            <span class="glyphicon glyphicon-briefcase toolbar-icon">
-            </span>
-            <span class="tooltip"
-                sdm-popover
-                sdm-popover-template-text="Create Collection"
-                sdm-popover-class="sdm-tooltip"
-                sdm-popover-show="mouseenter"
-                sdm-popover-hide="mouseleave"
-                sdm-popover-show-timeout="400"
-                sdm-popover-hide-timeout="0"
-                sdm-tooltip-style
-                sdm-tooltip-x="12"
-                sdm-tooltip-y="32">
-            </span>
-        </button>
-        <button type="button" class="btn btn-default" sdm-popover sdm-popover-template-content="components/download/modalDownload.html" sdm-popover-class="sdm-download" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="42px" sdm-popover-style-left="initial"sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
-            <span class="glyphicon glyphicon-cloud-download toolbar-icon">
-            </span>
-            <span class="tooltip"
-                sdm-popover
-                sdm-popover-template-text="Download"
-                sdm-popover-class="sdm-tooltip"
-                sdm-popover-show="mouseenter"
-                sdm-popover-hide="mouseleave"
-                sdm-popover-show-timeout="400"
-                sdm-popover-hide-timeout="0"
-                sdm-tooltip-style
-                sdm-tooltip-x="12"
-                sdm-tooltip-y="32">
-            </span>
-        </button>
-        <button type="button" class="btn btn-default" ng-show="sdmButtonsController.location() === '/projects'" sdm-popover sdm-popover-template-content="components/moveSessions/moveSessionsPopover.html" sdm-popover-class="sdm-move-sessions" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="17px" sdm-popover-style-left="initial" sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
-            <span class="glyphicon glyphicon-arrow-right toolbar-icon">
-            </span>
-            <span class="tooltip"
-                sdm-popover
-                sdm-popover-template-text="Move Sessions"
-                sdm-popover-class="sdm-tooltip"
-                sdm-popover-show="mouseenter"
-                sdm-popover-hide="mouseleave"
-                sdm-popover-show-timeout="400"
-                sdm-popover-hide-timeout="0"
-                sdm-tooltip-style
-                sdm-tooltip-x="12"
-                sdm-tooltip-y="32">
-            </span>
-        </button>
-        <button type="button" class="btn btn-default" ng-show="sdmButtonsController.location() === '/collections'" sdm-popover sdm-popover-template-content="components/removeCollection/removeCollectionPopover.html" sdm-popover-class="sdm-remove-collection" sdm-popover-show="click" sdm-popover-style-top="84px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-right="17px" sdm-popover-style-left="initial" sdm-popover-show-timeout="0" sdm-append-to-body ng-disabled="!sdmButtonsController.selectionButtonsEnabled()">
-            <span class="glyphicon glyphicon-remove-circle toolbar-icon" >
-            </span>
-            <span class="tooltip"
-                sdm-popover
-                sdm-popover-template-text="Remove"
-                sdm-popover-class="sdm-tooltip"
-                sdm-popover-show="mouseenter"
-                sdm-popover-hide="mouseleave"
-                sdm-popover-show-timeout="400"
-                sdm-tooltip-style
-                sdm-tooltip-x="12"
-                sdm-tooltip-y="32">
-            </span>
-        </button>
+</div>
+<div>
+  <div class="radio-group view-type" ng-if="sdmButtonsController.location().search('/search|/upload') === -1">
+    <div class="radio">
+      <label>
+        <input type="radio" name="viewType" value="table" ng-checked="sdmButtonsController.isActiveButton('table')" ng-click="sdmButtonsController.layout('table')" >
+        Table
+      </label>
     </div>
+    <div class="radio">
+      <label>
+        <input type="radio" name="viewType" value="tree" ng-checked="sdmButtonsController.isActiveButton('tree')" ng-click="sdmButtonsController.layout('tree')" >
+        Tree
+      </label>
+    </div>
+  </div>
+  <div class="radio-group user-access" ng-if="sdmButtonsController.userData.wheel">
+    <div class="radio">
+      <label>
+        <input type="radio" name="userAccess" value="default" ng-checked="!sdmButtonsController.userData.root" ng-click="sdmButtonsController.toggleSuperUser()">
+        Default
+      </label>
+    </div>
+    <div class="radio">
+      <label>
+        <input type="radio" name="userAccess" value="superuser" ng-checked="sdmButtonsController.userData.root" ng-click="sdmButtonsController.toggleSuperUser()">
+        Site Admin
+      </label>
+    </div>
+  </div>
+  <div class="view-label">
+    View:
+  </div>
 </div>

@@ -21,6 +21,7 @@
                     controllerAs: 'sdmULDController',
                     link: function($scope, $element, $attrs, sdmULDController) {
                         sdmULDController.data = sdmViewManager.getUploadData();
+                        sdmULDController.empty = true;
 
                         var userData = sdmUserManager.getAuthData();
 
