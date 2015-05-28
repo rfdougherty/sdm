@@ -168,9 +168,8 @@
                             angular.forEach(sdmULDController.data.series, function(series, seriesUID) {
                                 var overwrite = {
                                     series_uid: seriesUID,
-                                    group_name: sdmULDController.data.selectedGroup.name || 'Unknown',
-                                    project_name: sdmULDController.data.selectedProject.name || 'unknown',
-                                    manufacturer: series.tags['Manufacturer'].value[0],
+                                    group_name: sdmULDController.data.selectedGroup._id || 'unknown',
+                                    project_name: sdmULDController.data.selectedProject.name || 'untitled',
                                     acq_no: series.tags['AcquisitionNumber']? series.tags['AcquisitionNumber'].value[0]:1
                                 };
                                 var _uploadSeries = function() {

@@ -18,7 +18,7 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
         var sendFile = function(data, filename, _id) {
             var URL = uploadURL + '?filename=' + filename;
             if (_id) {
-                URL += '&_id=' + _id;
+                URL += '&ticket=' + _id;
             }
             var deferred = $q.defer();
             console.log(data);
@@ -43,7 +43,7 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
         }
 
         var sendComplete = function(_id) {
-            return makeAPICall.async(uploadURL + '?complete=true&_id=' + _id, null, 'POST');
+            return makeAPICall.async(uploadURL + '?complete=true&ticket=' + _id, null, 'POST');
         }
 
         var uploadDicom = function(dicom, name, _id, anonymize) {
@@ -77,7 +77,8 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                 seriesD.reject('promise aborted for', seriesUID);
             }
 
-            sendFile(headerData, 'METADATA.json').then(function(_id){
+            sendFile(headerData, 'METADATA.json').then(function(response){
+                var _id = response.ticket;
                 var promises = [];
                 var i = 0;
                 var numQueues = 12;
