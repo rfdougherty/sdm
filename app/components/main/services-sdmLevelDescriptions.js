@@ -60,8 +60,7 @@
                 headers: ['Group'],
                 urlToExpand: function (node) {
                     return {
-                        path: 'projects',
-                        params: {group: node.id}
+                        path: 'groups/' + node.id + '/projects',
                     }
                 }
             };

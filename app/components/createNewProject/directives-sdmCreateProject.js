@@ -15,7 +15,9 @@
                         sdmNPController.loadingState = 1;
                         sdmNPController.placeholder = 'Enter new project name';
                         var groupsURL = BASE_URL + 'groups';
-                        var projectsURL = BASE_URL + 'projects';
+                        var projectsURL = function(groupId) {
+                            return BASE_URL + 'groups/' + groupId + '/projects';
+                        }
                         var data = {'admin': 'true'};
                         makeAPICall.async(groupsURL, data).then(function(result) {
                             sdmNPController.groups = result;
@@ -63,13 +65,12 @@
                                 return;
                             }
                             var payload = {
-                                group: sdmNPController.selectedGroup._id,
                                 name: sdmNPController.newProject
                             };
 
 
                             console.log('payload', payload);
-                            makeAPICall.async(projectsURL, null, 'POST', payload).then(function(result) {
+                            makeAPICall.async(projectsURL(sdmNPController.selectedGroup._id), null, 'POST', payload).then(function(result) {
                                 console.log(result);
                                 selectCreatedProject(result._id);
                                 sdmViewManager.refreshView();

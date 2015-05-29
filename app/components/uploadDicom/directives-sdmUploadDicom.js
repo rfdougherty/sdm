@@ -30,7 +30,7 @@
                                 sdmULDController.data.selectedProject = null;
                                 return;
                             }
-                            return makeAPICall.async(BASE_URL + 'projects', {group: group._id}).then(function(projects){
+                            return makeAPICall.async(BASE_URL + 'groups/' + group._id + '/projects').then(function(projects){
                                 var _projects = userData.root?projects:projects.filter(function(project){
                                     var p = project.permissions;
                                     return p && (p.length > 1 || (
