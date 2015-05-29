@@ -132,20 +132,24 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                             function(){
                                 series.progress = 100;
                                 seriesD.resolve();
+                                queues = null;
                             },
                             function(){
                                 series.progress = 0;
                                 seriesD.reject();
+                                queues = null;
                             });
                     } else {
                         series.progress = 0;
                         seriesD.reject();
+                        queues = null;
                     }
 
                 },
                 function(){
                     series.progress = 0;
                     seriesD.reject();
+                    queues = null;
                 });
             });
             return seriesD.promise;

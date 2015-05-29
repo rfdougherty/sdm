@@ -38,11 +38,10 @@
                         <td>
                             <div class="progress">
                                 <div class="progress-bar" role="progressbar" aria-valuenow="{{data.progress}}" aria-valuemin="0" aria-valuemax="100" ng-style="{width: data.progress + '%'}">
-                                    {{data.progress | number:2 ||0}}%
+                                    {{data.progress | number:0 ||0}}%
                                 </div>
                             </div>
                         </td>
-                            <!--{{("" + data.progress).split('.')[0]}}%</td-->
                     </tr>
                     <tr>
                         <td></td>

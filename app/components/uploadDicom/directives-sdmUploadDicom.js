@@ -184,18 +184,9 @@
                                         series, seriesUID, overwrite, sdmULDController.data.anonymize
                                     );
                                 } else {
-                                    if (sdmULDController.abort) {
-                                        return;
-                                    }
                                     previousSeries = previousSeries.then( _uploadSeries, _uploadSeries);
                                 }
                             });
-                            sdmULDController.abort = false;
-                        }
-
-                        sdmULDController.abort = function() {
-                            sdmULDController.abort = true;
-                            currentSeries.abort();
                         }
 
                         sdmULDController.clear = function() {
