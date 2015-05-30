@@ -160,15 +160,22 @@
                                 }
                             );
                         }
+                        var isSiemens = function(manufacturer) {
+                            return manufacturer.toUpperCase().search('SIEMENS') >= 0;
+                        }
                         var currentSeries;
                         sdmULDController.upload = function() {
                             var previousSeries;
                             angular.forEach(sdmULDController.data.series, function(series, seriesUID) {
+                                var acq_no = null;
+                                if (series.tags['AcquisitionNumber'] && !isSiemens(series.tags['Manufacturer'].value[0])) {
+                                    acq_no = series.tags['AcquisitionNumber'].value[0];
+                                }
                                 var overwrite = {
                                     series_uid: seriesUID,
                                     group_name: sdmULDController.data.selectedGroup._id || 'unknown',
                                     project_name: sdmULDController.data.selectedProject.name || 'untitled',
-                                    acq_no: series.tags['AcquisitionNumber']? series.tags['AcquisitionNumber'].value[0]:1
+                                    acq_no: acq_no
                                 };
                                 var _uploadSeries = function() {
                                     currentSeries = series;
