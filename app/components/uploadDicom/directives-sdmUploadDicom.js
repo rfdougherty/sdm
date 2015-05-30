@@ -88,7 +88,6 @@
                                         dicomTags.forEach(function(tag){
                                             tags[tag] = sdmFileUtilities.getDicomTag(dicom, tag);
                                         });
-                                        console.log(tags);
                                         file.PatientName = tags.PatientName;
                                         file.PatientBirthDate = tags.PatientBirthDate;
                                         file.PatientAge = tags.PatientAge;
@@ -96,7 +95,6 @@
                                             var experimentDate = tags.AcquisitionDate || tags.StudyDate;
                                             experimentDate = experimentDate.value[0];
                                             var patientBirthDate = tags.PatientBirthDate.value[0];
-                                            console.log(experimentDate, patientBirthDate)
                                             var months = (experimentDate.getFullYear() - patientBirthDate.getFullYear()) * 12 +
                                                 (experimentDate.getMonth() - patientBirthDate.getMonth()) -
                                                 (patientBirthDate.getDay() > experimentDate.getDay());
@@ -176,13 +174,17 @@
                                     currentSeries = series;
                                     return sdmDicomUploader.uploadSeries(
                                         series, seriesUID, overwrite, sdmULDController.data.anonymize
-                                    );
+                                    ).catch(function() {
+                                        series.progress = -100;
+                                    });
                                 }
                                 if (!previousSeries) {
                                     currentSeries = series;
                                     previousSeries = sdmDicomUploader.uploadSeries(
                                         series, seriesUID, overwrite, sdmULDController.data.anonymize
-                                    );
+                                    ).catch(function(){
+                                        series.progress = -100;
+                                    });
                                 } else {
                                     previousSeries = previousSeries.then( _uploadSeries, _uploadSeries);
                                 }

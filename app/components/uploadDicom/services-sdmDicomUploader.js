@@ -21,14 +21,16 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                 URL += '&ticket=' + _id;
             }
             var deferred = $q.defer();
-            console.log(data);
             sdmFileUtilities.calculateMD5(data).then(function(md5){
                 makeAPICall.async(
                     URL,
                     null,
                     'POST',
                     data,
-                    {'Content-MD5': md5}
+                    {'Content-MD5': md5},
+                    null,
+                    null,
+                    true
                 ).then(function(response) {
                     deferred.resolve(response)
                 },
@@ -73,9 +75,6 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
             series.progress = 0;
 
             var headerData = buildHeader(overwrite);
-            series.abort = function() {
-                seriesD.reject('promise aborted for', seriesUID);
-            }
 
             sendFile(headerData, 'METADATA.json').then(function(response){
                 var _id = response.ticket;
@@ -135,20 +134,20 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
                                 queues = null;
                             },
                             function(){
-                                series.progress = 0;
                                 seriesD.reject();
+                                console.log('series rejected: completion failed')
                                 queues = null;
                             });
                     } else {
-                        series.progress = 0;
                         seriesD.reject();
+                        console.log('series rejected: some files have not been uploaded');
                         queues = null;
                     }
 
                 },
                 function(){
-                    series.progress = 0;
                     seriesD.reject();
+                    console.log('series rejected: error during upload');
                     queues = null;
                 });
             });

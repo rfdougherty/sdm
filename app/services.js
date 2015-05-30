@@ -13,8 +13,7 @@ var httpServices = angular.module('sdmHttpServices', ['ngCookies', 'sdm.authenti
 httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', function($http, $cookieStore, sdmUserManager) {
 
     var makeAPICall = {
-        async: function(url, params, method, data, headers, responseType, timeout) {
-            console.log(data);
+        async: function(url, params, method, data, headers, responseType, timeout, rethrow) {
             console.log("MAKE API CALL\nwith url=", url, " and params=", params);
             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
             if (typeof method === 'undefined') {
@@ -78,6 +77,9 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                     return makeAPICall.async(url, params, method, data);
                 }
             }, function(reason){
+                if (rethrow){
+                    throw new Error(reason);
+                }
                 console.log(reason);
             }).then(function(finalResult){
                 return finalResult;
