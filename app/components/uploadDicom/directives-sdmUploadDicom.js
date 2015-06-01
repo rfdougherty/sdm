@@ -193,6 +193,7 @@
                                     ).catch(function(){
                                         series.progress = -100;
                                     });
+
                                 } else {
                                     previousSeries = previousSeries.then( _uploadSeries, _uploadSeries);
                                 }

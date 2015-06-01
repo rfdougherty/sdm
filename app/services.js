@@ -77,7 +77,7 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
                     return makeAPICall.async(url, params, method, data);
                 }
             }, function(reason){
-                if (rethrow){
+                if (rethrow) {
                     throw new Error(reason);
                 }
                 console.log(reason);
