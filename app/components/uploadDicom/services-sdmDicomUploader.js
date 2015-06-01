@@ -69,10 +69,11 @@ angular.module('sdm.uploadDicom.services.sdmDicomUploader',
         }
 
         var uploadSeries = function(series, seriesUID, overwrite, anonymize) {
+            series.uploading = true;
             var seriesD = $q.defer();
-            if (!series.selected) {
+            if (series.removed) {
                 seriesD.resolve();
-                return seriesD.promise
+                return seriesD.promise;
             }
             series.progress = 0;
 

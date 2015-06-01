@@ -21,7 +21,7 @@
                     controllerAs: 'sdmULDController',
                     link: function($scope, $element, $attrs, sdmULDController) {
                         sdmULDController.data = sdmViewManager.getUploadData();
-                        sdmULDController.empty = true;
+                        sdmULDController.data.numSeries = sdmULDController.data.numSeries || 0;
 
                         var userData = sdmUserManager.getAuthData();
 
@@ -135,6 +135,7 @@
                                                     size: 0,
                                                     progress: 0
                                                 };
+                                            sdmULDController.data.numSeries++;
                                         }
                                         file.uid = tags.SOPInstanceUID.value[0] + '.dcm';
                                         if (!seriesData.files[file.uid]) {
@@ -155,7 +156,7 @@
                                                 seriesData.datetime += ' ' + toTimeString(tags.StudyTime.value[0]);
                                             }
                                         }
-                                        sdmULDController.data.empty = false;
+
                                     });
 
                                 }
@@ -200,9 +201,17 @@
                             });
                         }
 
+                        sdmULDController.remove = function(seriesUID, series) {
+                            if (!series.uploading) {
+                                series.removed = true;
+                                delete sdmULDController.data.series[seriesUID];
+                                sdmULDController.data.numSeries--;
+                            }
+                        }
+
                         sdmULDController.clear = function() {
                             sdmULDController.data.series = {};
-                            sdmULDController.data.empty = true;
+                            sdmULDController.data.numSeries = 0;
                         }
 
                         sdmULDController.confirmAnonymize = function($event) {

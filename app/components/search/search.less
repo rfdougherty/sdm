@@ -3,7 +3,7 @@
 @search-buttons-position: 110px;
 @search-box-position: 165px;
 @search-box-height: 162px;
-@input-width: 200px;
+@input-width: 170px;
 
 #sdm-search-box {
     position: absolute;
@@ -54,7 +54,7 @@
                 padding-left: 0px;
                 text-align: center;
                 label {
-                    width: 120px;
+                    width: 105px;
                     text-align: left;
                     font-weight: normal;
                 }
@@ -78,6 +78,7 @@
                         margin-right: 2px;
                         border-radius: 3px;
                         border: solid 1px @softGray;
+                        padding: 0px;
                         &:focus {
                             outline: none;
                         }
@@ -94,11 +95,13 @@
                         }
                     }
                     input.btn {
-                        width: @input-width/2 - 4;
+                        width: @input-width/2 - 10;
                         height: 30px;
                         padding: 1px;
                         background-color: @blue;
                         color: white;
+                        position: relative;
+                        left: 6px;
                         &[type="button"] {
                             background-color: white;
                             color: black;

@@ -8,22 +8,25 @@
     left: 15px;
     right: 15px;
     table {
-        margin-top: 15px;
+        margin-top: 5px;
         width: 100%;
         table-layout: fixed;
         th {
             font-weight: 500;
         }
-        th:first-child, td:first-child {
-            width: 9%;
-        }
 
         th, td {
-            width: 13%;
-            height: 30px;
-            padding: 5px;
+            width: 14%;
+            height: 40px;
+            padding: 0px;
+            vertical-align: middle;
+            .series-message {
+                font-style: italic;
+                color: @mediumGray;
+            }
             .progress {
                 margin-bottom: 0px;
+                height: 10px;
                 .progress-bar {
                     -webkit-transition: none;
                     -moz-transition: none;
@@ -34,6 +37,11 @@
                 &.progress-error {
                     background-color: red;
                 }
+            }
+            input {
+                height: 30px;
+                padding: 4px 10px;
+                font-size: 14px;
             }
         }
         tr.sdm-table-row {
@@ -111,15 +119,11 @@
     }
 
     #sdm-upload-dicom-buttons {
-        margin-top: 15px;
-        width: 96%;
-        margin-left: auto;
-        margin-right: auto;
+        margin-top: 60px;
+        width: 100%;
         input.btn {
             float: right;
-            width: 116px;
-            height: 24px;
-            padding: 1px;
+
             margin-left: 5px;
             background-color: @blue;
             color: white;
@@ -127,7 +131,6 @@
                 background-color: white;
                 color: black;
             }
-            padding-bottom: 15px;
         }
 
     }
@@ -160,6 +163,15 @@
         left: 5px;
         right:5px;
         bottom: 5px;
+        .footer-note {
+            padding-top: 30px;
+            float: right;
+            font-style: italic;
+            color: @darkGray;
+        }
+        .clear-all {
+            margin-top: 15px;
+        }
     }
 
 }
