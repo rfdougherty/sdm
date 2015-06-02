@@ -15,20 +15,26 @@
                     controller: function(){},
                     controllerAs: 'sdmAMController',
                     link: function($scope, $element, $attrs, sdmAMController) {
-                        sdmAMController.adminView = 'main';
+                        sdmAMController.adminView = 'edit groups';
                         sdmAMController.trigger = {
                             node: null,
                             sessionKey: 1
                         };
-                        $scope.$parent.disableEvents();
+                        //$scope.$parent.disableEvents();
                         sdmAMController.viewID = 'admin';
                         sdmAMController.currentView = sdmViewManager.getCurrentView();
                         sdmViewManager.setCurrentView('admin');
                         sdmFilterTree.setView('admin');
                         sdmAMController.sdmData = {};
-                        sdmAMController.defaultSelectText = 'Select Existing Group';
+                        sdmAMController.defaultSelectText = 'Select';
                         sdmAMController.user = sdmUserManager.getAuthData();
-                        sdmAMController.addedPermissions = [{'_id': sdmAMController.user.user_uid, 'access': 'admin'}];
+                        console.log(sdmAMController.user);
+                        sdmAMController.addedPermissions = [
+                            {
+                                '_id': sdmAMController.user.user_uid,
+                                name: [sdmAMController.user.firstname, sdmAMController.user.lastname].join(' '),
+                                'access': 'admin'
+                            }];
                         sdmAMController.isGroupExisting = false;
 
 
@@ -56,26 +62,21 @@
                             return typeaheadElement;
                         };
 
-                        var groupsth = addTypeahead('#permissions .typeahead', 'selectedUID');
+                        var groupsth = addTypeahead('#group-permissions .typeahead', 'selectedUID');
                         var usersth = addTypeahead('.sdm-edit-users .typeahead', 'existingUserID');
 
                         var refreshTypeahead = function() {
                             groupsth.typeahead('destroy');
                             usersth.typeahead('destroy');
-                            groupsth = addTypeahead('#permissions .typeahead', 'selectedUID');
+                            groupsth = addTypeahead('#group-permissions .typeahead', 'selectedUID');
                             usersth = addTypeahead('.sdm-edit-users .typeahead', 'existingUserID');
                         }
 
                         function loadData() {
-                            sdmAdminInterface.loadGroupsAndUsers().then(
+                            return sdmAdminInterface.loadGroupsAndUsers().then(
                                 function(tree){
                                     console.log(tree);
                                     sdmAMController.sdmData.data = tree;
-                                    sdmViewManager.setCurrentViewData(
-                                        sdmAMController.sdmData.data,
-                                        sdmAMController
-                                    );
-                                    sdmViewManager.triggerViewChange(tree);
                                     sdmAMController.existingGroups = tree.children;
                                 });
                         }
@@ -84,7 +85,7 @@
                         sdmAMController.close = function($event) {
                             sdmViewManager.setCurrentView(sdmAMController.currentView);
                             sdmFilterTree.setView(sdmAMController.currentView);
-                            $scope.$parent.enableEvents();
+                            //$scope.$parent.enableEvents();
                             $scope.$parent._hidePopover($event, 0);
                         }
 
@@ -94,7 +95,8 @@
                         sdmAMController.emailPlaceholder = 'Enter user email (optional)';
                         sdmAMController.permissionPlaceholder = 'Enter User ID';
                         sdmAMController.existingUserPlaceholder = 'Enter User ID';
-                        sdmAMController.groupPlaceholder = 'Create New Group';
+                        sdmAMController.groupNamePlaceholder = 'Edit your group name';
+                        sdmAMController.createGroupPlaceholder = 'Give your group a name';
 
                         function clearUserFields(){
                             sdmAMController.userFirstName = null;
@@ -189,24 +191,21 @@
                         }
 
                         sdmRoles().then(function(roles){
+                            console.log(roles);
                             sdmAMController.roles = roles;
-                            sdmAMController.selectedRole = sdmAMController.roles[0];
                         });
-
+                        var typeahead_hint_element_color;
                         sdmAMController.selectGroup = function() {
                             console.log(sdmAMController.selectedGroup);
                             if (sdmAMController.selectedGroup) {
-                                sdmAMController.isGroupExisting = true;
-                                sdmAMController.groupName = sdmAMController.selectedGroup.name;
-                                sdmAMController.groupId = sdmAMController.selectedGroup.id;
                                 sdmAMController.addedPermissions = sdmAMController.selectedGroup.roles;
-                                sdmAMController.defaultSelectText = 'Create New Group';
-                            } else {
-                                sdmAMController.isGroupExisting = false;
-                                sdmAMController.groupName = '';
-                                sdmAMController.groupId = null;
-                                sdmAMController.addedPermissions = [{'_id': sdmAMController.user.user_uid, 'access': 'admin'}];
-                                sdmAMController.defaultSelectText = 'Select Existing Group';
+                                sdmAMController.addedPermissions.forEach(function(permission){
+                                    var user = sdmAMController.users[permission._id]
+                                    permission.name = [user.firstname, user.lastname].join(' ')
+                                })
+                                var typeahead_hint_element = angular.element('#group-permissions .tt-hint');
+                                typeahead_hint_element_color = typeahead_hint_element.css('background-color');
+                                typeahead_hint_element.css('background-color', 'transparent');
                             }
                         };
 
@@ -217,14 +216,18 @@
                                 form.hasErrors = true;
                                 form.newPermission.hasErrors = true;
                                 sdmAMController.selectedUID = null;
+                                sdmAMController.selectedRole = null;
                                 sdmAMController.permissionPlaceholder = "User UID is missing or invalid";
+                                groupsth.typeahead('val', '');
                                 return;
                             } else {
                                 if (!sdmAMController.users[sdmAMController.selectedUID]) {
                                     form.hasErrors = true;
                                     form.newPermission.hasErrors = true;
                                     sdmAMController.selectedUID = null;
-                                    sdmAMController.permissionPlaceholder = "User UID does not exist";
+                                    sdmAMController.selectedRole = null;
+                                    sdmAMController.permissionPlaceholder = "User UID doesn't exist";
+                                    groupsth.typeahead('val', '');
                                     return;
                                 } else if (sdmAMController.addedPermissions.map(
                                         function(permission){
@@ -233,46 +236,46 @@
                                     form.hasErrors = true;
                                     form.newPermission.hasErrors = true;
                                     sdmAMController.selectedUID = null;
-                                    sdmAMController.permissionPlaceholder = "User already has a permission";
+                                    sdmAMController.selectedRole = null;
+                                    sdmAMController.permissionPlaceholder = "User already has permission";
+                                    groupsth.typeahead('val', '');
                                     return;
                                 }
                             }
+                            var user = sdmAMController.users[sdmAMController.selectedUID];
                             sdmAMController.addedPermissions.push({
                                 _id: sdmAMController.selectedUID,
-                                access: sdmAMController.selectedRole.rid
+                                access: sdmAMController.selectedRole,
+                                name: [user.firstname, user.lastname].join(' ')
                             });
                             sdmAMController.selectedUID = '';
                             sdmAMController.success = true;
                             form.newPermission.hasErrors = false;
+                            sdmAMController.permissionPlaceholder = 'Permission added. Save to confirm';
+                            sdmAMController.selectedRole = null;
                             setTimeout(function(){
                                 $scope.$apply(function(){
                                     sdmAMController.success = false;
-                                });
-                            }, 2000);
-                            sdmAMController.permissionPlaceholder = 'Permission added. Save to confirm.';
-                            groupsth.typeahead('val', '');
-                        };
-
-                        sdmAMController.removeUser = function ($index, form) {
-                            sdmAMController.addedPermissions.splice($index, 1);
-                            sdmAMController.permissionPlaceholder = ' User removed. Save to confirm';
-                            sdmAMController.success = true;
-                            form.newPermission.hasErrors = false;
-                            var viewValue = form.newPermission.$viewValue;
-                            sdmAMController.selectedUID = null;
-                            setTimeout(function(){
-                                $scope.$apply(function(){
-                                    sdmAMController.success = false;
-                                    sdmAMController.selectedUID = viewValue;
+                                    sdmAMController.permissionPlaceholder = 'Enter User ID';
                                 });
                             }, 2000);
                         };
 
-                        sdmAMController.saveGroup = function($event, form) {
-                            if (!sdmAMController.groupId){
-                                form.hasErrors = true;
-                                return;
-                            }
+                        sdmAMController.save = function($index, form) {
+                            saveGroup(false, true).then(function(){
+                                sdmAMController.selectedGroup = null;
+                                sdmAMController.groupId = null;
+                                sdmAMController.saveSuccess = true;
+                                setTimeout(function(){
+                                    $scope.$apply(function(){
+                                        sdmAMController.saveSuccess = false;
+                                    });
+                                }, 2000);
+                            });
+                        }
+
+                        var saveGroup = function(isNew, name){
+                            console.log(sdmAMController);
                             var roles = sdmAMController.addedPermissions.map(
                                 function(permission) {
                                     return {
@@ -282,49 +285,80 @@
                                 }
                             );
                             var payload = {
-                                _id: sdmAMController.groupId,
-                                name: sdmAMController.groupName || sdmAMController.groupId,
+                                _id: isNew?sdmAMController.groupId:sdmAMController.selectedGroup.id,
                                 roles: roles
                             }
-                            var isNewGroup = sdmAMController.existingGroups.every(function(group){
-                                return (group.id !== sdmAMController.groupId)
-                            })
-                            var method = isNewGroup?'POST':'PUT';
-                            sdmAdminInterface.editGroup(method, sdmAMController.groupId, payload).then(
-                                function() {
-                                    sdmAMController.selectedGroup = null;
-                                    sdmAMController.isGroupExisting = false;
-                                    sdmAMController.groupName = '';
-                                    sdmAMController.groupId = null;
-                                    sdmAMController.addedPermissions = [{'_id': sdmAMController.user.user_uid, 'access': 'admin'}];
-                                    sdmAMController.defaultSelectText = 'Select Existing Group';
-                                    sdmAMController.showConfirmGroup = false;
-                                    loadData();
-                                    sdmViewManager.refreshView('projects');
-                                    sdmAMController.groupPlaceholder = isNewGroup?'Group Created':'Group Updated';
-                                    setTimeout(function() {
-                                        sdmAMController.groupPlaceholder = 'Create New Group';
-                                        $scope.$apply();
-                                    }, 2000);
-                                }
-                            );
+                            if (name) {
+                                payload.name = isNew?sdmAMController.groupId:sdmAMController.selectedGroup.name;
+                            }
+                            var method = isNew?'POST':'PUT';
+                            return sdmAdminInterface.editGroup(method, payload._id, payload)
+                        }
+
+                        sdmAMController.removeUserFromGroup = function ($index, form) {
+                            sdmAMController.addedPermissions.splice($index, 1);
+                            saveGroup(false).then(function(){
+                                sdmAMController.permissionPlaceholder = ' User removed';
+                                sdmAMController.success = true;
+                                form.newPermission.hasErrors = false;
+                                var viewValue = form.newPermission.$viewValue;
+                                sdmAMController.selectedUID = null;
+                                setTimeout(function(){
+                                    $scope.$apply(function(){
+                                        sdmAMController.success = false;
+                                        sdmAMController.selectedUID = viewValue;
+                                        sdmAMController.permissionPlaceholder = 'Enter User ID';
+                                    });
+                                }, 2000);
+                            });
                         };
 
-                        sdmAMController.deleteGroup = function($event, form) {
-                            if (!sdmAMController.groupId){
+                        var findGroupByID = function(id) {
+                            var results = sdmAMController.existingGroups.filter(function(g){
+                                return g.id === id;
+                            });
+                            return results.length === 0?undefined:results[0];
+                        }
+
+                        sdmAMController.createGroup = function($event, form) {
+                            if (!sdmAMController.groupId || findGroupByID(sdmAMController.groupId)){
+                                form.hasErrors = true;
+                                sdmAMController.createWarning = sdmAMController.groupId?"Group already exists":"Please enter the group name"
+                                setTimeout(function(){
+                                    $scope.$apply(function(){
+                                        sdmAMController.createWarning = null;
+                                    });
+                                }, 2000)
+                                return;
+                            }
+                            saveGroup(true, true).then(loadData).then(function() {
+                                sdmAMController.selectedGroup = findGroupByID(sdmAMController.groupId);
+                                sdmAMController.createSuccess = true;
+                                setTimeout(function(){
+                                    $scope.$apply(function(){
+                                        sdmAMController.createSuccess = false;
+                                    });
+                                }, 2000)
+                            });
+                        }
+
+                        sdmAMController.saveGroupName = function($event) {
+                            if (!sdmAMController.selectedGroup.name){
                                 form.hasErrors = true;
                                 return;
                             }
-                            sdmAMController.showConfirmGroup = true;
+                            saveGroup(false, true).then(loadData).then(function(){
+                                sdmAMController.selectedGroup = findGroupByID(sdmAMController.selectedGroup.id);
+                            });
                         }
 
-                        sdmAMController.confirmDeleteGroup = function($event, form) {
-                            if (!sdmAMController.groupId){
+                        sdmAMController.deleteGroup = function($event, form) {
+                            if (!sdmAMController.selectedGroup){
                                 form.hasErrors = true;
                                 return;
                             }
                             var method = 'DELETE';
-                            sdmAdminInterface.editGroup(method, sdmAMController.groupId).then(
+                            sdmAdminInterface.editGroup(method, sdmAMController.selectedGroup.id).then(
                                 function() {
                                     sdmAMController.selectedGroup = null;
                                     sdmAMController.isGroupExisting = false;
@@ -336,6 +370,8 @@
                                     loadData();
                                     sdmViewManager.refreshView('projects');
                                     sdmAMController.groupPlaceholder = 'Group Deleted';
+                                    var typeahead_hint_element = angular.element('#group-permissions .tt-hint');
+                                    typeahead_hint_element.css('background-color', typeahead_hint_element_color);
                                     setTimeout(function() {
                                         sdmAMController.groupPlaceholder = 'Create New Group';
                                         $scope.$apply();

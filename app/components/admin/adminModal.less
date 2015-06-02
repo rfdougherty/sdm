@@ -1,6 +1,6 @@
 @import (less) "../../active_config/variables.less";
 
-@sdm-content-top: 95px;
+@sdm-content-top: 110px;
 
 sdm-admin-modal {
     div#sdm-table-root {
@@ -17,33 +17,21 @@ sdm-admin-modal {
     div#sdm-main-table-content {
         padding-bottom: 10px;
     }
-    div.admin-header {
-        background-color: @bgcol1;
-        color: @fgcol1;
-        border-bottom: solid white 1px;
-        height: 21px;
-        span.glyphicon.glyphicon-remove {
-            float: right;
-            padding-right: 5px;
-            padding-top: 4px;
-            font-size: 11px;
-        }
-    }
 
     div.admin-title {
-        padding-left: 10px;
+        padding-left: 40px;
         padding-right:10px;
-        margin-top: 0px;
-        font-size: 24px;
+        height: 60px;
+        border-radius: 4px 4px 0 0;
+        border-bottom: solid 1px @mediumGray;
         margin-bottom: 10px;
         font-weight: bold;
-        font-variant: small-caps;
-        background-color: @bgcol2;
-        color: @fgcol2;
+        background-color: @lightestGray;
+        padding-top: 20px;
     }
     ul.nav.nav-tabs {
-        margin-left: 15px;
-        margin-right: 15px;
+        margin-left: 40px;
+        margin-right: 40px;
     }
     button.btn-xs {
         position: absolute;
@@ -59,6 +47,10 @@ div.sdm-admin-modal {
         border-right: none;
         border-bottom: none;
     }
+    .popover-dialog {
+        border: none;
+        box-shadow: 0px 2px 6px @darkGray;
+    }
     .popover-overlay {
         background-color: lightgray;
     }
@@ -67,12 +59,10 @@ div.sdm-admin-modal {
 div#sdm-admin-content {
     position: absolute;
     top: @sdm-content-top;
-    left: 15px;
-    right: 15px;
+    left: 40px;
+    right: 40px;
     bottom: 41px;
-    border: 1px solid black;
     border-top: none;
-
 }
 
 div.sdm-edit-groups {
@@ -86,83 +76,144 @@ div.sdm-edit-groups {
         font-style: italic;
         color: grey;
     }
-    div#permissions {
-        margin-top: 6px;
-        input.typeahead {
-            width: 287px;
+
+    form {
+        margin: 0;
+
+    }
+    .flex-row {
+        display: flex;
+        &.first {
+            .sdm-input-label, .sdm-input-divider {
+                margin-bottom: 4px;
+            }
         }
+    }
+
+    .sdm-input-cell {
+        margin-top: 10px;
+        .warning {
+            color: red;
+            align-self: flex-end;
+        }
+        flex: 4;
+        .sdm-input-invisible {
+            visibility: hidden;
+        }
+        .input-group {
+            width: 100%;
+            display: inline-flex;
+        }
+        input.form-control {
+            float: left;
+        }
+        &.sdm-small3 {
+            flex: 3;
+        }
+        &.sdm-small2 {
+            flex: 2;
+        }
+        &.sdm-small1 {
+            flex: 1;
+        }
+    }
+    .sdm-input-divider {
+        flex: 1;
+        font-weight: 500;
+    }
+    div#group-permissions {
+        margin-top: 10px;
+        #group-permissions-title {
+            font-weight: 600;
+            border-bottom: 1px solid @mediumGray;
+            padding-bottom: 4px;
+        }
+        input.typeahead {
+            width: 400px;
+        }
+        /*
+        .enable-input input.tt-hint {
+            visibility: hidden;
+        }*/
         div.tt-dataset-users {
             padding-left: 10px;
             border: 1px solid lightgrey;
             height: 120px;
-            width: 287px;
+            width: 270px;
             background: white;
             overflow: scroll;
         }
-        select {
-            position: relative;
-            top: 6px;
-        }
-        span.add-user {
-            position: relative;
-            top: 10px;
-            font-size: 20px;
-            margin-left: 5px;
-        }
-    }
-    form {
-        margin: 0 10px;
-    }
-    .sdm-input-label {
-        float: left;
-        width: 200px;
-        font-weight: bold;
-    }
-    div#group-permissions {
-        margin-top: 5px;
-
-        div.permissions-header table {
-            border: 1px solid black;
-            background-color: @bgcol2;
-            color: @fgcol2;
-            margin-bottom: 0px;
-            td {
-                width: 33%;
-            }
-        }
-        div.permissions-body {
-            height: 208px;
+        .permissions-body {
+            margin-top: 10px;
+            border: 0px solid @mediumGray;
+            border-width: 1px;
             overflow: scroll;
-            border: 1px solid black;
-
-            border-top: none;
-            table.table {
-                margin-top: 0px;
-                margin-bottom: 0px;
-                table-layout: fixed;
-                td {
-                    border-top: none;
-                    width: 33%;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    .glyphicon.disabled {
-                        color: lightgrey;
-                    }
-                    &.permissions-access {
-                        padding-left: 0px;
-                        select {
-                            margin-bottom: 0px;
-                            width: 103px;
-                        }
-                    }
-                    vertical-align: middle;
+            max-height: 170px;
+            .flex-row {
+                border: 0px solid @mediumGray;
+                border-top-width: 1px;
+                align-items: center;
+                padding: 4px 0;
+                &.gray {
+                    background-color: @lightestGray;
                 }
-
+                &.first-body {
+                    border-top-width: 0;
+                }
+                .sdm-input-cell {
+                    margin-top: 0;
+                    &.remove {
+                        text-align: center;
+                        color: @blue;
+                    }
+                    &.select {
+                        padding-left: 0px;
+                    }
+                }
             }
         }
+        .flex-row {
+            .sdm-input-cell {
+                &.remove-header {
+                    text-align: center;
+                    vertical-align: bottom;
+                    align-self: flex-end;
+                }
+            }
+        }
+
     }
     input.btn {
         margin-top: 9px;
+        &.form-control {
+            width: auto;
+        }
+    }
+    .sdm-groups-buttons {
+        position: absolute;
+        bottom: -25px;
+        right: 0px;
+        input.btn.save {
+            color: white;
+            background-color: @blue;
+        }
+    }
+    .warning-success {
+        position: absolute;
+        left: 0px;
+        bottom: -25px;
+        color: @orange;
+        visibility: hidden;
+        &.visible {
+            visibility: visible;
+        }
+    }
+    .warning-create {
+        color: @orange;
+        visibility: hidden;
+        &.visible {
+            visibility: visible;
+        }
     }
 }
 
@@ -174,7 +225,7 @@ div.sdm-edit-users {
     bottom: 5px;
     padding-top: 10px;
     form {
-        margin: 0 10px;
+        margin: 0;
     }
     input.btn-sm {
         margin-top: 10px;
