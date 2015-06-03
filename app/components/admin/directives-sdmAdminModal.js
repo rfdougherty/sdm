@@ -15,7 +15,7 @@
                     controller: function(){},
                     controllerAs: 'sdmAMController',
                     link: function($scope, $element, $attrs, sdmAMController) {
-                        sdmAMController.adminView = 'edit groups';
+                        sdmAMController.adminView = 'edit users';
                         sdmAMController.trigger = {
                             node: null,
                             sessionKey: 1
@@ -36,6 +36,8 @@
                                 'access': 'admin'
                             }];
                         sdmAMController.isGroupExisting = false;
+                        sdmAMController.wheel = false;
+                        sdmAMController.existingUser = {};
 
 
 
@@ -94,7 +96,7 @@
                         sdmAMController.userIDPlaceholder = 'Enter user ID';
                         sdmAMController.emailPlaceholder = 'Enter user email (optional)';
                         sdmAMController.permissionPlaceholder = 'Enter User ID';
-                        sdmAMController.existingUserPlaceholder = 'Enter User ID';
+                        sdmAMController.existingUserPlaceholder = 'Search User ID';
                         sdmAMController.groupNamePlaceholder = 'Edit your group name';
                         sdmAMController.createGroupPlaceholder = 'Give your group a name';
 
@@ -103,10 +105,14 @@
                             sdmAMController.userLastName = null;
                             sdmAMController.userID = null;
                             sdmAMController.email = null;
-                            sdmAMController.superuser = null;
+                            sdmAMController.wheel = false;
                         }
 
                         sdmAMController.saveUser = function ($event, form) {
+                            if (sdmAMController.existingUser && sdmAMController.existingUser._id) {
+                                updateUser($event, form);
+                                return
+                            }
                             $event.stopPropagation();
                             if (!form.$valid) {
                                 console.log('form', form);
@@ -128,18 +134,24 @@
                                 });
                         }
 
-                        sdmAMController.updateUser = function($event, form) {
+                        var updateUser = function($event, form) {
                             $event.stopPropagation();
                             if (!form.$valid) {
                                 console.log('form', form);
                                 return;
                             }
+                            sdmAMController.existingUser.firstname = sdmAMController.userFirstName;
+                            sdmAMController.existingUser.lastname = sdmAMController.userLastName;
+                            sdmAMController.existingUser.email = sdmAMController.email;
+                            sdmAMController.existingUser.wheel = sdmAMController.wheel;
+
                             sdmAdminInterface.updateUser(
                                 sdmAMController.existingUser
                             ).then(loadData).then(function(){
-                                sdmAMController.existingUser = {};
+                                sdmAMController.existingUser = null;
                                 sdmAMController.existingUserID = null;
                                 sdmAMController.existingUserLoaded = false;
+                                clearUserFields();
                                 usersth.typeahead('val', '');
                                 refreshTypeahead();
                                 sdmAMController.existingUserPlaceholder = 'User Updated';
@@ -149,11 +161,8 @@
                                 }, 2000);
                             });
                         }
-                        sdmAMController.deleteUser = function($event, form) {
-                            sdmAMController.existingUser.confirmDelete = true;
-                        }
 
-                        sdmAMController.confirmDeleteUser = function($event, form) {
+                        sdmAMController.deleteUser = function($event, form) {
                             $event.stopPropagation();
                             if (!form.$valid) {
                                 console.log('form', form);
@@ -165,7 +174,6 @@
                                 sdmAMController.existingUser = {};
                                 sdmAMController.existingUserID = null;
                                 sdmAMController.existingUserLoaded = false;
-                                sdmAMController.existingUser.confirmDelete = false;
                                 usersth.typeahead('val', '');
                                 refreshTypeahead();
                                 sdmAMController.existingUserPlaceholder = 'User Deleted';
@@ -173,21 +181,45 @@
                                     sdmAMController.existingUserPlaceholder = 'Enter User ID';
                                     $scope.$apply();
                                 }, 2000);
+                                sdmAMController.clearForm();
                             });
                         }
 
                         sdmAMController.getUser = function($event) {
                             if ($event.which === 13) {
+                                $event.stopPropagation();
                                 $event.preventDefault();
                                 console.log($event);
                                 console.log(sdmAMController.existingUserID);
                                 sdmAdminInterface.getUser(sdmAMController.existingUserID).then(function(user){
                                     console.log($event);
                                     sdmAMController.existingUser = user;
+                                    sdmAMController.userFirstName = user.firstname;
+                                    sdmAMController.userLastName = user.lastname;
+                                    sdmAMController.email = user.email;
+                                    sdmAMController.wheel = user.wheel||false;
                                     $timeout(function () { $event.target.blur() }, 0, false);
                                     sdmAMController.existingUserLoaded = true;
+
                                 });
+                            } else {
+                                sdmAMController.existingUser = null;
+                                sdmAMController.userFirstName = null;
+                                sdmAMController.userLastName = null;
+                                sdmAMController.email = null;
+                                sdmAMController.wheel = false;
                             }
+                        }
+                        sdmAMController.clearForm = function() {
+                            sdmAMController.existingUser = null;
+                            sdmAMController.existingUserID = null;
+                            sdmAMController.userID = null;
+                            sdmAMController.userFirstName = null;
+                            sdmAMController.userLastName = null;
+                            sdmAMController.email = null;
+                            sdmAMController.wheel = false;
+                            sdmAMController.existingUserLoaded = false;
+                            usersth.typeahead('val', '');
                         }
 
                         sdmRoles().then(function(roles){

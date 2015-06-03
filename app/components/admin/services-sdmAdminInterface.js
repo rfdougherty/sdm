@@ -14,8 +14,10 @@
                 _id: userid,
                 firstname: firstname,
                 lastname: lastname,
-                wheel: wheel,
-                email: email
+                wheel: wheel
+            }
+            if (email) {
+                payload.email = email;
             }
             return makeAPICall.async(url, null, 'POST', payload).then(function(){
                 sdmUsers.refreshUsers();
@@ -28,6 +30,9 @@
                 lastname: user.lastname,
                 wheel: user.wheel,
                 email: user.email
+            }
+            if (user.email) {
+                payload.email = user.email;
             }
             return makeAPICall.async(url, null, 'PUT', payload).then(function(){
                 sdmUsers.refreshUsers();
