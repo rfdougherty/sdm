@@ -75,11 +75,9 @@
                         }
 
                         function loadData() {
-                            return sdmAdminInterface.loadGroupsAndUsers().then(
-                                function(tree){
-                                    console.log(tree);
-                                    sdmAMController.sdmData.data = tree;
-                                    sdmAMController.existingGroups = tree.children;
+                            return sdmAdminInterface.loadGroups().then(
+                                function(groups){
+                                    sdmAMController.existingGroups = groups;
                                 });
                         }
                         loadData();
@@ -230,14 +228,20 @@
                         sdmAMController.selectGroup = function() {
                             console.log(sdmAMController.selectedGroup);
                             if (sdmAMController.selectedGroup) {
-                                sdmAMController.addedPermissions = sdmAMController.selectedGroup.roles;
-                                sdmAMController.addedPermissions.forEach(function(permission){
-                                    var user = sdmAMController.users[permission._id]
-                                    permission.name = [user.firstname, user.lastname].join(' ')
+                                sdmAdminInterface.loadUsersForGroup(sdmAMController.selectedGroup).then(function (roles) {
+                                    sdmAMController.addedPermissions = roles;
+                                    sdmAMController.addedPermissions.forEach(function(permission){
+                                        var user = sdmAMController.users[permission._id]
+                                        if (user && user.lastname) {
+                                            permission.name = [user.firstname, user.lastname].join(' ')
+                                        } else {
+                                            permission.name = permission._id
+                                        }
+                                    })
+                                    var typeahead_hint_element = angular.element('#group-permissions .tt-hint');
+                                    typeahead_hint_element_color = typeahead_hint_element.css('background-color');
+                                    typeahead_hint_element.css('background-color', 'transparent');
                                 })
-                                var typeahead_hint_element = angular.element('#group-permissions .tt-hint');
-                                typeahead_hint_element_color = typeahead_hint_element.css('background-color');
-                                typeahead_hint_element.css('background-color', 'transparent');
                             }
                         };
 
@@ -345,9 +349,9 @@
                             });
                         };
 
-                        var findGroupByID = function(id) {
+                        var findGroupByID = function(_id) {
                             var results = sdmAMController.existingGroups.filter(function(g){
-                                return g.id === id;
+                                return g._id === _id;
                             });
                             return results.length === 0?undefined:results[0];
                         }

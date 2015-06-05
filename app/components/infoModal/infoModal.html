@@ -213,6 +213,24 @@
             </div>
         </div>
     </form>
+    <!-- permissions end -->
+    <!-- notes -->
+    <form name="formNotes" class="notes-view" ng-class="{error: formNotes.hasErrors}" ng-show="sdmIMController.loadingState === 0 && sdmIMController.modalView === 'notes'">
+        <div ng-keydown="sdmIMController.createNewNote($event)">
+            <textarea class="form-control new-note" ng-model="sdmIMController.newNote" ng-show="sdmIMController.canModify"  placeholder="Enter your note">
+            </textarea>
+        </div>
+        <div class="sdm-notes">
+            <div ng-repeat="note in sdmIMController.apiDataNotes.slice().reverse()">
+                <div class="note-header">
+                    <span class="author">{{note.author}} wrote:</span>
+                    <i class="fa fa-times-circle-o" ng-click="sdmIMController.removeNote($index, formNotes)"></i>
+                </div>
+                <div class="note-container" ng-bind-html="note.text | newlines"></div>
+            </div>
+        </div>
+    </form>
+    <!-- notes end -->
     <div class="info-modal-warning" ng-show="sdmIMController.confirmDismiss">
         Are you sure you want do dismiss your pending changes?
     </div>

@@ -16,6 +16,7 @@
                     angular.forEach(dialogStyle, function(value, key) {
                         dialogStyle[key] = null;
                     });
+                    console.log(content);
                     var calculatedWidth = sdmTextWidthCalculator(content, 12, 'span');
                     calculatedWidth += calculatedWidth%2 + 8;
                     dialogStyle.width = calculatedWidth + 'px';

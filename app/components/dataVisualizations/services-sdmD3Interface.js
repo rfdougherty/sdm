@@ -4,7 +4,7 @@
     var SdmD3Interface = function(
             $rootScope, $compile, sdmFilterTree,
             sdmViewManager, sdmDataManager,
-            sdmTextWidthCalculator, sdmUserManager
+            sdmTextWidthCalculator, sdmUserManager, sdmUsers
         ) {
 
         var calculateTextWidth = sdmTextWidthCalculator;
@@ -142,8 +142,24 @@
             };
         };
 
-        var _parseNote = function(note) {
-            return note.replace(/https?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
+        var users = {}
+        sdmUsers.getUsers().then(function(userData){
+            users = userData;
+        });
+
+        var _parseNote = function(notes) {
+            if (notes) {
+                var content = notes.map(function(note){
+                    var author = users[note.author];
+                    if (author) {
+                        return author.firstname + ' ' + author.lastname + ': ' + note.text;
+                    } else {
+                        return note.text;
+                    }
+                }).join('<br><br>');
+                return content.replace(/https?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
+            }
+            return '';
         }
 
         SdmD3Interface.prototype.createCell = function(selection) {
@@ -305,13 +321,13 @@
     SdmD3Interface.$inject = [
         '$rootScope', '$compile', 'sdmFilterTree',
         'sdmViewManager', 'sdmDataManager',
-        'sdmTextWidthCalculator', 'sdmUserManager'
+        'sdmTextWidthCalculator', 'sdmUserManager', 'sdmUsers'
     ];
 
     angular.module('sdm.dataVisualizations.services.sdmD3Interface', [
         'sdm.services',
         'sdm.main.services.sdmViewManager',
         'sdm.authentication.services.sdmUserManager',
-        'sdm.main.services.sdmDataManager'
+        'sdm.main.services.sdmDataManager', 'sdm.APIServices.services.sdmUsers'
     ]).factory('SdmD3Interface', SdmD3Interface);
 })();

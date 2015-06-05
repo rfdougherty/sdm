@@ -52,80 +52,15 @@
         }
         var viewID = 'admin';
         var levelDescription = sdmDataManager.headers(viewID);
-        var _loadUsersForGroup = function(group) {
-            var result = $q.defer();
+        var loadUsersForGroup = function(group) {
             var groupURL = BASE_URL + 'groups';
-            var userURL = BASE_URL + 'users';
-            console.log(group);
-            makeAPICall.async(groupURL + '/' + group._id).then(function(group){
-                group.roles = group.roles||[];
-                var promises = group.roles.map(function(role) {
-                    var deferred = $q.defer();
-                    makeAPICall.async(userURL + '/' + role._id).then(function(user) {
-                        if (!user) {
-                            console.log(role._id, 'does not exist')
-                            deferred.resolve();
-                            return;
-                        }
-                        var userNode = new DataNode(
-                            user,
-                            null,
-                            levelDescription['users']
-                        );
-                        userNode.role = roles[role.access];
-                        deferred.resolve(userNode);
-                    });
-                    return deferred.promise;
-                });
-                $q.all(promises).then(function(users) {
-                    console.log(users);
-                    users = users.filter(function(user){return user});
-                    console.log(users);
-                    users.sort(naturalSortByName);
-                    var groupNode = new DataNode(
-                        group,
-                        null,
-                        levelDescription['groups'],
-                        users
-                    );
-                    groupNode.roles = group.roles;
-                    users.forEach(
-                        function(user, i){
-                            user.index = i;
-                            user.parent = groupNode;
-                        }
-                    );
-                    console.log(groupNode);
-                    result.resolve(groupNode);
-                });
+            return makeAPICall.async(groupURL + '/' + group._id).then(function(group){
+                return group.roles
             });
-            return result.promise;
         }
 
-        var loadGroupsAndUsers = function() {
-            var result = $q.defer();
-            makeAPICall.async(BASE_URL + 'groups').then(function(groups) {
-                var promises = groups.map(_loadUsersForGroup);
-                $q.all(promises).then(function(groups) {
-                    console.log(groups);
-                    groups.sort(naturalSortByName);
-                    var tree = new DataNode(
-                            {name: 'root'},
-                            null,
-                            levelDescription['roots'],
-                            groups
-                        );
-                    groups.forEach(
-                        function(group, i){
-                            group.index = i;
-                            group.parent = tree;
-                            group._children = group.children;
-                            group.children = null;
-                        });
-                    result.resolve(tree);
-                });
-            });
-            return result.promise;
+        var loadGroups = function() {
+            return makeAPICall.async(BASE_URL + 'groups?admin=true');
         };
 
         var editGroup = function(method, groupId, payload) {
@@ -143,7 +78,8 @@
 
         return {
             createNewUser: createNewUser,
-            loadGroupsAndUsers: loadGroupsAndUsers,
+            loadGroups: loadGroups,
+            loadUsersForGroup: loadUsersForGroup,
             editGroup: editGroup,
             getUser: getUser,
             updateUser: updateUser,

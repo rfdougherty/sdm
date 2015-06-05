@@ -24,7 +24,7 @@
                     </div>
                     <div class="sdm-input-cell">
                         <div class="sdm-input-label">Edit Existing Group</div>
-                        <select class="form-control" ng-class="{default:!sdmAMController.selectedGroup}" ng-options="(group.name || group.id) for group in sdmAMController.existingGroups" ng-model="sdmAMController.selectedGroup" ng-change="sdmAMController.selectGroup()">
+                        <select class="form-control" ng-class="{default:!sdmAMController.selectedGroup}" ng-options="(group.name || group._id) for group in sdmAMController.existingGroups" ng-model="sdmAMController.selectedGroup" ng-change="sdmAMController.selectGroup()">
                             <option class="default" value="" disabled>{{sdmAMController.defaultSelectText}}</option>
                         </select>
                     </div>
@@ -117,7 +117,7 @@
                 <div class="flex-row">
                     <div class="sdm-input-cell">
                         <div class="sdm-input-label">User ID</div>
-                        <input class="form-control" type="text" ng-model="sdmAMController.existingUser._id||sdmAMController.userID" name="userID" disabled>
+                        <input class="form-control" type="text" ng-value="sdmAMController.existingUser._id||sdmAMController.userID" name="userID" disabled>
                     </div>
                     <div class="sdm-input-cell sdm-small1">
                     </div>

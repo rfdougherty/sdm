@@ -1,4 +1,4 @@
-@import (less) "../../active_config/variables.less";
+@import (less) "../../variables.less";
 
 //style for the tooltip
 div.popover.sdm-note-tooltip {
@@ -401,6 +401,30 @@ sdm-info-modal {
 
     }
 
+    .notes-view {
+        .sdm-notes {
+            height: 350px;
+            overflow: scroll;
+            margin-bottom: 6px;
+            margin-top: 6px;
+        }
+        .note-header {
+            font-weight: 500;
+        }
+        .note-container {
+            border: 1px solid @mediumGray;
+            border-radius: 6px;
+            min-height: 45px;
+            padding: 0 10px;
+        }
+        i.fa-times-circle-o {
+            float: right;
+        }
+        border-bottom: 1px solid @mediumGray;
+        margin-left: 40px;
+        margin-right: 40px;
+        padding-top: 20px;
+    }
     div.info-modal-warning {
         padding: 10px;
         color: red;

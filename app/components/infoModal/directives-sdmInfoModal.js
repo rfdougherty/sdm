@@ -266,7 +266,7 @@ var _inputEl;
                         sdmIMController.data = {};
                         var path = [];
                         var n = node;
-                        var apiDataNotes;
+                        sdmIMController.apiDataNotes = [];
                         sdmIMController.formatSize = sdmHumanReadableSize;
                         while (n.parent){
                             path.unshift(n.parent.level.name==='sessions'?n.parent.name + ' - ' + n.parent.subject:n.parent.name);
@@ -323,81 +323,112 @@ var _inputEl;
                         sdmIMController.baseUrl = BASE_URL + 'acquisitions/' + node.id + '/file';
                         console.log(path);
                         sdmIMController.path = path.slice(1);
-                        sdmIMController.title = level.slice(0, level.length - 1) + ': ';
+                        sdmIMController.title = level.slice(0, level.length - 1);
                         sdmIMController.name = node.name;
                         sdmIMController.user = sdmUserManager.getAuthData();
                         console.log(sdmIMController.user);
-                        makeAPICall.async(APIUrl, {site: node.site}).then(
-                            function (apiData) {
-                                console.log('apiData', apiData);
-                                sdmIMController.data = node.level.getModalData(node, apiData);
-                                sdmIMController.data.forEach(function(field){
-                                    field.originalValue = field.value;
-                                });
-                                sdmIMController.attachments = [];
-                                sdmIMController.files = [];
-                                apiData.files = apiData.files || [];
-                                apiData.files.forEach(function(file){
-                                    if (file.flavor === 'data') {
-                                        sdmIMController.files.push(file);
-                                    } else if (file.flavor === 'attachment'){
-                                        sdmIMController.attachments.push(file);
-                                    }
-                                });
-                                sdmIMController.editables = node.level.editables ||{};
+                        sdmIMController.getAttachmentType = function(attachment) {
+                            if (attachment.ext){
+                                return attachment.ext.slice(1, attachment.length);
+                            } else {
+                                var nameSplit = attachment.name.split('.');
+                                return nameSplit[nameSplit.length - 1];
+                            }
+                        };
+                        var refreshDataInModal = function(){
 
-
-                                if (sdmIMController.files.length) {
-                                    sdmIMController.expandedAttachments = false;
-                                    sdmIMController.expandedFiles = true;
-                                }
-                                sdmIMController.files.sort(function(file, file1){
-                                    return file.filetype===file1.filetype?0:file.filetype>file1.filetype?1:-1 });
-
-                                console.log(apiData.permissions, node.level.name);
-                                if (apiData.permissions) {
-                                    apiData.permissions.forEach(function(permission){
-                                        if (permission._id === sdmIMController.user.user_uid) {
-                                            sdmIMController.userPermission = permission.access;
+                            return makeAPICall.async(APIUrl, {site: node.site}).then(
+                                function (apiData) {
+                                    console.log('apiData', apiData);
+                                    sdmIMController.data = node.level.getModalData(node, apiData);
+                                    sdmIMController.data.forEach(function(field){
+                                        field.originalValue = field.value;
+                                    });
+                                    sdmIMController.attachments = [];
+                                    sdmIMController.files = [];
+                                    apiData.files = apiData.files || [];
+                                    apiData.files.forEach(function(file){
+                                        if (file.flavor === 'data') {
+                                            sdmIMController.files.push(file);
+                                        } else if (file.flavor === 'attachment'){
+                                            sdmIMController.attachments.push(file);
                                         }
                                     });
-                                }
+                                    sdmIMController.editables = node.level.editables ||{};
 
-                                sdmIMController.isAdmin = sdmIMController.canModify = false;
-                                if (sdmIMController.userPermission) {
-                                    console.log(sdmIMController.userPermission);
-                                    sdmIMController.isAdmin = sdmIMController.userPermission === 'admin';
-                                    sdmIMController.canModify = sdmIMController.userPermission.search(/rw$|admin$/) === 0;
-                                }
-                                if (sdmIMController.user.root) {
-                                    sdmIMController.isAdmin = sdmIMController.canModify = true;
-                                }
 
-                                apiData.permissions =
-                                    node.level.name.search(/collections|projects/) === 0 ?
-                                        apiData.permissions : null;
-                                sdmIMController.apiData = apiData;
-                                apiDataNotes = apiData.notes;
-                                sdmIMController.loadingState--;
-                                if (
-                                        sdmIMController.files.length &&
-                                        (
-                                            sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' ||
-                                            sdmIMController.user.root || sdmIMController.userPermission === 'ro'
-                                        )
-                                    ) {
-                                    sdmIMController.modalView = 'file list';
-                                } else {
-                                    sdmIMController.modalView = 'attachments';
-                                }
-                                console.log(sdmIMController);
-                            },
-                            function(reason){
-                                console.log('rejected request because of', reason);
-                                sdmIMController.dismiss();
+                                    if (sdmIMController.files.length) {
+                                        sdmIMController.expandedAttachments = false;
+                                        sdmIMController.expandedFiles = true;
+                                    }
+                                    sdmIMController.files.sort(function(file, file1){
+                                        return file.filetype===file1.filetype?0:file.filetype>file1.filetype?1:-1 });
+
+                                    console.log(apiData.permissions, node.level.name);
+                                    if (apiData.permissions) {
+                                        apiData.permissions.forEach(function(permission){
+                                            if (permission._id === sdmIMController.user.user_uid) {
+                                                sdmIMController.userPermission = permission.access;
+                                            }
+                                        });
+                                    }
+
+                                    sdmIMController.isAdmin = sdmIMController.canModify = false;
+                                    if (sdmIMController.userPermission) {
+                                        console.log(sdmIMController.userPermission);
+                                        sdmIMController.isAdmin = sdmIMController.userPermission === 'admin';
+                                        sdmIMController.canModify = sdmIMController.userPermission.search(/rw$|admin$/) === 0;
+                                    }
+                                    if (sdmIMController.user.root) {
+                                        sdmIMController.isAdmin = sdmIMController.canModify = true;
+                                    }
+
+                                    apiData.permissions =
+                                        node.level.name.search(/collections|projects/) === 0 ?
+                                            apiData.permissions : null;
+                                    sdmIMController.apiData = apiData;
+                                    if (sdmIMController.apiData.notes){
+                                        sdmUsers.getUsers().then(function(){
+                                            sdmIMController.apiDataNotes = sdmIMController.apiData.notes.map(function(note){
+                                                var author = sdmIMController.users[note.author];
+                                                return {
+                                                    author: author.firstname + ' ' + author.lastname,
+                                                    text: note.text
+                                                }
+                                            });
+                                        })
+                                    }
+                                },
+                                function(reason){
+                                    console.log('rejected request because of', reason);
+                                    sdmIMController.dismiss();
+                                });
+                        }
+                        refreshDataInModal().then(function(){
+                            sdmIMController.loadingState--;
+                            if (
+                                    sdmIMController.files.length &&
+                                    (
+                                        sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' ||
+                                        sdmIMController.user.root || sdmIMController.userPermission === 'ro'
+                                    )
+                                ) {
+                                sdmIMController.modalView = 'file list';
+                            } else {
+                                sdmIMController.modalView = 'attachments';
+                            }
+                        });
+
+                        sdmIMController.download = function(file) {
+                            var _node = {
+                                level: level,
+                                _id: node.id,
+                                file: file
+                            };
+                            sdmDownloadInterface.getDownloadURL(_node, true, false).then(function(response){
+                                window.open(response.url + '&attach=true', '_self');
                             });
-
-
+                        };
 
 
                         sdmIMController.dismiss = function ($event) {
@@ -406,17 +437,44 @@ var _inputEl;
                         };
 
                         sdmIMController.close = function ($event) {
-                            var areNotesChanged = sdmIMController.apiData && apiDataNotes !== sdmIMController.apiData.notes;
                             var isApiDataChanged = !sdmIMController.data.every(
                                 function (field) {
                                     return field.value === field.originalValue;
                                 });
-                            if (sdmIMController.arePermissionsChanged || areNotesChanged || isApiDataChanged) {
+                            if (sdmIMController.arePermissionsChanged || isApiDataChanged) {
                                 sdmIMController.confirmDismiss = true;
                             } else {
                                 $scope.$parent._hidePopover($event, 0);
                             }
                         };
+                        sdmIMController.createNewNote = function($event){
+                            if ($event.keyCode === 13 & !$event.shiftKey) {
+                                $event.preventDefault();
+                                $event.stopPropagation();
+                                sdmIMController.apiData.notes = sdmIMController.apiData.notes||[];
+                                sdmIMController.newNote = sdmIMController.newNote.replace(/\10/, '\n')
+                                console.log({a: sdmIMController.newNote})
+                                sdmIMController.apiData.notes.push({text: sdmIMController.newNote||''});
+                                var url = BASE_URL + node.level.name + '/' + node.id;
+                                var payload = {
+                                    notes: sdmIMController.apiData.notes
+                                }
+                                makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(refreshDataInModal);
+                                sdmIMController.newNote = null;
+                                return;
+                            }
+                        }
+
+                        sdmIMController.removeNote = function($index){
+                            var length = sdmIMController.apiData.notes.length;
+                            sdmIMController.apiData.notes.splice(length - $index - 1, 1);
+                            var url = BASE_URL + node.level.name + '/' + node.id;
+                            var payload = {
+                                notes: sdmIMController.apiData.notes
+                            }
+                            makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(refreshDataInModal);
+                            sdmIMController.newNote = null;
+                        }
 
                         sdmIMController.removeUser = function ($index, form) {
                             console.log('removing', sdmIMController.apiData.permissions[$index]);
@@ -450,18 +508,10 @@ var _inputEl;
                                     });
                                 }
                             );
+
                         }
 
                         sdmIMController.confirmAttachmentRemove = [];
-
-                        sdmIMController.download = function(file) {
-                            var url = APIUrl + '/file/' + file.filename;
-
-                            makeAPICall.async(url, null, 'POST', null).then(function(response){
-
-                                window.open(url + '?ticket=' + response.ticket, '_self');
-                            });
-                        };
 
                         sdmIMController.addConfirmAttachment = function($index) {
                             sdmIMController.confirmAttachmentRemove[$index] = true;
@@ -472,21 +522,23 @@ var _inputEl;
                         }
 
                         sdmIMController.removeAttachment = function(attachment) {
-                            var url = APIUrl + '/file/' + attachment.filename;
-                            makeAPICall.async(url, null, 'DELETE', null).then(sdmIMController.updateAttachmentsAndFiles);
+                            var url = APIUrl + '/attachment?name=' + attachment.name
+                                + attachment.ext;
+                            makeAPICall.async(url, null, 'DELETE', null).then(sdmIMController.updateAttachments);
                         }
 
                         sdmIMController.downloadAttachment= function($index) {
-                            var url = APIUrl + '/file/' + sdmIMController.attachments[$index].filename;
+                            var url = APIUrl + '/attachment?name=' + sdmIMController.attachments[$index].name
+                                + sdmIMController.attachments[$index].ext;
 
                             makeAPICall.async(url, null, 'POST', null).then(function(response){
 
-                                window.open(url + '?ticket=' + response.ticket, '_self');
+                                window.open(response.url + '&attach=true', '_self');
                             });
                         };
 
                         sdmIMController.hasPapayaViewer = function(attachment) {
-                            var filename = attachment.filename;
+                            var filename = attachment.name + attachment.ext;
                             return filename.search(/\.nii(\.gz)?$/) >= 0;
                         }
 
@@ -496,7 +548,8 @@ var _inputEl;
                         }
 
                         sdmIMController.viewAttachment = function(attachment) {
-                            var url = APIUrl + '/file/' + attachment.filename;
+                            var fullname = attachment.name + attachment.ext;
+                            var url = APIUrl + '/attachment?name=' + fullname;
                             var callback;
                             if (sdmIMController.hasBbrowserViewer(attachment)) {
                                 callback = function(response) {
@@ -512,16 +565,15 @@ var _inputEl;
                                 };
                             } else if (sdmIMController.hasPapayaViewer(attachment)) {
                                 callback = function(response) {
-                                    console.log(response.ticket);
-                                    papayaParams.images = [url + '?ticket=' + response.ticket + '&view=true'];
+                                    papayaParams.images = [response.url];
                                     papayaParams.showOrientation = false;
                                     papaya.Container.startPapaya();
                                 };
                             } else {
                                 callback = function(response) {
                                     sdmIMController.resourceViewer = {
-                                        fileUrl: url + '?ticket=' + response.ticket + '&view=true',
-                                        mimetype: attachment.mimetype
+                                        fileUrl: response.url,
+                                        type: sdmIMController.getAttachmentType(attachment)
                                     }
                                 };
                             }
@@ -529,10 +581,13 @@ var _inputEl;
                         };
 
                         sdmIMController.viewFileInPapaya = function(file) {
-                            var url = APIUrl + '/file/' + file.filename;
-
-                            makeAPICall.async(url, null, 'POST', null).then(function(response){
-                                papayaParams.images = [url + '?ticket=' + response.ticket];
+                            var _node = {
+                                level: level,
+                                _id: node.id,
+                                file: file
+                            };
+                            sdmDownloadInterface.getDownloadURL(_node, true, false).then(function(response){
+                                papayaParams.images = [response.url];
                                 papayaParams.showOrientation = false;
                                 papaya.Container.startPapaya();
                             });
@@ -610,12 +665,11 @@ var _inputEl;
                         }
 
                         sdmIMController.save = function ($event) {
-                            var areNotesChanged = apiDataNotes !== sdmIMController.apiData.notes;
                             var isApiDataChanged = !sdmIMController.data.every(
                                 function (field) {
                                     return !field.editing;
                                 });
-                            if (!sdmIMController.arePermissionsChanged && !areNotesChanged && !isApiDataChanged) {
+                            if (!sdmIMController.arePermissionsChanged && !isApiDataChanged) {
                                 $scope.$parent._hidePopover($event, 0);
                                 return;
                             }

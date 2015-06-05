@@ -3,9 +3,9 @@
 
 <head>
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDM</title>
+    <title>  SciTran SDM</title>
 
-
+    <link rel="icon" href="favicon.ico" />
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link rel="stylesheet/less" href="main.less" />
@@ -39,13 +39,16 @@
 
     <div id="sdm-main" class="main-content">
         <div class="header">
-            <div class="logo" ng-include="'active_config/header-logo.html'">
+            <div class="logo" ng-include="'header-logo.html'">
             </div>
 
             <div class="auth" ng-include src="'components/authentication/login-box.html'" ng-controller="LoginController">
             </div>
             <div class="logo-divider"></div>
-            <div class="stanford" ng-include="'active_config/header-stanford.html'">
+            <div class="institution-logo">
+                <a href="https://www.stanford.edu/" target="_blank">
+                    <img src="custom/logo.png" />
+                </a>
             </div>
         </div>
         <div class="navigation-bar"
@@ -54,21 +57,6 @@
         </div>
         <div ng-view>
         </div>
-        <!--div class="footer">
-            <div id="footer-links">
-                <span class="scitran" ng-include="scitran.html">
-                </span>
-                <span class="divider"></span>
-                <span class="customizable" ng-include="'active_config/footer-links.html'">
-                </span>
-                <span class="divider"></span>
-
-                <span id="footer-copyright" ng-include="'active_config/footer-copyright.html'">
-                </span>
-            </div>
-
-
-        </div-->
     </div>
     <script>
         if (navigator.userAgent.search(/Chrome\//i) < 0 || navigator.userAgent.search(/OPR\//) >= 0) {
@@ -90,7 +78,7 @@
 
 
     <!-- main app and services that are used globally -->
-    <script src="active_config/config.js"></script>
+    <script src="custom/config.js"></script>
     <script src="app.js"></script>
     <script src="services.js"></script>
     <script src="directives.js"></script>

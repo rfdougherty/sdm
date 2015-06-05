@@ -5,7 +5,7 @@
 
 // Demonstrate how to register services
 // In this case it is a simple value service.
-var nimsServices = angular.module('sdm.services', ['sdmHttpServices', 'sdmD3Service', 'sdmTextWidthCalculator']).
+var nimsServices = angular.module('sdm.services', ['sdmHttpServices', 'sdmD3Service', 'sdmTextWidthCalculator', 'newLinesFilter']).
 value('version', '0.11');
 
 var httpServices = angular.module('sdmHttpServices', ['ngCookies', 'sdm.authentication.services.sdmUserManager']);
@@ -152,4 +152,11 @@ angular.module('sdmTextWidthCalculator', [])
             return width;
         }
         return calculator;
+    });
+
+angular.module('newLinesFilter', [])
+    .filter('newlines', function(){
+        return function(text) {
+            return text.replace(/\n/g, '<br/>');
+        }
     });

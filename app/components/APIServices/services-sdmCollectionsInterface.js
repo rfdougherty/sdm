@@ -64,7 +64,6 @@
                 var url = BASE_URL + 'collections';
                 var data = {
                     name: name,
-                    notes: notes,
                     permissions: permissions
                 }
                 makeAPICall.async(url, null, 'POST', data).then(function(response){
@@ -94,7 +93,6 @@
                 });
                 var data = {
                     name: name,
-                    notes: notes,
                     contents: {
                         operation: operation,
                         nodes: nodes

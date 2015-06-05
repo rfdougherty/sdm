@@ -172,7 +172,3 @@ var substringMatcher = function(elements, field) {
     cb(matches);
   };
 };
-
-var _debugGetService = function(serviceName) {
-    return angular.element(document.body).injector().get(serviceName);
-}
