@@ -19,15 +19,13 @@ sdm-admin-modal {
     }
 
     div.admin-title {
-        padding-left: 40px;
-        padding-right:10px;
+        padding: 20px 40px 0px 40px;
+        margin-bottom: 10px;
         height: 60px;
         border-radius: 4px 4px 0 0;
         border-bottom: solid 1px @mediumGray;
-        margin-bottom: 10px;
         font-weight: bold;
         background-color: @lightestGray;
-        padding-top: 20px;
     }
     ul.nav.nav-tabs {
         margin-left: 40px;
@@ -50,6 +48,7 @@ div.sdm-admin-modal {
     .popover-dialog {
         border: none;
         box-shadow: 0px 2px 6px @darkGray;
+        font-family: 'proxima-nova', "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
     .popover-overlay {
         background-color: lightgray;
@@ -63,42 +62,6 @@ div#sdm-admin-content {
     right: 40px;
     bottom: 41px;
     border-top: none;
-}
-.flex-row {
-    display: flex;
-    &.first {
-        .sdm-input-label, .sdm-input-divider {
-            margin-bottom: 4px;
-        }
-    }
-}
-
-.sdm-input-cell {
-    margin-top: 10px;
-    .warning {
-        color: red;
-        align-self: flex-end;
-    }
-    flex: 4;
-    .sdm-input-invisible {
-        visibility: hidden;
-    }
-    .input-group {
-        width: 100%;
-        display: inline-flex;
-    }
-    input.form-control {
-        float: left;
-    }
-    &.sdm-small3 {
-        flex: 3;
-    }
-    &.sdm-small2 {
-        flex: 2;
-    }
-    &.sdm-small1 {
-        flex: 1;
-    }
 }
 
 div.sdm-edit-groups {

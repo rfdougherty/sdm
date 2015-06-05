@@ -1,10 +1,14 @@
 <sdm-info-modal>
-    <div class="info-modal-path" >
-        <span ng-repeat="element in sdmIMController.path"> <span class="glyphicon glyphicon-chevron-right" ng-if="$index!==0"></span> {{element}}</span>
-        <span class="glyphicon glyphicon-remove" ng-click="sdmIMController.close($event)"></span>
+    <div class="info-modal-title">
+        {{sdmIMController.title}} info
+        <span class="spinner" ng-show="sdmIMController.loadingState > 0"></span>
     </div>
-    <div class="info-modal-title">{{sdmIMController.title}}<span>{{sdmIMController.name}}</span>
-        <span class="spinner" ng-show="sdmIMController.loadingState > 0"></span></div>
+    <div class="info-modal-path" >
+        <div>
+            <span ng-repeat="element in sdmIMController.path"> <span class="glyphicon glyphicon-chevron-right" ng-if="$index!==0"></span>  {{element}}</span>
+            <span><span class="glyphicon glyphicon-chevron-right"/> {{sdmIMController.name}}</span>
+        </div>
+    </div>
     <div class="info-modal-body" ng-show="sdmIMController.loadingState === 0">
         <div class="sdm-field-line" ng-repeat="field in sdmIMController.data">
             <span class="field-name">{{field.key}}:</span>
@@ -17,98 +21,80 @@
                 <span class="glyphicon glyphicon-pencil"></span>
             </button>
         </div>
+    </div>
 
-        <div class="sdm-input-label">Notes</div><br>
-        <textarea class="form-control" ng-model="sdmIMController.apiData.notes" ng-show="sdmIMController.canModify">
-        </textarea>
-        <div class="sdm-notes" ng-show="!sdmIMController.canModify">{{sdmIMController.apiData.notes}}</div>
-    </div>
-    <div ng-if="sdmIMController.files.length">
-        <div id="files-title" class="sdm-input-label" ng-show="sdmIMController.loadingState === 0 && (sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root || (sdmIMController.userPermission === 'ro'))">
-            File list
-            <span class="expand" ng-click="sdmIMController.expandSection('files')">
-                <span class="glyphicon glyphicon-chevron-right" ng-if="!sdmIMController.expandedFiles"></span>
-                <span class="glyphicon glyphicon-chevron-down" ng-if="sdmIMController.expandedFiles"></span>
-                <span class="tooltip"
-                    sdm-popover
-                    sdm-popover-template-text="Toggle Files view"
-                    sdm-popover-class="sdm-tooltip"
-                    sdm-popover-show="mouseenter"
-                    sdm-popover-hide="mouseleave"
-                    sdm-popover-show-timeout="400"
-                    sdm-popover-hide-timeout="0"
-                    sdm-tooltip-style
-                    sdm-tooltip-x="10"
-                    sdm-tooltip-y="32">
-                </span>
-            </span>
+    <ul class="nav nav-tabs" role="tablist" ng-show="sdmIMController.loadingState === 0">
+        <li role="presentation"  ng-class="{active: sdmIMController.modalView === 'file list'}" ng-click="sdmIMController.modalView = 'file list'" ng-show="sdmIMController.files.length && (sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root || sdmIMController.userPermission === 'ro')">
+            <a>File List</a>
+        </li>
+        <li role="presentation"  ng-class="{active: sdmIMController.modalView === 'attachments'}" ng-click="sdmIMController.modalView = 'attachments'" ng-show="(sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root || (sdmIMController.userPermission === 'ro' && sdmIMController.attachments.length))">
+            <a>Attachments</a>
+        </li>
+        <li role="presentation" ng-class="{active: sdmIMController.modalView === 'notes'}" ng-click="sdmIMController.modalView = 'notes'">
+            <a>Notes</a>
+        </li>
+        <li role="presentation" ng-class="{active: sdmIMController.modalView === 'permissions'}" ng-click="sdmIMController.modalView = 'permissions'" ng-show="sdmIMController.apiData.permissions">
+            <a>Permissions</a>
+        </li>
+    </ul>
+
+    <!-- files -->
+    <div ng-show="sdmIMController.modalView === 'file list'" class="sdm-view-files">
+        <div class="files-header">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>File description</td>
+                        <td>Size</td>
+                        <td class="centered">Viewer</td>
+                    </tr>
+                </thead>
+            </table>
         </div>
-        <div ng-show="sdmIMController.expandedFiles" class="sdm-view-files">
-            <div class="files-header">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <td>File description</td>
-                            <td>Size</td>
-                            <td>Viewer</td>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div class="files-body">
-                <table class="table">
-                    <tbody>
-                        <tr class='file' ng-repeat="file in sdmIMController.files">
-                            <td><a href ng-click="sdmIMController.download(file)">{{file.filetype}}: {{file.datatypes.join(', ')}}</a></td>
-                            <td>{{sdmIMController.formatSize(file.filesize)}}</td>
-                            <td>
-                                <span class="glyphicon glyphicon-eye-open"
-                                      ng-show="file.filetype === 'montage'"
-                                      sdm-popover sdm-popover-template-content="components/d3Viewer/tileViewer.html"
-                                      sdm-popover-class="sdm-info-modal" sdm-popover-show="click"
-                                      sdm-popover-show-timeout="0" sdm-popover-style-width="90%"
-                                      sdm-popover-style-height="90%" sdm-append-to-body>
-                                </span>
-                                <span class="glyphicon glyphicon-eye-open"
-                                    ng-show="file.filetype === 'nifti'"
-                                    sdm-popover
-                                    sdm-popover-template-content="components/papayaViewer/papayaViewer.html"
-                                    sdm-popover-class="sdm-papaya-viewer"
-                                    sdm-popover-show="click"
-                                    sdm-popover-show-timeout="0"
-                                    sdm-append-to-body ng-click="sdmIMController.viewFileInPapaya(file)">
-                                </span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="files-body">
+            <table class="table">
+                <tbody>
+                    <tr class='file' ng-repeat="file in sdmIMController.files">
+                        <td><a href ng-click="sdmIMController.download(file)">{{file.filetype}}: {{file.datatypes.join(', ')}}</a></td>
+                        <td>{{sdmIMController.formatSize(file.filesize)}}</td>
+                        <td class="centered">
+                            <span class="glyphicon glyphicon-eye-open"
+                                  ng-show="file.filetype === 'montage'"
+                                  sdm-popover sdm-popover-template-content="components/d3Viewer/tileViewer.html"
+                                  sdm-popover-class="sdm-info-modal" sdm-popover-show="click"
+                                  sdm-popover-show-timeout="0" sdm-popover-style-width="90%"
+                                  sdm-popover-style-height="90%" sdm-append-to-body>
+                            </span>
+                            <span class="glyphicon glyphicon-eye-open"
+                                ng-show="file.filetype === 'nifti'"
+                                sdm-popover
+                                sdm-popover-template-content="components/papayaViewer/papayaViewer.html"
+                                sdm-popover-class="sdm-papaya-viewer"
+                                sdm-popover-show="click"
+                                sdm-popover-show-timeout="0"
+                                sdm-append-to-body ng-click="sdmIMController.viewFileInPapaya(file)">
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+
     </div>
-    <div id="attachments-title" class="sdm-input-label" ng-show="sdmIMController.loadingState === 0 && (sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root || (sdmIMController.userPermission === 'ro' && sdmIMController.attachments.length))">
-        Attachments
-        <span class="expand" ng-click="sdmIMController.expandSection('attachments')">
-            <span class="glyphicon glyphicon-chevron-right" ng-if="!sdmIMController.expandedAttachments"></span>
-            <span class="glyphicon glyphicon-chevron-down" ng-if="sdmIMController.expandedAttachments"></span>
-            <span class="tooltip"
-                sdm-popover
-                sdm-popover-template-text="Toggle attachments view"
-                sdm-popover-class="sdm-tooltip"
-                sdm-popover-show="mouseenter"
-                sdm-popover-hide="mouseleave"
-                sdm-popover-show-timeout="400"
-                sdm-popover-hide-timeout="0"
-                sdm-tooltip-style
-                sdm-tooltip-x="10"
-                sdm-tooltip-y="32">
-            </span>
-        </span>
-    </div>
-    <div class="sdm-upload-attachments" ng-show="sdmIMController.loadingState === 0 && sdmIMController.expandedAttachments">
+
+
+    <!-- files  end -->
+    <!-- attachments -->
+    <div class="sdm-upload-attachments" ng-show="sdmIMController.loadingState === 0 && sdmIMController.modalView === 'attachments'">
         <sdm-upload-attachment ng-show="sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root">
-            <div ng-file-drop ng-file-select ng-model="sdmULController.newFiles" class="drop-box"
-                drag-over-class="dragover" ng-multiple="true" allow-dir="true" ng-change="sdmULController.addFiles()">
-                Drop files here or click to upload</div>
+            <div ng-file-drop ng-file-select class="drop-box" ng-model="sdmULController.newFiles" drag-over-class="dragover" ng-multiple="true" allow-dir="true" ng-change="sdmULController.addFiles()">
+                <span class="glyphicon glyphicon-picture"></span>
+                <span class="sdm-message-dropbox">
+                    <div>Drop your files here</div>
+                    <div class="small">Or click to</div>
+                    <div class="small with-border">Browse</div>
+                </span>
+            </div>
             <div class="progress-container" ng-show="sdmULController.uploadInProgress">
                 <div>
                     <span class="upload-desc-wrap">
@@ -130,6 +116,7 @@
                 {{sdmULController.errorMessage}}
             </div>
         </sdm-upload-attachment>
+
         <div ng-show="sdmIMController.attachments.length">
             <div class="attachments-header">
                 <table class="table">
@@ -137,8 +124,8 @@
                         <tr>
                             <td>Filename</td>
                             <td>Size</td>
-                            <td>Viewer</td>
-                            <td ng-show="sdmIMController.userPermission !== 'ro' || sdmIMController.user.root">Remove</td>
+                            <td class="centered">Viewer</td>
+                            <td ng-show="sdmIMController.userPermission !== 'ro' || sdmIMController.user.root" class="centered">Remove</td>
                         </tr>
                     </thead>
                 </table>
@@ -149,7 +136,7 @@
                         <tr class='attachment' ng-repeat="attachment in sdmIMController.attachments">
                             <td><a href ng-click="sdmIMController.downloadAttachment($index)">{{attachment.filename}}</a></td>
                             <td>{{sdmIMController.formatSize(attachment.filesize)}}</td>
-                            <td>
+                            <td class="centered">
                                 <a href >
                                     <span class="glyphicon glyphicon-eye-open"
                                         ng-show="attachment.filetype === 'nifti'"
@@ -180,7 +167,7 @@
                                     </span>
                                 </a>
                             </td>
-                            <td ng-show="sdmIMController.userPermission !== 'ro' || sdmIMController.user.root">
+                            <td ng-show="sdmIMController.userPermission !== 'ro' || sdmIMController.user.root" class="centered">
                                 <span class="glyphicon glyphicon-remove" ng-click="attachment.confirmRemove=true" ng-show="!attachment.confirmRemove"></span>
                                 <input type="button" class="btn btn-default btn-xs btn-danger" ng-click="sdmIMController.removeAttachment(attachment)" value="Delete" ng-show="attachment.confirmRemove"></input>
                             </td>
@@ -191,82 +178,48 @@
             </div>
         </div>
     </div>
+    <!-- attachments end -->
 
-    <form name="form" ng-class="{error: form.hasErrors}" ng-show="sdmIMController.loadingState === 0">
-        <div id="info-permissions" ng-show="sdmIMController.apiData.permissions">
-            <div id="info-change-permissions" class="form-inline" ng-show="sdmIMController.isAdmin">
-                <div id="permissions-title" class="sdm-input-label">Change permissions
-                <span class="expand" ng-click="sdmIMController.expandSection('permissions')">
-                    <span class="glyphicon glyphicon-chevron-right" ng-if="!sdmIMController.expandedPermissions"></span>
-                    <span class="glyphicon glyphicon-chevron-down" ng-if="sdmIMController.expandedPermissions"></span>
-                    <span class="tooltip"
-                        sdm-popover
-                        sdm-popover-template-text="Toggle permissions view"
-                        sdm-popover-class="sdm-tooltip"
-                        sdm-popover-show="mouseenter"
-                        sdm-popover-hide="mouseleave"
-                        sdm-popover-show-timeout="400"
-                        sdm-popover-hide-timeout="0"
-                        sdm-tooltip-style
-                        sdm-tooltip-x="10"
-                        sdm-tooltip-y="32">
-                    </span>
-                </span></div>
-                <span ng-show="sdmIMController.expandedPermissions" class="new-permission">
-                    <input class="typeahead form-control" type="email" placeholder="{{sdmIMController.permissionPlaceholder}}" ng-model="sdmIMController.selectedUID" name="newPermission" ng-class="{'sdm-invalid': form.newPermission.hasErrors, 'sdm-operation-success': sdmIMController.success}">
-                    <select class="form-control" ng-options="role.name for role in sdmIMController.roles" ng-model="sdmIMController.selectedRole"></select>
-                    <span class="add-user" ng-click="sdmIMController.addUser($event, form)">
-                        <span class="glyphicon glyphicon-plus-sign"></span>
-                        <span class="tooltip"
-                            sdm-popover
-                            sdm-popover-template-text="Add Permission"
-                            sdm-popover-class="sdm-tooltip"
-                            sdm-popover-show="mouseenter"
-                            sdm-popover-hide="mouseleave"
-                            sdm-popover-show-timeout="400"
-                            sdm-popover-hide-timeout="0"
-                            sdm-tooltip-style
-                            sdm-tooltip-x="10"
-                            sdm-tooltip-y="32">
-                        </span>
-                    </span>
-                </span>
-            </div>
-            <div ng-show="sdmIMController.expandedPermissions">
-                <div class="sdm-input-label">Permissions</div><br>
-                <div class="permissions-header">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <td>User ID</td>
-                                <td>Permissions</td>
-                                <td>Remove</td>
-                            </tr>
-                        </thead>
-                    </table>
+    <!-- permissions -->
+    <form name="form" ng-class="{error: form.hasErrors}" ng-show="sdmIMController.loadingState === 0 && sdmIMController.modalView === 'permissions'">
+        <div id="info-change-permissions" ng-show="sdmIMController.isAdmin">
+            <div class="flex-row">
+                <div class="sdm-input-cell sdm-small4"><!-- ng-class="{'enable-input':sdmAMController.selectedGroup}"-->
+                    <div class="sdm-input-label">Give Access to User:</div>
+                    <input class="form-control typeahead" type="text" ng-model="sdmIMController.selectedUID" placeholder="{{sdmIMController.permissionPlaceholder}}" name="newPermission" ng-class="{'sdm-invalid': form.newPermission.hasErrors, 'sdm-operation-success': sdmIMController.success}">
                 </div>
-                <div class="permissions-body">
-                    <table class="table">
-                        <tbody>
-                            <tr class='user-permission' ng-repeat="permission in sdmIMController.apiData.permissions">
-                                <td>{{permission._id}}</td>
-                                <td class="permissions-access"><select class="form-control" ng-options="role.rid as role.name for role in sdmIMController.roles" ng-model="permission.access" ng-change="sdmIMController.arePermissionsChanged = true" ng-disabled="permission._id===sdmIMController.user.user_uid && !sdmIMController.user.root"></select></td>
-                                <td>
-                                    <span class="glyphicon glyphicon-remove" ng-if="(permission._id!==sdmIMController.user.user_uid && sdmIMController.userPermission === 'admin') || sdmIMController.user.root" ng-click="sdmIMController.removeUser($index, form)"></span>
-                                    <span class="glyphicon glyphicon-remove disabled" ng-if="permission._id===sdmIMController.user.user_uid && !sdmIMController.user.root"></span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="sdm-input-cell sdm-small2">
+                    <div class="sdm-input-label">Assign Permission Level</div>
+                    <select class="form-control" ng-init="" ng-class="{default:!sdmIMController.selectedRole}" ng-options="role.name for role in sdmIMController.roles" ng-model="sdmIMController.selectedRole" ng-change="sdmIMController.addUser($event, form)" ng-disabled="!sdmIMController.selectedUID"><option class="default" value="" disabled>Select</option></select>
+                </div>
+                <div class="sdm-input-cell sdm-small2 remove-header">
+                    <div>Remove</div>
                 </div>
             </div>
-        </div>
-        <div class="info-modal-warning" ng-show="sdmIMController.confirmDismiss">
-            Are you sure you want do dismiss your pending changes?
-        </div>
-        <div class="info-modal-confirm-buttons">
-            <input type="button" id="info-modal-close" class="btn btn-default btn-xs" ng-click="sdmIMController.close($event)" value="Close" ng-show="!sdmIMController.confirmDismiss" ng-disabled="sdmULController.uploadInProgress"></input>
-            <input type="button" id="info-modal-dismiss" class="btn btn-default btn-xs btn-danger" ng-click="sdmIMController.dismiss($event)" value="Dismiss" ng-show="sdmIMController.confirmDismiss"></input>
-            <input type="button" id="info-modal-save" class="btn btn-default btn-xs" ng-click="sdmIMController.save($event)" ng-show="sdmIMController.canModify" ng-disabled="sdmULController.uploadInProgress" value="Save"></input>
+            <div class="permissions-body">
+                <div class="flex-row user-permission" ng-repeat="permission in sdmIMController.apiData.permissions" ng-class="{gray:$index%2===0, 'first-body':$index===0}">
+                    <div class="sdm-input-cell sdm-small4 permission-name">
+                        <div class="permission-name">
+                            {{permission._id}}
+                        </div>
+                    </div>
+                    <div class="sdm-input-cell sdm-small2 select">
+                        <select class="form-control" ng-options="role.rid as role.name for role in sdmIMController.roles" ng-model="permission.access" ng-change="sdmIMController.arePermissionsChanged = true" ng-disabled="permission._id===sdmIMController.user.user_uid && !sdmIMController.user.root"></select>
+                    </div>
+                    <div class="sdm-input-cell sdm-small2 remove">
+                        <i class="fa fa-times-circle-o fa-2x" ng-click="sdmIMController.removeUser($index, form)"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
+    <div class="info-modal-warning" ng-show="sdmIMController.confirmDismiss">
+        Are you sure you want do dismiss your pending changes?
+    </div>
+    <div class="info-modal-confirm-buttons">
+        <input type="button" id="info-modal-close" class="btn btn-default btn-xs" ng-click="sdmIMController.close($event)" value="Close" ng-show="!sdmIMController.confirmDismiss" ng-disabled="sdmULController.uploadInProgress"></input>
+        <input type="button" id="info-modal-dismiss" class="btn btn-default btn-xs btn-danger" ng-click="sdmIMController.dismiss($event)" value="Dismiss" ng-show="sdmIMController.confirmDismiss"></input>
+        <input type="button" id="info-modal-save" class="btn btn-default btn-xs" ng-click="sdmIMController.save($event)" ng-show="sdmIMController.canModify" ng-disabled="sdmULController.uploadInProgress" value="Save"></input>
+    </div>
+    <!-- permissions end -->
 </sdm-info-modal>

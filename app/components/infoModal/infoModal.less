@@ -45,8 +45,11 @@ div.popover.sdm-note-tooltip {
 //style for the info modal
 div.sdm-info-modal {
     .popover-dialog {
-        height: 600px;
-        width: 600px;
+        height: 700px;
+        width: 900px;
+        font-family: 'proxima-nova', "Helvetica Neue", Helvetica, Arial, sans-serif;
+        border: none;
+        box-shadow: 0px 2px 6px @darkGray;
     }
 
     .popover-dialog:before, .popover-dialog:after {
@@ -66,29 +69,11 @@ sdm-info-modal {
     .field-name {
         font-weight: bold;
     }
-    div#permissions-title, div#attachments-title,  div#files-title {
-        padding-top: 0px;
-        padding-bottom: 0px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        padding-left: 10px;
-        padding-right: 10px;
-        margin-left: 0px;
-        margin-right: 0px;
-        font-size: 18px;
-        font-variant: small-caps;
-        background-color: @bgcol2;
-        color: @fgcol2;
-        span.expand {
-            position: relative;
-            top: 1px;
-            font-size: 16px;
-            margin-left: 5px;
-            font-variant: normal;
-            float: right;
-        }
 
-
+    ul.nav.nav-tabs {
+        margin-top: 20px;
+        margin-left: 40px;
+        margin-right: 40px;
     }
 
     textarea {
@@ -97,14 +82,20 @@ sdm-info-modal {
     }
 
     div.sdm-upload-attachments, div.sdm-view-files {
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-left: 40px;
+        padding-right: 40px;
+        padding-top: 10px;
         div.attachments-header table {
-            border: 1px solid lightgrey;
-
+            border: 1px solid @mediumGray;
+            border-bottom: none;
+            font-weight: 500;
             margin-bottom: 0px;
+            margin-top: 15px;
             td {
                 width: 20%;
+                &.centered {
+                    text-align: center;
+                }
             }
 
             td:first-child {
@@ -113,30 +104,28 @@ sdm-info-modal {
         }
         div.attachments-body {
 
-            height: 100px;
+            height: 240px;
             overflow: scroll;
-            border: 1px solid lightgrey;
+            border: 1px solid @mediumGray;
 
             border-top: none;
             table.table {
+                tr {
+                    border-top: 1px solid @mediumGray;
+                    border-collapse: collapse;
+                }
                 margin-top: 0px;
                 margin-bottom: 0px;
                 table-layout: fixed;
                 td {
-                    border-top: none;
                     width: 20%;
                     overflow:hidden;
                     text-overflow: ellipsis;
-                    .glyphicon.disabled {
-                        color: lightgrey;
-                    }
-                    &.permissions-access {
-                        padding-left: 0px;
-                        select {
-                            width: 103px;
-                        }
-                    }
                     vertical-align: middle;
+                    white-space: nowrap;
+                    &.centered {
+                        text-align: center;
+                    }
                 }
 
                 td:first-child {
@@ -145,37 +134,41 @@ sdm-info-modal {
 
             }
         }
+
         div.files-header table {
-            border: 1px solid lightgrey;
+            border: 1px solid @mediumGray;
+            border-bottom: none;
             margin-top: 8px;
             margin-bottom: 0px;
+            font-weight: 500;
             td {
                 width: 33%;
+                &.centered {
+                    text-align: center;
+                }
             }
         }
         div.files-body {
-            height: 100px;
+            min-height: 150px;
+            max-height: 340px;
             overflow: scroll;
             border: 1px solid lightgrey;
 
             border-top: none;
             table.table {
+                tr {
+                    border-top: 1px solid @mediumGray;
+                    border-collapse: collapse;
+                }
                 margin-top: 0px;
                 margin-bottom: 0px;
                 table-layout: fixed;
                 td {
-                    border-top: none;
                     width: 33%;
                     overflow: hidden;
                     text-overflow: ellipsis;
-                    .glyphicon.disabled {
-                        color: lightgrey;
-                    }
-                    &.permissions-access {
-                        padding-left: 0px;
-                        select {
-                            width: 103px;
-                        }
+                    &.centered {
+                        text-align: center;
                     }
                     vertical-align: middle;
                 }
@@ -185,12 +178,12 @@ sdm-info-modal {
     }
 
     div.info-modal-path{
-        padding: 0px;
-        padding-left: 10px;
-        font-weight: bold;
-        border-bottom: solid white 1px;
-        background-color: @bgcol1;
-        color: @fgcol1;
+        padding: 0 40px 4px 40px;
+        & > div {
+            width: 100%;
+            font-weight: bold;
+            border-bottom: 1px solid @mediumGray;
+        }
         span.glyphicon {
             font-size: 11px;
             top: 0px;
@@ -203,44 +196,53 @@ sdm-info-modal {
     }
 
     div.info-modal-title{
-        padding-left: 10px;
-        padding-right:10px;
-        margin-top: 0px;
-        font-size: 24px;
+        padding: 20px 40px 0px 40px;
+        border-radius: 4px 4px 0 0;
         margin-bottom: 10px;
+        height: 60px;
         font-weight: bold;
-        font-variant: small-caps;
+        background-color: @lightestGray;
+        border-bottom: solid 1px @mediumGray;
         text-transform: capitalize;
-        background-color: @bgcol2;
-        color: @fgcol2;
-        span {
-            text-transform: none;
-            font-variant: normal;
-            font-size: 20px;
+        .spinner:before {
+            margin-top: 4px;
+            border-top-color: @mediumGray;
         }
     }
 
     div.info-modal-body {
-        padding-left: 10px;
-        padding-right: 10px;
+        padding: 10px 40px 0 40px;
+        .sdm-field-line {
+            display: flex;
+            align-items: center;
+        }
+        .field-name {
+            //width: 45px;
+            flex: 0 0 auto;
+        }
+        .sdm-value {
+            flex: 1;
+            border: 1px solid transparent;
+            padding-left: 2px;
+            margin-left: 4px;
+            align-items: flex-start;
+        }
         .sdm-editable {
             cursor: text;
-            position: relative;
-            top: -1px;
-            border: 1px solid transparent;
-            width: 80%;
+            //position: relative;
+            //top: -1px;
             height: 20px;
-            padding-left: 2px;
+            margin-right: 2px;
             vertical-align: top;
             display: inline-block;
             &.sdm-hover {
-                background-color: #e6e6e6;
-                border: 1px solid #adadad;
+                background-color: @lightestGray;
+                border: 1px solid @softGray;
             }
 
         }
         button.sdm-edit {
-            position: relative;
+            //position: relative;
             top: -1px;
             height: 20px;
             width: 22px;
@@ -260,8 +262,10 @@ sdm-info-modal {
             }
         }
         input.sdm-edit {
+            padding-top: 3px;
             height: 20px;
-            width: 80%;
+            flex: 1;
+            margin-left: 4px;
         }
     }
 
@@ -276,50 +280,64 @@ sdm-info-modal {
     }
 
     div#info-change-permissions {
-        span.twitter-typeahead {
-            margin-left: 10px;
-        }
-
+        margin-top: 10px;
+        padding-left: 40px;
+        padding-right: 40px;
         input.typeahead {
-            width: 287px;
-            &.sdm-invalid {
-                border: 1px solid red;
-                box-shadow: 0px 0px 4px fade(red, 60%);
-                &:focus {
-                    border: 1px solid red;
-                    box-shadow: 0px 0px 4px fade(red, 60%);
-                }
-            }
-            &.sdm-operation-success {
-                border: 1px solid lawngreen;
-                box-shadow: 0px 0px 4px fade(lawngreen, 60%);
-                &:focus {
-                    border: 1px solid lawngreen;
-                    box-shadow: 0px 0px 8px fade(lawngreen, 60%);
-                }
-            }
+            width: 400px;
         }
+        /*
+        .enable-input input.tt-hint {
+            visibility: hidden;
+        }*/
         div.tt-dataset-users {
             padding-left: 10px;
             border: 1px solid lightgrey;
             height: 120px;
-            width: 287px;
+            width: 270px;
             background: white;
             overflow: scroll;
         }
-        select {
-            position: relative;
-            top: 6px;
+        .permissions-body {
+            margin-top: 10px;
+            border: 0px solid @mediumGray;
+            border-width: 1px;
+            overflow: scroll;
+            max-height: 170px;
+            .flex-row {
+                border: 0px solid @mediumGray;
+                border-top-width: 1px;
+                align-items: center;
+                padding: 4px 0;
+                &.gray {
+                    background-color: @lightestGray;
+                }
+                &.first-body {
+                    border-top-width: 0;
+                }
+                .sdm-input-cell {
+                    margin-top: 0;
+                    &.remove {
+                        text-align: center;
+                        color: @blue;
+                    }
+                    &.select {
+                        padding-left: 0px;
+                    }
+                    .permission-name {
+                        padding-left: 10px;
+                    }
+                }
+            }
         }
-        input.create-user {
-            position: relative;
-            top: 6px;
-        }
-        span.add-user {
-            position: relative;
-            top: 12px;
-            font-size: 20px;
-            margin-left: 5px;
+        .flex-row {
+            .sdm-input-cell {
+                &.remove-header {
+                    text-align: center;
+                    vertical-align: bottom;
+                    align-self: flex-end;
+                }
+            }
         }
     }
 
@@ -397,14 +415,47 @@ sdm-info-modal {
         font-weight: bold;
     }
     .drop-box {
-        background: #F8F8F8;
-        border: 5px dashed #DDD;
-        width: 200px;
-        height: 65px;
-        text-align: center;
-        padding-top: 6px;
-        //margin-bottom: 10px;
+        width: 400px;
+        margin-left: 0px;
+        border: 2px dashed @mediumGray;
+        color: @softGray;
+        height: 96px;
+        vartical-align: middle;
         display: inline-block;
+        font-size: 20px;
+        margin-top: 10px;
+        span.glyphicon {
+            margin-left: 20px;
+            font-size: 70px;
+            vertical-align: middle;
+            margin-top: 10px;
+        }
+        span.sdm-message-dropbox {
+            text-align: center;
+            float: right;
+            margin-right: 40px;
+            margin-top: 5px;
+            line-height: 28px;
+            color: @mediumGray;
+            .small {
+                font-size: 12px;
+                line-height: 18px;
+            }
+            .small.with-border {
+                border: 1px solid @softGray;
+                border-radius: 4px;
+                margin: 0px 50px;
+                line-height: 30px;
+                //float: right;
+            }
+        }
+        &:hover {
+            border-color: @blue;
+            cursor: pointer;
+            * {
+                cursor: pointer;
+            }
+        }
     }
     .progress-container {
         div {
@@ -416,7 +467,6 @@ sdm-info-modal {
             }
         }
         .progress {
-            width: 360px;
             .progress-bar {
                 -webkit-transition: none;
                 -moz-transition: none;
@@ -424,13 +474,15 @@ sdm-info-modal {
                 -o-transition: none;
                 transition: none;
             }
+            width: 400px;
+            //margin-bottom: 0px;
+
         }
-        //width: 360px;
-        height: 65px;
-        top: -2px;
-        position: relative;
+
         display: inline-block;
-        left: 15px;
+        //left: 15px;
+        float: right;
+        margin-top: 20px;
     }
     .error-message {
         color: red;

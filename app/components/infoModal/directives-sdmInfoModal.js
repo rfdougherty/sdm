@@ -276,11 +276,8 @@ var _inputEl;
                         sdmIMController.permissionPlaceholder = 'Enter User ID';
                         sdmRoles().then(function(data){
                             sdmIMController.roles = data;
-                            sdmIMController.selectedRole = sdmIMController.roles[0];
                             sdmIMController.loadingState--;
                         });
-                        sdmIMController.expandedPermissions = false;
-                        sdmIMController.expandedAttachments = true;
                         var typeaheadElement = $element.find('#info-change-permissions .typeahead');
                         sdmUsers.getUsers().then(function(data){
                             sdmIMController.users = data;
@@ -382,6 +379,17 @@ var _inputEl;
                                 sdmIMController.apiData = apiData;
                                 apiDataNotes = apiData.notes;
                                 sdmIMController.loadingState--;
+                                if (
+                                        sdmIMController.files.length &&
+                                        (
+                                            sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' ||
+                                            sdmIMController.user.root || sdmIMController.userPermission === 'ro'
+                                        )
+                                    ) {
+                                    sdmIMController.modalView = 'file list';
+                                } else {
+                                    sdmIMController.modalView = 'attachments';
+                                }
                                 console.log(sdmIMController);
                             },
                             function(reason){
@@ -390,26 +398,6 @@ var _inputEl;
                             });
 
 
-
-                        sdmIMController.expandSection = function(section) {
-                            switch(section) {
-                                case 'permissions':
-                                    sdmIMController.expandedPermissions = !sdmIMController.expandedPermissions;
-                                    sdmIMController.expandedAttachments = false;
-                                    sdmIMController.expandedFiles = false;
-                                    break;
-                                case 'attachments':
-                                    sdmIMController.expandedPermissions = false;
-                                    sdmIMController.expandedAttachments = !sdmIMController.expandedAttachments;
-                                    sdmIMController.expandedFiles = false;
-                                    break;
-                                case 'files':
-                                    sdmIMController.expandedPermissions = false;
-                                    sdmIMController.expandedAttachments = false;
-                                    sdmIMController.expandedFiles = !sdmIMController.expandedFiles;
-                                    break;
-                            }
-                        };
 
 
                         sdmIMController.dismiss = function ($event) {
@@ -603,8 +591,10 @@ var _inputEl;
                             setTimeout(function(){
                                 $scope.$apply(function(){
                                     sdmIMController.success = false;
+                                    sdmIMController.permissionPlaceholder = 'Enter User ID';
                                 });
                             }, 2000);
+                            sdmIMController.selectedRole = null;
                             sdmIMController.arePermissionsChanged = true;
                             typeaheadElement.typeahead('val', '');
                         };
@@ -630,7 +620,7 @@ var _inputEl;
                                 return;
                             }
                             var url = BASE_URL + node.level.name + '/' + node.id;
-                            var payload = {notes: sdmIMController.apiData.notes};
+                            var payload = {};//{notes: sdmIMController.apiData.notes};
                             if (sdmIMController.arePermissionsChanged) {
                                 payload.permissions = sdmIMController.apiData.permissions;
                             }
