@@ -9,9 +9,7 @@ div.sdm-download{
     }
     .popover-dialog {
         padding: 0px;
-        transform: none;
-        -webkit-transform: none;
-        -moz-transform: none;
+        border: none;
     }
     .popover-dialog:after {
         border-bottom-color: @bgcol1;
@@ -19,11 +17,12 @@ div.sdm-download{
     .popover-dialog:before, .popover-dialog:after {
         top: 0px;
         left: 95%;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
     }
     &.popover {
         position: absolute;
-        left: 0px;
-        top: 0px;
         min-width: @min-width-body;
         width: 100%;
         height: 100%;
@@ -31,22 +30,13 @@ div.sdm-download{
 }
 
 sdm-download-modal {
-    div.download-header {
-        background-color: @bgcol1;
-        color: @fgcol1;
-        border-bottom: solid white 1px;
-        height: 21px;
-    }
     div.download-title {
-        padding-left: 10px;
-        padding-right:10px;
-        margin-top: 0px;
-        font-size: 24px;
-        margin-bottom: 10px;
+        padding: 10px;
+        margin-bottom: 20px;
+        background-color: @lightestGray;
+        border-radius: 4px 4px 0 0;
+        border-bottom: solid 1px @mediumGray;
         font-weight: bold;
-        font-variant: small-caps;
-        background-color: @bgcol2;
-        color: @fgcol2;
     }
     div#download-body {
         padding-left: 10px;
@@ -65,5 +55,9 @@ sdm-download-modal {
     }
     input:disabled+label {
         color: lightgray;
+    }
+    input#download-save {
+        background-color: @blue;
+        color: white;
     }
 }

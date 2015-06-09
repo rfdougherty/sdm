@@ -27,14 +27,21 @@
                         var viewID = currentPath.substring(1, currentPath);
                         sdmCCController.curator = sdmUserManager.getAuthData();
                         console.log('curator', sdmCCController.curator);
-                        sdmCCController.addedPermissions = [{'_id': sdmCCController.curator.user_uid, 'access': 'admin'}];
+                        sdmCCController.addedPermissions = [
+                            {
+                                '_id': sdmCCController.curator.user_uid,
+                                name: sdmCCController.curator.firstname + ' ' + sdmCCController.curator.lastname,
+                                'access': 'admin'
+                            }
+                            ];
                         sdmCCController.users = {};
                         sdmCCController.permissionPlaceholder = 'Enter User ID';
-                        sdmCCController.collectionPlaceholder = 'Create New Collection';
+                        sdmCCController.collectionPlaceholder = 'Give your collection a name';
+                        sdmCCController.collectionUpdatePlaceholder = 'Edit your collection name';
                         sdmCCController.loadingState = 2;
-                        var typeaheadElement = $element.find('#share .typeahead');
+                        var typeaheadElement = initialize();
                         function initialize() {
-                            sdmCCController.defaultSelectText = 'Select Existing Collection';
+                            var typeaheadElement = $element.find('#collection-permissions .typeahead');
                             sdmUsers.getUsers().then(function(data){
                                 console.log(data);
                                 sdmCCController.users = data;
@@ -49,11 +56,37 @@
                                         displayKey: 'value',
                                         source: substringMatcher(sdmCCController.users, '_id')
                                     });
-                                $element.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
+                                typeaheadElement.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
                                     sdmCCController.selectedUID = selectedUID.value;
                                 });
                                 sdmCCController.loadingState--;
                             });
+                            return typeaheadElement;
+                        }
+                        function initializeCollections() {
+                            return sdmCollectionsInterface.getCollections().then(
+                                function(collections){
+                                    console.log(collections);
+                                    var existingCollections =
+                                        sdmCCController.curator.root?collections:collections.filter(
+                                            function(collection){
+                                                console.log(collection.permissions);
+                                                for (var i = 0; i < collection.permissions.length; i++) {
+                                                    if (collection.permissions[i]._id === sdmCCController.curator.user_uid) {
+                                                        collection.userAccess = collection.permissions[i].access;
+                                                        return collection.userAccess.search(/rw$|admin$/) === 0;
+                                                    }
+                                                }
+                                                return false;
+                                            });
+                                    sdmCCController.existingCollections = existingCollections.sort(naturalSortByName);
+                                    sdmCCController.collectionsCurator = sdmCCController.existingCollections.filter(
+                                        function (collection) {
+                                            return collection.curator === sdmCCController.curator.user_uid;
+                                        }
+                                    ).map(function(collection){return collection.name});
+                                }
+                            );
                         }
                         var refreshUsers = function() {
                             sdmUsers.getUsers().then(function(data){
@@ -74,10 +107,9 @@
                                 );
                             });
                         };
-                        initialize();
+                        initializeCollections();
                         sdmRoles().then(function(data){
                             sdmCCController.roles = data;
-                            sdmCCController.selectedRole = sdmCCController.roles[0];
                             sdmCCController.loadingState--;
                         });
 
@@ -90,7 +122,14 @@
                             $scope.$parent._hidePopover($event, 0);
                         };
 
-                        sdmCCController.save = function ($event, form) {
+                        var findCollectionByID = function(_id) {
+                            var results = sdmCCController.existingCollections.filter(function(g){
+                                return g._id === _id;
+                            });
+                            return results.length === 0?undefined:results[0];
+                        }
+
+                        sdmCCController.save = function ($event, form, newCollection) {
                             $event.stopPropagation();
                             $event.preventDefault();
                             if (!form.$valid) {
@@ -100,11 +139,11 @@
                                 return;
                             }
                             console.log(sdmCCController.collectionsCurator);
-                            console.log(sdmCCController.collectionID );
+                            console.log(sdmCCController.collectionName );
                             if (!sdmCCController.collectionsCurator) {
                                 throw 'existing collections not initialized yet';
                             } else {
-                                if (!sdmCCController.collectionID &&
+                                if (newCollection &&
                                     sdmCCController.collectionsCurator.indexOf(sdmCCController.collectionName) >= 0 ) {
                                     form.hasErrors = true;
                                     form.collectionName.hasErrors = true;
@@ -115,16 +154,20 @@
                                 }
                             }
 
-                            $scope.$parent.enableEvents();
+
 
                             selection.then(function(selection) {
                                 console.log('selection', selection);
                                 function updateCollection(_id) {
                                     sdmCollectionsInterface.updateCollection(
                                         _id,
-                                        sdmCCController.collectionName,
-                                        sdmCCController.collectionNotes||'',
-                                        sdmCCController.addedPermissions,
+                                        sdmCCController.selectedCollection.name,
+                                        sdmCCController.addedPermissions.map(function(p) {
+                                            return {
+                                                _id: p._id,
+                                                access: p.access
+                                            }
+                                        }),
                                         selection,
                                         'add'
                                     ).then(function(){
@@ -132,32 +175,40 @@
                                     });
 
                                 }
-                                if (sdmCCController.collectionID) {
-                                    updateCollection(sdmCCController.collectionID);
+                                if (!newCollection) {
+                                    updateCollection(sdmCCController.selectedCollection._id);
+                                    $scope.$parent.enableEvents();
+                                    $scope.$parent._hidePopover($event, 0);
                                 } else {
                                     sdmCollectionsInterface.createCollection(
                                         sdmCCController.collectionName,
-                                        sdmCCController.collectionNotes||'',
-                                        sdmCCController.addedPermissions
-                                    ).then(function(response){
-                                        console.log('collection created', response);
-                                        updateCollection(response._id);
-                                    });
+                                        sdmCCController.addedPermissions.map(function(p) {
+                                            return {
+                                                _id: p._id,
+                                                access: p.access
+                                            }
+                                        })
+                                    ).then(function(result){
+                                        initializeCollections().then(function(){
+                                            sdmCCController.selectedCollection = findCollectionByID(result._id);
+                                            sdmCCController.collectionName = null;
+                                        }).then(function(){
+                                            updateCollection(sdmCCController.selectedCollection._id);
+                                        });
+                                    })
                                 }
                             });
-
-                            $scope.$parent._hidePopover($event, 0);
                         };
 
                         sdmCCController.delete = function($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
-                            sdmCollectionsInterface.deleteCollection(sdmCCController.collectionID).then(
+                            sdmCollectionsInterface.deleteCollection(sdmCCController.selectedCollection._id).then(
                                 function(){
+                                    initializeCollections();
                                     sdmViewManager.refreshView('collections');
+                                    sdmCCController.selectedCollection = null;
                                 });
-                            $scope.$parent.enableEvents();
-                            $scope.$parent._hidePopover($event, 0);
                         };
 
                         sdmCCController.addUser = function ($event, form) {
@@ -182,16 +233,26 @@
                                     return;
                                 }
                             }
+                            console.log(sdmCCController.selectedRole);
+                            var selectedName;
+                            var selectedUser = sdmCCController.users[sdmCCController.selectedUID];
+                            if (selectedUser && selectedUser.lastname) {
+                                selectedName = selectedUser.firstname + ' ' + selectedUser.lastname;
+                            } else {
+                                selectedName = sdmCCController.selectedUID;
+                            }
                             sdmCCController.addedPermissions.push({
                                 _id: sdmCCController.selectedUID,
+                                name: selectedName,
                                 access: sdmCCController.selectedRole.rid
                             });
-                            sdmCCController.selectedUID = '';
+                            sdmCCController.selectedUID = null;
                             sdmCCController.success = true;
                             form.newPermission.hasErrors = false;
                             setTimeout(function(){
                                 $scope.$apply(function(){
                                     sdmCCController.success = false;
+                                    sdmCCController.permissionPlaceholder = 'Enter User ID';
                                 });
                             }, 2000);
                             sdmCCController.permissionPlaceholder = 'Permission added. Save to confirm.';
@@ -225,49 +286,21 @@
 
                         sdmCCController.selectCollection = function() {
                             if (sdmCCController.selectedCollection) {
-                                console.log(sdmCCController.selectedCollection);
-                                sdmCCController.collectionName = sdmCCController.selectedCollection.name;
-                                sdmCCController.collectionID = sdmCCController.selectedCollection._id;
-                                sdmCCController.collectionNotes = sdmCCController.selectedCollection.notes;
-                                sdmCollectionsInterface.getCollection(sdmCCController.collectionID).then(
+                                sdmCollectionsInterface.getCollection(sdmCCController.selectedCollection._id).then(
                                     function(collection){
-                                        console.log(collection);
+                                        collection.permissions.forEach(function (p) {
+                                            var user = sdmCCController.users[p._id];
+                                            if (user && user.lastname) {
+                                                p.name = user.firstname + ' ' + user.lastname;
+                                            } else {
+                                                p.name = user._id;
+                                            }
+                                        });
                                         sdmCCController.addedPermissions = collection.permissions;
-                                        console.log(collection.permissions);
                                 });
-                                sdmCCController.defaultSelectText = 'Create New Collection';
-                            } else {
-                                sdmCCController.collectionName = '';
-                                sdmCCController.collectionID = null;
-                                sdmCCController.collectionNotes = '';
-                                sdmCCController.addedPermissions = [{'_id': sdmCCController.curator.user_uid, 'access': 'admin'}];
-                                sdmCCController.defaultSelectText = 'Select Existing Collection';
+
                             }
                         };
-
-                        sdmCollectionsInterface.getCollections().then(
-                            function(collections){
-                                console.log(collections);
-                                var existingCollections =
-                                    sdmCCController.curator.root?collections:collections.filter(
-                                        function(collection){
-                                            console.log(collection.permissions);
-                                            for (var i = 0; i < collection.permissions.length; i++) {
-                                                if (collection.permissions[i]._id === sdmCCController.curator.user_uid) {
-                                                    collection.userAccess = collection.permissions[i].access;
-                                                    return collection.userAccess.search(/rw$|admin$/) === 0;
-                                                }
-                                            }
-                                            return false;
-                                        });
-                                sdmCCController.existingCollections = existingCollections.sort(naturalSortByName);
-                                sdmCCController.collectionsCurator = sdmCCController.existingCollections.filter(
-                                    function (collection) {
-                                        return collection.curator_id === sdmCCController.curator.user_uid;
-                                    }
-                                ).map(function(collection){return collection.name});
-                            }
-                        );
 
                     }
                 }

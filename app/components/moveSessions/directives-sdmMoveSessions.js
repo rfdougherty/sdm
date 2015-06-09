@@ -38,7 +38,7 @@
                                 deferred.resolve()
                                 return deferred.promise;
                             }
-                            return makeAPICall.async(BASE_URL + 'projects', {group: group._id}).then(function(projects){
+                            return makeAPICall.async(BASE_URL + 'groups/' + group._id + '/projects').then(function(projects){
                                 var _projects = userData.root?projects:projects.filter(function(project){
                                     var p = project.permissions;
                                     return p && (p.length > 1 || (
@@ -64,13 +64,6 @@
                                 sdmMSController.loadingState--;
                                 return selection;
                             });
-                        var changeHeight = function(value) {
-                            //$scope.$apply(function(){
-                                var height = $scope.$parent.dialogStyle['height'];
-                                height = parseInt(height.substr(0, height.length - 2));
-                                $scope.$parent.dialogStyle['height'] = height + value + 'px';
-                            //});
-                        }
                         sdmMSController.cancel = function ($event) {
                             console.log('cancel');
                             $event.stopPropagation();
@@ -89,9 +82,6 @@
                                 });
                                 sdmMSController.loadingState = 1;
                                 $q.all(promises).then(function(results){
-                                        if (sdmMSController.isFailed) {
-                                            changeHeight(-34);
-                                        }
                                         sdmMSController.isFailed = false;
                                         sdmMSController.loadingState = 0;
                                         sdmViewManager.refreshView();
@@ -99,7 +89,6 @@
                                         $scope.$parent.enableEvents();
                                     },
                                     function () {
-                                        changeHeight(34);
                                         sdmMSController.loadingState = 0;
                                         sdmMSController.isFailed = true;
                                     });

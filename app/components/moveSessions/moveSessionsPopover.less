@@ -9,51 +9,36 @@ div.sdm-move-sessions {
     }
     .popover-dialog {
         padding: 0px;
-        transform: none;
-        -webkit-transform: none;
-        -moz-transform: none;
-    }
-    .popover-dialog:after {
-        border-bottom-color: @bgcol1;
+        border: none;
     }
     .popover-dialog:before, .popover-dialog:after {
         top: 0px;
         left: 95%;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
     }
     &.popover {
         position: absolute;
-        left: 0px;
-        top: 0px;
         min-width: @min-width-body;
         width: 100%;
         height: 100%;
     }
 }
+div.move-sessions-main {
+    height: 100%;
+    position: relative;
+}
 
 sdm-move-sessions {
     white-space: normal;
-    div.move-sessions-header {
-        background-color: @bgcol1;
-        border-top-left-radius: 3px;
-        border-top-right-radius: 3px;
-        height: 5px;
-    }
     div.move-sessions-title {
-        padding-left: 10px;
-        padding-right:10px;
-        margin-top: 0px;
-        font-size: 16px;
-        margin-bottom: 10px;
+        padding: 10px;
+        margin-bottom: 5px;
+        background-color: @lightestGray;
+        border-radius: 4px 4px 0 0;
+        border-bottom: solid 1px @mediumGray;
         font-weight: bold;
-        font-variant: small-caps;
-        background-color: @bgcol1;
-        color: @fgcol1;
-        .spinner:before {
-            margin-top: 2px;
-        }
-        .spinner:not(:required):before {
-            border-top-color: @fgcol1;
-        }
     }
     div.move-sessions-body {
         padding-left: 10px;
@@ -69,8 +54,8 @@ sdm-move-sessions {
     div.move-sessions-body.warning {
         color: red;
         span {
-            color: @fgcol1;
-            background-color: @bgcol1;
+            color: white;
+            background-color: @blue;
             padding-left: 4px;
             padding-right: 4px;
         }
@@ -80,11 +65,19 @@ sdm-move-sessions {
         bottom: 6px;
         left: 10px;
         text-align: left;
+        #create-project {
+            background-color: @blue;
+            color: white;
+        }
     }
     div.move-sessions-confirm-buttons {
         position: absolute;
         bottom: 6px;
         right: 10px;
         text-align: right;
+        #move-sessions-confirm {
+            background-color: @blue;
+            color: white;
+        }
     }
 }

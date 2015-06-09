@@ -95,7 +95,9 @@ body {
         font-size: 14px;
         color: @blue;
     }
-
+    .user-preferences {
+        position: relative;
+    }
 }
 
 .navigation-bar {
@@ -607,15 +609,16 @@ span.tooltip {
     float: right;
     width: 16px;
     height: 16px;
-    margin-top: 10px;
+    margin-top: 4px;
     margin-left: -10px;
+    border-top-color: @mediumGray;
 }
 
 .spinner:not(:required):before {
     content: '';
     border-radius: 50%;
     border: 2px solid rgba(0, 0, 0, .3);
-    border-top-color: @fgcol2;
+    border-top-color: @mediumGray;
     animation: spinner .8s linear infinite;
     -webkit-animation: spinner .8s linear infinite;
 }

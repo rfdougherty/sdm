@@ -3,6 +3,9 @@
 div.sdm-create-collection {
 
     .popover-dialog {
+        width: 900px;
+        height: 700px;
+        border: none;
     }
 
     .popover-dialog:before, .popover-dialog:after {
@@ -11,8 +14,7 @@ div.sdm-create-collection {
         border-left: none;
         border-right: none;
         border-bottom: none;
-        //width: 600px;
-        //height: 500px;
+
     }
     .popover-overlay {
         background-color: lightgray;
@@ -20,172 +22,145 @@ div.sdm-create-collection {
 
 
     sdm-create-collection {
-        div.collection-option {
-            text-align: center;
-        }
-        div.collection-header {
-            background-color: @bgcol1;
-            color: @fgcol1;
-            border-bottom: solid white 1px;
-            height: 21px;
-            span.glyphicon.glyphicon-remove {
-                float: right;
-                padding-right: 5px;
-                padding-top: 4px;
-                font-size: 11px;
-            }
-        }
-
-        div.collection-title {
-            //background-color: lightgrey;
-            padding-left: 10px;
-            padding-right:10px;
-            margin-top: 0px;
-            font-size: 24px;
+        div.collections-title {
+            padding: 20px 40px 0px 40px;
             margin-bottom: 10px;
+            height: 60px;
+            border-radius: 4px 4px 0 0;
+            border-bottom: solid 1px @mediumGray;
             font-weight: bold;
-            font-variant: small-caps;
-            background-color: @bgcol2;
-            color: @fgcol2;
+            background-color: @lightestGray;
         }
 
         form.create-collection {
-            padding-left: 10px;
-            padding-right:10px;
-            &.error {
-                input.sdm-invalid {
-                    border: 1px solid red;
-                    box-shadow: 0px 0px 4px fade(red, 60%);
-                    &:focus {
-                        border: 1px solid red;
-                        box-shadow: 0px 0px 4px fade(red, 60%);
-                    }
-                }
+            position: absolute;
+            left: 40px;
+            right: 40px;
+            top: 60px;
+            bottom:0px;
+            border-top: none;
+
+            .form-control.default {
+                font-style: italic;
+                color: grey;
+            }
+
+            form {
+                margin: 0;
 
             }
-            select {
-                margin-bottom: 10px;
-                &.form-control.default {
-                    font-style: italic;
-                    color: grey;
-                }
-            }
-            input.form-control.name {
-                &::-webkit-input-placeholder {
-                   color: grey;
-                   font-style: italic;
-                }
 
-                &:-moz-placeholder { /* Firefox 18- */
-                   color: grey;
-                   font-style: italic;
-                }
-
-                &::-moz-placeholder {  /* Firefox 19+ */
-                   color: grey;
-                   font-style: italic;
-                }
+            .sdm-input-divider {
+                flex: 1;
+                font-weight: 500;
             }
-            input.sdm-operation-success {
-                border: 1px solid lawngreen;
-                box-shadow: 0px 0px 4px fade(lawngreen, 60%);
-                &:focus {
-                    border: 1px solid lawngreen;
-                    box-shadow: 0px 0px 8px fade(lawngreen, 60%);
+            div#collection-permissions {
+                margin-top: 10px;
+                #collection-permissions-title {
+                    font-weight: 600;
+                    border-bottom: 1px solid @mediumGray;
+                    padding-bottom: 4px;
                 }
-            }
-            div#share {
                 input.typeahead {
-                    width: 287px;
+                    width: 400px;
                 }
+                /*
+                .enable-input input.tt-hint {
+                    visibility: hidden;
+                }*/
                 div.tt-dataset-users {
                     padding-left: 10px;
                     border: 1px solid lightgrey;
                     height: 120px;
-                    width: 287px;
+                    width: 270px;
                     background: white;
                     overflow: scroll;
                 }
-                input.create-user {
-                    position: relative;
-                    top: 6px;
+                .permissions-body {
+                    margin-top: 10px;
+                    border: 0px solid @mediumGray;
+                    border-width: 1px;
+                    overflow: scroll;
+                    max-height: 170px;
+                    .flex-row {
+                        border: 0px solid @mediumGray;
+                        border-top-width: 1px;
+                        align-items: center;
+                        padding: 4px 0;
+                        &.gray {
+                            background-color: @lightestGray;
+                        }
+                        &.first-body {
+                            border-top-width: 0;
+                        }
+                        .sdm-input-cell {
+                            margin-top: 0;
+                            &.remove {
+                                text-align: center;
+                                color: @blue;
+                            }
+                            &.select {
+                                padding-left: 0px;
+                            }
+                        }
+                    }
+                    .permission-name {
+                        padding-left: 10px;
+                    }
                 }
-                select {
-                    position: relative;
-                    top: 11px;
+                .flex-row {
+                    .sdm-input-cell {
+                        &.remove-header {
+                            text-align: center;
+                            vertical-align: bottom;
+                            align-self: flex-end;
+                        }
+                    }
                 }
-                 span.add-user {
-                    position: relative;
-                    top: 12px;
-                    font-size: 20px;
-                    margin-left: 5px;
 
+            }
+            input.btn {
+                margin-top: 9px;
+                &.form-control {
+                    width: auto;
                 }
             }
-            div#collection-permissions {
-                margin-top: 5px;
-
-                div.permissions-header table {
-                    border: 1px solid black;
-                    background-color: @bgcol2;
-                    color: @fgcol2;
-
-                    margin-bottom: 0px;
-                    td {
-                        width: 33%;
-                    }
+            .sdm-collections-buttons {
+                position: absolute;
+                bottom: -25px;
+                right: 0px;
+                input.btn.save {
+                    color: white;
+                    background-color: @blue;
                 }
-                div.permissions-body {
-                    height: 100px;
-                    overflow: scroll;
-                    border: 1px solid black;
-
-                    border-top: none;
-                    table.table {
-                        margin-top: 0px;
-                        margin-bottom: 0px;
-                        table-layout: fixed;
-                        td {
-                            border-top: none;
-                            width: 33%;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                            .glyphicon.disabled {
-                                color: lightgrey;
-                            }
-                            &.permissions-access {
-                                padding-left: 0px;
-                                select {
-                                    margin-bottom: 0px;
-                                    width: 103px;
-                                }
-                            }
-                            vertical-align: middle;
-                        }
-
-                    }
+            }
+            .warning-success {
+                position: absolute;
+                left: 0px;
+                bottom: -25px;
+                color: @orange;
+                visibility: hidden;
+                &.visible {
+                    visibility: visible;
+                }
+            }
+            .warning-create {
+                color: @orange;
+                visibility: hidden;
+                &.visible {
+                    visibility: visible;
                 }
             }
             div.collection-confirm-buttons {
                 position: absolute;
-                bottom: 6px;
-                right: 10px;
+                bottom: 20px;
+                right: 0px;
                 text-align: right;
                 input#collection-delete {
                     background-color: #df3e3e;
                     color: white;
                 }
             }
-            textarea {
-                max-height: 56px;
-                max-width: 100%;
-            }
-        }
-
-        .sdm-input-label {
-            float: left;
-            width: 100px;
-            font-weight: bold;
         }
 
     }

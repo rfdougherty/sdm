@@ -9,9 +9,7 @@ div.sdm-remove-collection {
     }
     .popover-dialog {
         padding: 0px;
-        transform: none;
-        -webkit-transform: none;
-        -moz-transform: none;
+        border: none
     }
     .popover-dialog:after {
         border-bottom-color: @bgcol1;
@@ -19,6 +17,9 @@ div.sdm-remove-collection {
     .popover-dialog:before, .popover-dialog:after {
         top: 0px;
         left: 95%;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
     }
     &.popover {
         position: absolute;
@@ -32,37 +33,23 @@ div.sdm-remove-collection {
 
 sdm-remove-collection {
     white-space: normal;
-    div.remove-collection-header {
-        background-color: @bgcol1;
-        border-top-left-radius: 3px;
-        border-top-right-radius: 3px;
-        height: 5px;
-    }
     div.remove-collection-title {
-        padding-left: 10px;
-        padding-right:10px;
+        padding: 10px;
         margin-top: 0px;
         font-size: 16px;
         margin-bottom: 0px;
         font-weight: bold;
-        font-variant: small-caps;
-        background-color: @bgcol1;
-        color: @fgcol1;
-        .spinner:before {
-            margin-top: 2px;
-        }
-        .spinner:not(:required):before {
-            border-top-color: @fgcol1;
-        }
+        background-color: @lightestGray;
+        border-bottom: 1px solid @mediumGray;
     }
     div.remove-collection-body {
         padding-top: 5px;
         padding-left: 10px;
         padding-right:10px;
         font-size: 14px;
-        height: 94px;
+        height: 80px;
         overflow: scroll;
-        border-bottom: 1px solid black;
+        border-bottom: 1px solid @lightestGray;
         .remove-collection-list {
             div.indented {
                 margin-left: 20px;
@@ -78,8 +65,7 @@ sdm-remove-collection {
                 margin-top: 4px;
                 font-size: 9px;
                 -webkit-appearance: none;
-                background-color: fade(color(@bgcol4), 50%);
-                color: @fgcol3;
+                background-color: @lightestGray;
                 border: 1px solid black;
                 border-radius: 2px;
                 height: 12px;
@@ -97,8 +83,8 @@ sdm-remove-collection {
                 }
             }
             input.has-access[type=checkbox] {
-                background-color: fade(color(@bgcol1), 75%);
-                color: @fgcol1;
+                background-color: fade(color(@blue), 75%);
+                color: white;
             }
         }
     }

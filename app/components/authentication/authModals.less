@@ -1,34 +1,21 @@
 @import (less) "../../variables.less";
 
-div.header-modal {
-    background-color: @bgcol1;
-    color: @fgcol1;
-    border-bottom: solid white 1px;
-    height: 21px;
-}
-
 div.title-modal {
-    padding-left: 10px;
-    padding-right:10px;
-    margin-top: 0px;
-    font-size: 24px;
+    padding: 20px 20px 0px 20px;
+    border-radius: 4px 4px 0 0;
     margin-bottom: 10px;
+    height: 60px;
     font-weight: bold;
-    font-variant: small-caps;
-    background-color: @bgcol2;
-    color: @fgcol2;
+    background-color: @lightestGray;
+    border-bottom: solid 1px @mediumGray;
+    text-transform: capitalize;
 }
 
 
-div.confirm-buttons {
-    position: absolute;
-    bottom: 6px;
-    right: 10px;
-    text-align: right;
-}
+
 div.body-modal {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 div.sdm-login-modal, div.sdm-new-user {
@@ -41,5 +28,19 @@ div.sdm-login-modal, div.sdm-new-user {
     }
     .popover-overlay {
         background-color: lightgray;
+    }
+    .popover-dialog {
+        font-family: 'proxima-nova', "Helvetica Neue", Helvetica, Arial, sans-serif;
+        border: none;
+    }
+    div.confirm-buttons {
+        position: absolute;
+        bottom: 6px;
+        right: 10px;
+        text-align: right;
+        .login {
+            color: white;
+            background-color: @blue;
+        }
     }
 }

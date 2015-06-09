@@ -1,8 +1,7 @@
 <sdm-new-user id="login-modal">
-    <div class="header-modal"></div>
     <div id="newuser-modal-title" class="title-modal">User Not Registered</div>
     <div class="body-modal">You were properly authenticated as <b>{{sdmNUController.username}}</b>, but you are not a registered user of this application. Please ask an administrator for assistance.</div>
     <div class="confirm-buttons">
-        <button ng-click="sdmNUController.close()">Close</button>
+        <button class="btn btn-default" ng-click="sdmNUController.close()">Close</button>
     </div>
 </sdm-new-user>

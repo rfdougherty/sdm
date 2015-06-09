@@ -9,3 +9,4 @@ node_modules
 coverage
 instrumented
 bower_components
+*.old.*

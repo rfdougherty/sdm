@@ -59,7 +59,7 @@
                 return collections;
             }
 
-            var createCollection = function (name, notes, permissions) {
+            var createCollection = function (name, permissions) {
                 var d = $q.defer();
                 var url = BASE_URL + 'collections';
                 var data = {
@@ -73,7 +73,7 @@
             };
 
 
-            var updateCollection = function(id, name, notes, permissions, selection, operation) {
+            var updateCollection = function(id, name, permissions, selection, operation) {
                 var d = $q.defer();
                 var url = BASE_URL + 'collections/' + id;
                 if (typeof operation === 'undefined') {

@@ -1,9 +1,8 @@
 <sdm-login-modal id="login-modal">
-    <div class="header-modal"></div>
     <div id="login-modal-title" class="title-modal">User Not Authenticated</div>
     <div class="body-modal">Please login on your {{sdmLMController.authProvider}} account to access the application.</div>
     <div class="confirm-buttons">
-        <button ng-click="sdmLMController.cancel()">Cancel</button>
-        <button ng-click="sdmLMController.authenticate()">Login</button>
+        <button class="btn btn-default" ng-click="sdmLMController.cancel()">Cancel</button>
+        <button class="btn btn-default login" ng-click="sdmLMController.authenticate()">Login</button>
     </div>
 </sdm-login-modal>

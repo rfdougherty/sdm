@@ -1,14 +1,26 @@
+@import (less) "../../variables.less";
+
 div.sdm-user-preferences {
     .popover-dialog {
-        padding: 5px;
         transform: none;
         -webkit-transform: none;
         -moz-transform: none;
+        font-family: 'proxima-nova', "Helvetica Neue", Helvetica, Arial, sans-serif;
+        border: none;
+        box-shadow: 0px 0px 6px @darkGray;
     }
 
     .popover-dialog:before, .popover-dialog:after {
         top: 0px;
         left: 95%;
+
+    }
+    .popover-dialog:after {
+        border-bottom-color: @lightestGray;
+
+    }
+    .popover-dialog:before {
+        border-bottom-color: transparent;
     }
 }
 
@@ -19,7 +31,7 @@ sdm-update-user-preferences .user-preferences-header {
     .user-preferences-buttons {
         float: right;
         div {
-            color: lightgray;
+            color: @mediumGray;
             padding-left: 5px;
             &#user-preferences-cancel, &#user-preferences-save {
                 color: black;
@@ -35,11 +47,14 @@ sdm-update-user-preferences .user-preferences-header {
         font-size: 12px;
         &.username {
             font-weight: bold;
-            font-size: 16px;
+            font-size: 18px;
         }
     }
-    padding-bottom: 10px;
-
+    padding: 5px;
+    background-color: @lightestGray;
+    border-bottom: solid 1px @mediumGray;
+    border-radius: 4px 4px 0 0;
+    max-height: 34px;
 }
 
 
@@ -47,9 +62,12 @@ sdm-update-user-preferences .user-preferences-image {
     float: left;
     //width: 200px;
     padding-right: 10px;
+    padding-left: 5px;
+    padding-top: 5px;
 }
 
 sdm-update-user-preferences .user-preferences-input {
+    padding-left: 5px;
     width: 180px;
     display: inline;
     div {
@@ -61,7 +79,7 @@ sdm-update-user-preferences .user-preferences-input {
     }
     input {
         position: relative;
-        top: -2px;
+        top: -3px;
         left: -3px;
         width: 153px;
     }

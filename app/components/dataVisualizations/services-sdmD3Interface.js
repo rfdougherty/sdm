@@ -148,15 +148,20 @@
         });
 
         var _parseNote = function(notes) {
+            var content;
             if (notes) {
-                var content = notes.map(function(note){
-                    var author = users[note.author];
-                    if (author) {
-                        return author.firstname + ' ' + author.lastname + ': ' + note.text;
-                    } else {
-                        return note.text;
-                    }
-                }).join('<br><br>');
+                if (typeof notes === 'string') {
+                    content = notes;
+                } else {
+                    content = notes.map(function(note){
+                        var author = users[note.author];
+                        if (author) {
+                            return author.firstname + ' ' + author.lastname + ': ' + note.text;
+                        } else {
+                            return note.text;
+                        }
+                    }).join('<br><br>');
+                }
                 return content.replace(/https?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
             }
             return '';

@@ -28,7 +28,6 @@ angular.module('sdm.removeCollection.directives.sdmRemoveCollection', [
                             return sdmCollectionsInterface.updateCollection(
                                 collection.id,
                                 collection.name,
-                                collection.notes,
                                 null,
                                 collection.selection,
                                 'remove'
@@ -60,7 +59,7 @@ angular.module('sdm.removeCollection.directives.sdmRemoveCollection', [
                             $q.all(promises).then(function(){
                                 sdmViewManager.refreshView();
                                 sdmRCController.completed = true;
-                                $scope.$apply();
+                                //$scope.$apply();
                                 setTimeout(function(){
                                     $scope.$parent.enableEvents();
                                     $scope.$parent._hidePopover($event, 0);
