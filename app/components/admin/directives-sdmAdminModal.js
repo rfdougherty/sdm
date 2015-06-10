@@ -321,7 +321,7 @@
                                 }
                             );
                             var payload = {
-                                _id: isNew?sdmAMController.groupId:sdmAMController.selectedGroup.id,
+                                _id: isNew?sdmAMController.groupId:sdmAMController.selectedGroup._id,
                                 roles: roles
                             }
                             if (name) {
@@ -384,7 +384,7 @@
                                 return;
                             }
                             saveGroup(false, true).then(loadData).then(function(){
-                                sdmAMController.selectedGroup = findGroupByID(sdmAMController.selectedGroup.id);
+                                sdmAMController.selectedGroup = findGroupByID(sdmAMController.selectedGroup._id);
                             });
                         }
 
@@ -393,8 +393,9 @@
                                 form.hasErrors = true;
                                 return;
                             }
+                            console.log(sdmAMController.selectedGroup._id);
                             var method = 'DELETE';
-                            sdmAdminInterface.editGroup(method, sdmAMController.selectedGroup.id).then(
+                            sdmAdminInterface.editGroup(method, sdmAMController.selectedGroup._id).then(
                                 function() {
                                     sdmAMController.selectedGroup = null;
                                     sdmAMController.isGroupExisting = false;

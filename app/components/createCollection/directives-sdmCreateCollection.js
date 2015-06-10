@@ -25,27 +25,26 @@
                         console.log('scopeCreateCollection', $scope);
                         var currentPath = $location.path();
                         var viewID = currentPath.substring(1, currentPath);
+                        var  typeaheadElement;
                         sdmCCController.curator = sdmUserManager.getAuthData();
                         console.log('curator', sdmCCController.curator);
-                        sdmCCController.addedPermissions = [
-                            {
-                                '_id': sdmCCController.curator.user_uid,
-                                name: sdmCCController.curator.firstname + ' ' + sdmCCController.curator.lastname,
-                                'access': 'admin'
-                            }
-                            ];
+
                         sdmCCController.users = {};
+
                         sdmCCController.permissionPlaceholder = 'Enter User ID';
                         sdmCCController.collectionPlaceholder = 'Give your collection a name';
                         sdmCCController.collectionUpdatePlaceholder = 'Edit your collection name';
                         sdmCCController.loadingState = 2;
-                        var typeaheadElement = initialize();
                         function initialize() {
-                            var typeaheadElement = $element.find('#collection-permissions .typeahead');
                             sdmUsers.getUsers().then(function(data){
                                 console.log(data);
                                 sdmCCController.users = data;
-
+                                sdmCCController.loadingState--;
+                            });
+                        }
+                        function initializeTypeahead() {
+                            if (!typeaheadElement) {
+                                typeaheadElement = $element.find('#collection-permissions .typeahead');
                                 typeaheadElement.typeahead({
                                         hint: true,
                                         highlight: true,
@@ -59,9 +58,9 @@
                                 typeaheadElement.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
                                     sdmCCController.selectedUID = selectedUID.value;
                                 });
-                                sdmCCController.loadingState--;
-                            });
-                            return typeaheadElement;
+                                var typeahead_hint_element = angular.element('#collection-permissions .tt-hint');
+                                typeahead_hint_element.css('background-color', 'transparent');
+                            }
                         }
                         function initializeCollections() {
                             return sdmCollectionsInterface.getCollections().then(
@@ -107,6 +106,7 @@
                                 );
                             });
                         };
+                        initialize();
                         initializeCollections();
                         sdmRoles().then(function(data){
                             sdmCCController.roles = data;
@@ -180,6 +180,13 @@
                                     $scope.$parent.enableEvents();
                                     $scope.$parent._hidePopover($event, 0);
                                 } else {
+                                    sdmCCController.addedPermissions = [
+                                        {
+                                            '_id': sdmCCController.curator.user_uid,
+                                            name: sdmCCController.curator.firstname + ' ' + sdmCCController.curator.lastname,
+                                            'access': 'admin'
+                                        }
+                                        ];
                                     sdmCollectionsInterface.createCollection(
                                         sdmCCController.collectionName,
                                         sdmCCController.addedPermissions.map(function(p) {
@@ -192,6 +199,7 @@
                                         initializeCollections().then(function(){
                                             sdmCCController.selectedCollection = findCollectionByID(result._id);
                                             sdmCCController.collectionName = null;
+                                            initializeTypeahead();
                                         }).then(function(){
                                             updateCollection(sdmCCController.selectedCollection._id);
                                         });
@@ -208,6 +216,8 @@
                                     initializeCollections();
                                     sdmViewManager.refreshView('collections');
                                     sdmCCController.selectedCollection = null;
+                                    typeaheadElement.typeahead('destroy');
+                                    typeaheadElement = null;
                                 });
                         };
 
@@ -263,6 +273,7 @@
                             sdmCCController.addedPermissions.splice($index, 1);
                             sdmCCController.permissionPlaceholder = ' User removed. Save to confirm';
                             sdmCCController.success = true;
+                            console.log(form);
                             form.newPermission.hasErrors = false;
                             var viewValue = form.newPermission.$viewValue;
                             sdmCCController.selectedUID = null;
@@ -270,6 +281,7 @@
                                 $scope.$apply(function(){
                                     sdmCCController.success = false;
                                     sdmCCController.selectedUID = viewValue;
+                                    sdmCCController.permissionPlaceholder = 'Enter User ID';
                                 });
                             }, 2000);
                         };
@@ -286,6 +298,7 @@
 
                         sdmCCController.selectCollection = function() {
                             if (sdmCCController.selectedCollection) {
+                                initializeTypeahead();
                                 sdmCollectionsInterface.getCollection(sdmCCController.selectedCollection._id).then(
                                     function(collection){
                                         collection.permissions.forEach(function (p) {
@@ -293,7 +306,7 @@
                                             if (user && user.lastname) {
                                                 p.name = user.firstname + ' ' + user.lastname;
                                             } else {
-                                                p.name = user._id;
+                                                p.name = p._id;
                                             }
                                         });
                                         sdmCCController.addedPermissions = collection.permissions;

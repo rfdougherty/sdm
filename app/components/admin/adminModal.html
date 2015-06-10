@@ -49,7 +49,7 @@
                     </div>
                     <div class="sdm-input-cell sdm-small1"/>
                     <div class="sdm-input-cell delete-group">
-                        <div ng-class="{'sdm-input-invisible':!sdmAMController.selectedGroup}">
+                        <div ng-class="{'sdm-input-invisible':!sdmAMController.selectedGroup}" ng-show="sdmAMController.user.root">
                             <a href=""  ng-click="sdmAMController.deleteGroup($event, formGroup)">Delete Group: {{sdmAMController.selectedGroup.name}}</a>
                             <div>(Note: Group Name, all users and permissions will be removed)</div>
                         </div>

@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div id="collection-permissions" ng-show="sdmCCController.loadingState === 0">
+        <div id="collection-permissions">
             <div id="collection-permissions-title">
                 Manage Users
             </div>
@@ -71,7 +71,7 @@
                         <select class="form-control" ng-options="role.rid as role.name for role in sdmCCController.roles" ng-model="permission.access" ng-disabled="false"></select>
                     </div>
                     <div class="sdm-input-cell sdm-small2 remove">
-                        <i class="fa fa-times-circle-o fa-2x" ng-click="sdmCCController.removeUser($index)"></i>
+                        <i class="fa fa-times-circle-o fa-2x" ng-click="sdmCCController.removeUser($index, form)"></i>
                     </div>
                 </div>
             </div>
