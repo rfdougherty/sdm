@@ -269,11 +269,13 @@ sdm-info-modal {
 
 
     div.info-modal-confirm-buttons {
-        padding-left: 10px;
         position: absolute;
-        bottom: 10px;
-        right: 10px;
-        text-align: right;
+        bottom: 20px;
+        right: 40px;
+        #info-modal-save {
+            background-color: @blue;
+            color: white;
+        }
     }
 
     div#info-change-permissions {
@@ -300,7 +302,7 @@ sdm-info-modal {
             border: 0px solid @mediumGray;
             border-width: 1px;
             overflow: scroll;
-            max-height: 170px;
+            max-height: 330px;
             .flex-row {
                 border: 0px solid @mediumGray;
                 border-top-width: 1px;
@@ -400,7 +402,7 @@ sdm-info-modal {
 
     .notes-view {
         .sdm-notes {
-            height: 350px;
+            height: 330px;
             overflow: scroll;
             margin-bottom: 6px;
             margin-top: 6px;

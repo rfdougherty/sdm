@@ -261,7 +261,7 @@
                                     return 'fa nav-glyph expander ' + icon;
                                 }).on('mouseup', actions.expandNode);
                         }
-                        if (i === 0 && d.notes && !d.hideGlyphs) {
+                        if (i === 0 && d.notes && d.notes.length > 0 && !d.hideGlyphs) {
                             d3DivContent.style({'width':'70%'});
                             // IMPORTANT: data in this tooltip is added to its scope in the sdmCellOnHover function
                             d3Element.append('div').append('span').attr({

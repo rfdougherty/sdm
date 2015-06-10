@@ -459,7 +459,12 @@ var _inputEl;
                                 var payload = {
                                     notes: sdmIMController.apiData.notes
                                 }
-                                makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(refreshDataInModal);
+                                makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(refreshDataInModal).then(
+                                    function(){
+                                        var currentPath = $location.path();
+                                        currentPath = currentPath.substring(1, currentPath.length);
+                                        sdmViewManager.refreshView(currentPath);
+                                    });
                                 sdmIMController.newNote = null;
                                 return;
                             }
@@ -472,7 +477,13 @@ var _inputEl;
                             var payload = {
                                 notes: sdmIMController.apiData.notes
                             }
-                            makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(refreshDataInModal);
+
+                            makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(refreshDataInModal).then(
+                                function(){
+                                    var currentPath = $location.path();
+                                    currentPath = currentPath.substring(1, currentPath.length);
+                                    sdmViewManager.refreshView(currentPath);
+                                });
                             sdmIMController.newNote = null;
                         }
 
