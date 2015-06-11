@@ -113,6 +113,9 @@ div.sdm-edit-groups {
             border-width: 1px;
             overflow: scroll;
             max-height: 170px;
+            .permission-name {
+                padding-left: 10px;
+            }
             .flex-row {
                 border: 0px solid @mediumGray;
                 border-top-width: 1px;
@@ -148,7 +151,6 @@ div.sdm-edit-groups {
 
     }
     input.btn {
-        margin-top: 9px;
         &.form-control {
             width: auto;
         }
@@ -174,7 +176,7 @@ div.sdm-edit-groups {
     }
     .warning-create {
         color: @orange;
-        visibility: hidden;
+        //visibility: hidden;
         &.visible {
             visibility: visible;
         }

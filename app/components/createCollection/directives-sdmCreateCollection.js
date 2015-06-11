@@ -128,7 +128,7 @@
                             });
                             return results.length === 0?undefined:results[0];
                         }
-
+/**
                         sdmCCController.save = function ($event, form, newCollection) {
                             $event.stopPropagation();
                             $event.preventDefault();
@@ -158,23 +158,7 @@
 
                             selection.then(function(selection) {
                                 console.log('selection', selection);
-                                function updateCollection(_id) {
-                                    sdmCollectionsInterface.updateCollection(
-                                        _id,
-                                        sdmCCController.selectedCollection.name,
-                                        sdmCCController.addedPermissions.map(function(p) {
-                                            return {
-                                                _id: p._id,
-                                                access: p.access
-                                            }
-                                        }),
-                                        selection,
-                                        'add'
-                                    ).then(function(){
-                                        sdmViewManager.refreshView('collections');
-                                    });
 
-                                }
                                 if (!newCollection) {
                                     updateCollection(sdmCCController.selectedCollection._id);
                                     $scope.$parent.enableEvents();
@@ -206,7 +190,80 @@
                                     })
                                 }
                             });
-                        };
+                        };**/
+
+                        sdmCCController.createCollection = function() {
+                            if (!sdmCCController.collectionsCurator) {
+                                throw 'existing collections not initialized yet';
+                            }
+                            if (sdmCCController.collectionsCurator.indexOf(sdmCCController.collectionName) >= 0 ) {
+                                form.hasErrors = true;
+                                form.collectionName.hasErrors = true;
+                                sdmCCController.collectionPlaceholder =
+                                    'Collection "' + sdmCCController.collectionName + '" already exists';
+                                sdmCCController.collectionName = null;
+                                return;
+                            }
+                            sdmCCController.addedPermissions = [
+                                {
+                                    '_id': sdmCCController.curator.user_uid,
+                                    name: sdmCCController.curator.firstname + ' ' + sdmCCController.curator.lastname,
+                                    'access': 'admin'
+                                }
+                                ];
+                            sdmCollectionsInterface.createCollection(
+                                sdmCCController.collectionName,
+                                sdmCCController.addedPermissions.map(function(p) {
+                                    return {
+                                        _id: p._id,
+                                        access: p.access
+                                    }
+                                })
+                            ).then(function(result){
+                                initializeCollections().then(function(){
+                                    sdmCCController.selectedCollection = findCollectionByID(result._id);
+                                    sdmCCController.collectionName = null;
+                                    initializeTypeahead();
+                                });
+                            });
+                        }
+
+                        var savePermissionsAndName = function(callback) {
+                            sdmCollectionsInterface.updateCollection(
+                                sdmCCController.selectedCollection._id,
+                                sdmCCController.selectedCollection.name,
+                                sdmCCController.addedPermissions.map(function(p) {
+                                    return {
+                                        _id: p._id,
+                                        access: p.access
+                                    }
+                                }),
+                                []
+                            ).then(callback);
+                        }
+
+                        sdmCCController.addSelection = function($event, form) {
+                            if (!form.$valid) {
+                                console.log('form', form);
+                                form.hasErrors = true;
+                                sdmCCController.collectionPlaceholder = 'Please enter a name for the collection';
+                                return;
+                            }
+                            selection.then(function(selection){
+                                sdmCollectionsInterface.updateCollection(
+                                    sdmCCController.selectedCollection._id,
+                                    sdmCCController.selectedCollection.name,
+                                    null,
+                                    selection,
+                                    'add'
+                                ).then(function(){
+                                    sdmViewManager.refreshView('collections');
+                                    $scope.$parent.enableEvents();
+                                    $scope.$parent._hidePopover($event, 0);
+                                });
+                            });
+
+                        }
 
                         sdmCCController.delete = function($event) {
                             $event.stopPropagation();
@@ -256,34 +313,40 @@
                                 name: selectedName,
                                 access: sdmCCController.selectedRole.rid
                             });
-                            sdmCCController.selectedUID = null;
-                            sdmCCController.success = true;
-                            form.newPermission.hasErrors = false;
-                            setTimeout(function(){
-                                $scope.$apply(function(){
-                                    sdmCCController.success = false;
-                                    sdmCCController.permissionPlaceholder = 'Enter User ID';
-                                });
-                            }, 2000);
-                            sdmCCController.permissionPlaceholder = 'Permission added. Save to confirm.';
-                            typeaheadElement.typeahead('val', '');
+                            var cb = function() {
+                                sdmCCController.selectedUID = null;
+                                sdmCCController.success = true;
+                                form.newPermission.hasErrors = false;
+                                setTimeout(function(){
+                                    $scope.$apply(function(){
+                                        sdmCCController.success = false;
+                                        sdmCCController.permissionPlaceholder = 'Enter User ID';
+                                    });
+                                }, 2000);
+                                sdmCCController.permissionPlaceholder = 'Permission added.';
+                                typeaheadElement.typeahead('val', '');
+                            }
+                            savePermissionsAndName(cb);
                         };
 
                         sdmCCController.removeUser = function ($index, form) {
                             sdmCCController.addedPermissions.splice($index, 1);
-                            sdmCCController.permissionPlaceholder = ' User removed. Save to confirm';
-                            sdmCCController.success = true;
-                            console.log(form);
-                            form.newPermission.hasErrors = false;
-                            var viewValue = form.newPermission.$viewValue;
-                            sdmCCController.selectedUID = null;
-                            setTimeout(function(){
-                                $scope.$apply(function(){
-                                    sdmCCController.success = false;
-                                    sdmCCController.selectedUID = viewValue;
-                                    sdmCCController.permissionPlaceholder = 'Enter User ID';
-                                });
-                            }, 2000);
+                            var cb = function() {
+                                sdmCCController.permissionPlaceholder = ' User removed.';
+                                sdmCCController.success = true;
+                                console.log(form);
+                                form.newPermission.hasErrors = false;
+                                var viewValue = form.newPermission.$viewValue;
+                                sdmCCController.selectedUID = null;
+                                setTimeout(function(){
+                                    $scope.$apply(function(){
+                                        sdmCCController.success = false;
+                                        sdmCCController.selectedUID = viewValue;
+                                        sdmCCController.permissionPlaceholder = 'Enter User ID';
+                                    });
+                                }, 2000);
+                            }
+                            savePermissionsAndName(cb);
                         };
 
                         sdmCCController.createUserInModal = function ($event) {

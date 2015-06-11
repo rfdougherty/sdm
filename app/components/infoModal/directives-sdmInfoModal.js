@@ -259,6 +259,7 @@ var _inputEl;
                     controller: function(){},
                     controllerAs: 'sdmIMController',
                     link: function($scope, $element, $attrs, sdmIMController) {
+                        $scope.$parent.disableEvents();
                         var node = $scope.$parent.$parent.data;
                         var APIUrl = BASE_URL + node.level.name + '/' + node.id;
                         var level = node.level.name;
@@ -278,6 +279,7 @@ var _inputEl;
                             sdmIMController.roles = data;
                             sdmIMController.loadingState--;
                         });
+
                         var typeaheadElement = $element.find('#info-change-permissions .typeahead');
                         sdmUsers.getUsers().then(function(data){
                             sdmIMController.users = data;
@@ -430,22 +432,9 @@ var _inputEl;
                             });
                         };
 
-
-                        sdmIMController.dismiss = function ($event) {
+                        sdmIMController.close = function ($event) {
                             $scope.$parent.enableEvents();
                             $scope.$parent._hidePopover($event, 0);
-                        };
-
-                        sdmIMController.close = function ($event) {
-                            var isApiDataChanged = !sdmIMController.data.every(
-                                function (field) {
-                                    return field.value === field.originalValue;
-                                });
-                            if (sdmIMController.arePermissionsChanged || isApiDataChanged) {
-                                sdmIMController.confirmDismiss = true;
-                            } else {
-                                $scope.$parent._hidePopover($event, 0);
-                            }
                         };
                         sdmIMController.createNewNote = function($event){
                             if ($event.keyCode === 13 & !$event.shiftKey) {
@@ -491,18 +480,25 @@ var _inputEl;
                             console.log('removing', sdmIMController.apiData.permissions[$index]);
                             var userID = sdmIMController.apiData.permissions[$index]._id;
                             sdmIMController.apiData.permissions.splice($index, 1);
-                            sdmIMController.permissionPlaceholder = ' User removed. Save to confirm';
-                            sdmIMController.success = true;
-                            form.newPermission.hasErrors = false;
-                            var viewValue = form.newPermission.$viewValue;
-                            sdmIMController.selectedUID = null;
-                            setTimeout(function(){
-                                $scope.$apply(function(){
-                                    sdmIMController.success = false;
-                                    sdmIMController.selectedUID = viewValue;
-                                });
-                            }, 2000);
-                            sdmIMController.arePermissionsChanged = true;
+                            var url = BASE_URL + node.level.name + '/' + node.id;
+                            var payload = {};
+
+                            payload.permissions = sdmIMController.apiData.permissions;
+
+                            makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(function() {
+                                sdmIMController.permissionPlaceholder = ' User removed';
+                                sdmIMController.success = true;
+                                form.newPermission.hasErrors = false;
+                                var viewValue = form.newPermission.$viewValue;
+                                sdmIMController.selectedUID = null;
+                                setTimeout(function(){
+                                    $scope.$apply(function(){
+                                        sdmIMController.success = false;
+                                        sdmIMController.selectedUID = viewValue;
+                                        sdmIMController.permissionPlaceholder = 'Enter User ID';
+                                    });
+                                }, 2000);
+                            });
                         };
 
                         sdmIMController.updateAttachmentsAndFiles = function() {
@@ -650,19 +646,26 @@ var _inputEl;
                                 _id: sdmIMController.selectedUID,
                                 access: sdmIMController.selectedRole.rid
                             });
-                            sdmIMController.selectedUID = '';
-                            sdmIMController.permissionPlaceholder = 'Permission added. Save to confirm.';
-                            sdmIMController.success = true;
-                            form.newPermission.hasErrors = false;
-                            setTimeout(function(){
-                                $scope.$apply(function(){
-                                    sdmIMController.success = false;
-                                    sdmIMController.permissionPlaceholder = 'Enter User ID';
-                                });
-                            }, 2000);
-                            sdmIMController.selectedRole = null;
-                            sdmIMController.arePermissionsChanged = true;
-                            typeaheadElement.typeahead('val', '');
+
+                            var url = BASE_URL + node.level.name + '/' + node.id;
+                            var payload = {};
+
+                            payload.permissions = sdmIMController.apiData.permissions;
+
+                            makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(function() {
+                                sdmIMController.selectedUID = '';
+                                sdmIMController.permissionPlaceholder = 'Permission added.';
+                                sdmIMController.success = true;
+                                form.newPermission.hasErrors = false;
+                                setTimeout(function(){
+                                    $scope.$apply(function(){
+                                        sdmIMController.success = false;
+                                        sdmIMController.permissionPlaceholder = 'Enter User ID';
+                                    });
+                                }, 2000);
+                                sdmIMController.selectedRole = null;
+                                typeaheadElement.typeahead('val', '');
+                            });
                         };
 
                         sdmIMController.createUserInModal = function ($event) {
@@ -675,37 +678,28 @@ var _inputEl;
                             );
                         }
 
-                        sdmIMController.save = function ($event) {
-                            var isApiDataChanged = !sdmIMController.data.every(
-                                function (field) {
-                                    return !field.editing;
-                                });
-                            if (!sdmIMController.arePermissionsChanged && !isApiDataChanged) {
-                                $scope.$parent._hidePopover($event, 0);
-                                return;
-                            }
+                        sdmIMController.saveFields = function ($event) {
                             var url = BASE_URL + node.level.name + '/' + node.id;
                             var payload = {};//{notes: sdmIMController.apiData.notes};
-                            if (sdmIMController.arePermissionsChanged) {
-                                payload.permissions = sdmIMController.apiData.permissions;
-                            }
-                            if (isApiDataChanged) {
-                                console.log(sdmIMController.data);
-                                sdmIMController.data.filter(function(field){
-                                    return field.editing;
-                                }).forEach(
-                                    function (field){
-                                        console.log(field);
-                                        sdmIMController.editables[field.key].update(payload, field.value);
+                            var name;
+                            console.log(sdmIMController.data);
+                            sdmIMController.data.filter(function(field) {
+                                return sdmIMController.editables[field.key]
+                            }).forEach(
+                                function (field){
+                                    sdmIMController.editables[field.key].update(payload, field.value);
+                                    if (field.key === 'Name') {
+                                        name = field.value;
                                     }
-                                )
-                            }
+                                }
+                            )
                             makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(function(){
                                     var currentPath = $location.path();
                                     currentPath = currentPath.substring(1, currentPath.length);
                                     sdmViewManager.refreshView(currentPath);
-                                    $scope.$parent.enableEvents();
-                                    $scope.$parent._hidePopover($event, 0);
+                                    if (name) {
+                                        sdmIMController.name = node.name = name;
+                                    }
                                 });
                         }
                     }

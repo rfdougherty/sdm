@@ -5,7 +5,7 @@
     <form name="form" class="create-collection">
         <div class="flex-row first">
             <div class="sdm-input-cell">
-                <div class="sdm-input-label">Create New</div>
+                <div class="sdm-input-label">Add to new collection</div>
                 <input class="form-control" type="text" ng-model="sdmCCController.collectionName" placeholder="{{sdmCCController.collectionPlaceholder}}" name="collectionNew">
             </div>
             <div class="sdm-input-cell sdm-small1">
@@ -21,13 +21,13 @@
         <div class="flex-row">
             <div class="sdm-input-cell">
                 <div class="sdm-input-invisible">Name</div>
-                <input type="button" class="form-control btn btn-default" value="Create" ng-click="sdmCCController.save($event, form, true)" ng-disabled="!sdmCCController.collectionName">
+                <input type="button" class="form-control btn btn-default" value="Create" ng-click="sdmCCController.createCollection()" ng-disabled="!sdmCCController.collectionName">
             </div>
             <div class="sdm-input-cell sdm-small1"/>
             <div class="sdm-input-cell">
                 <div class="sdm-input-label">Name</div>
                 <div class="input-group">
-                    <input class="form-control" type="text" ng-model="sdmCCController.selectedCollection.name" placeholder="{{sdmCCController.updateCollectionPlaceholder}}" name="collectionName" ng-disabled="!sdmCCController.selectedCollection">
+                    <input class="form-control" type="text" ng-model="sdmCCController.selectedCollection.name" placeholder="{{sdmCCController.collectionUpdatePlaceholder}}" name="collectionName" ng-disabled="!sdmCCController.selectedCollection">
                 </div>
             </div>
         </div>
@@ -76,12 +76,9 @@
                 </div>
             </div>
         </div>
-        <div class="warning-success" ng-class="{'visible':sdmCCController.saveSuccess}">
-            Collection successfully saved
-        </div>
         <div class="collection-confirm-buttons">
             <input type="button" id="collection-cancel" class="btn btn-default" ng-click="sdmCCController.cancel($event)" value="Cancel"></input>
-            <input id="collection-save" type="button" class="btn btn-default save" ng-click="sdmCCController.save($event, form)" value="Save" ng-show="sdmCCController.selectedCollection"></input>
+            <input id="collection-save" type="button" class="btn btn-default save" ng-click="sdmCCController.addSelection($event, form)" value="Confirm" ng-show="sdmCCController.selectedCollection"></input>
         </div>
     </form>
 

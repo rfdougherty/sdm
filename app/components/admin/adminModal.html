@@ -39,13 +39,18 @@
                         <div class="sdm-input-label">Name</div>
                         <div class="input-group">
                             <input class="form-control" type="text" ng-model="sdmAMController.selectedGroup.name" placeholder="{{sdmAMController.groupNamePlaceholder}}" name="groupId" ng-disabled="!sdmAMController.selectedGroup">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default save-btn-form" type="button" ng-disabled="!sdmAMController.selectedGroup.name" ng-click="sdmAMController.saveGroup($event)">Save</button>
+                            </span>
                         </div>
                     </div>
                 </div>
                 <div class="flex-row">
                     <div class="sdm-input-cell">
+                        <div class="sdm-input-invisible" ng-show="!sdmAMController.createSuccess && !sdmAMController.updateSuccess">Name</div>
                         <div class="warning">{{sdmAMController.createWarning}}</div>
-                        <div class="warning-create" ng-class="{'visible':sdmAMController.createSuccess}">Group succesfully created</div>
+                        <div class="warning-create" ng-show="sdmAMController.createSuccess">Group succesfully created</div>
+                        <div class="warning-create" ng-show="sdmAMController.updateSuccess">Group name changed</div>
                     </div>
                     <div class="sdm-input-cell sdm-small1"/>
                     <div class="sdm-input-cell delete-group">
@@ -76,13 +81,13 @@
                     <div class="permissions-body" ng-show="sdmAMController.selectedGroup">
                         <div class="flex-row user-permission" ng-repeat="permission in sdmAMController.addedPermissions" ng-class="{gray:$index%2===0, 'first-body':$index===0}">
                             <div class="sdm-input-cell sdm-small4">
-                                {{permission.name}}
+                                <div class="permission-name">{{permission.name}}</div>
                             </div>
                             <div class="sdm-input-cell sdm-small2 select">
                                 <select class="form-control" ng-options="role.rid as role.name for role in sdmAMController.roles" ng-model="permission.access" ng-disabled="false"></select>
                             </div>
                             <div class="sdm-input-cell sdm-small2 remove">
-                                <i class="fa fa-times-circle-o fa-2x" ng-click="sdmAMController.removeUserFromGroup($index)"></i>
+                                <i class="fa fa-times-circle-o fa-2x" ng-click="sdmAMController.removeUserFromGroup($index, formGroup)"></i>
                             </div>
                         </div>
                     </div>
@@ -91,8 +96,7 @@
                     Group successfully saved
                 </div>
                 <div class="sdm-groups-buttons">
-                    <input type="button" id="collection-cancel" class="btn btn-default" ng-click="sdmAMController.close($event)" value="Cancel"></input>
-                    <input id="collection-save" type="button" class="btn btn-default save" ng-click="sdmAMController.save($event, form)" value="Save" ng-show="sdmAMController.selectedGroup"></input>
+                    <input type="button" id="collection-cancel" class="btn btn-default" ng-click="sdmAMController.close($event)" value="Close"></input>
                 </div>
             </form>
         </div>

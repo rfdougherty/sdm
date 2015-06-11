@@ -1,3 +1,5 @@
+@import (less) "../../variables.less";
+
 .popover-overlay {
     position:absolute;
     z-index:9999;
@@ -51,8 +53,12 @@
             visibility: hidden;
         }
         .input-group {
-            width: 100%;
+            width: 86%;
             display: inline-flex;
+        }
+        .input-group-btn  button{
+            color: white;
+            background-color: @blue;
         }
         input.form-control {
             float: left;

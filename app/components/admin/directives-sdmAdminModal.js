@@ -284,17 +284,19 @@
                                 access: sdmAMController.selectedRole,
                                 name: [user.firstname, user.lastname].join(' ')
                             });
-                            sdmAMController.selectedUID = '';
-                            sdmAMController.success = true;
-                            form.newPermission.hasErrors = false;
-                            sdmAMController.permissionPlaceholder = 'Permission added. Save to confirm';
-                            sdmAMController.selectedRole = null;
-                            setTimeout(function(){
-                                $scope.$apply(function(){
-                                    sdmAMController.success = false;
-                                    sdmAMController.permissionPlaceholder = 'Enter User ID';
-                                });
-                            }, 2000);
+                            saveGroup(false).then(function(){
+                                sdmAMController.selectedUID = '';
+                                sdmAMController.success = true;
+                                form.newPermission.hasErrors = false;
+                                sdmAMController.permissionPlaceholder = 'Permission added.';
+                                sdmAMController.selectedRole = null;
+                                setTimeout(function(){
+                                    $scope.$apply(function(){
+                                        sdmAMController.success = false;
+                                        sdmAMController.permissionPlaceholder = 'Enter User ID';
+                                    });
+                                }, 2000);
+                            });
                         };
 
                         sdmAMController.save = function($index, form) {
@@ -324,7 +326,7 @@
                                 _id: isNew?sdmAMController.groupId:sdmAMController.selectedGroup._id,
                                 roles: roles
                             }
-                            if (name) {
+                            if (name && sdmAMController.selectedGroup.name) {
                                 payload.name = isNew?sdmAMController.groupId:sdmAMController.selectedGroup.name;
                             }
                             var method = isNew?'POST':'PUT';
@@ -378,13 +380,16 @@
                             });
                         }
 
-                        sdmAMController.saveGroupName = function($event) {
-                            if (!sdmAMController.selectedGroup.name){
-                                form.hasErrors = true;
-                                return;
-                            }
+                        sdmAMController.saveGroup = function($event) {
                             saveGroup(false, true).then(loadData).then(function(){
                                 sdmAMController.selectedGroup = findGroupByID(sdmAMController.selectedGroup._id);
+                                sdmViewManager.refreshView('projects');
+                                sdmAMController.updateSuccess = true;
+                                setTimeout(function(){
+                                    $scope.$apply(function(){
+                                        sdmAMController.updateSuccess = false;
+                                    });
+                                }, 2000)
                             });
                         }
 
