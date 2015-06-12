@@ -300,6 +300,14 @@ var _inputEl;
                             });
                             sdmIMController.loadingState--;
                         });
+                        sdmIMController.getUsername = function(_id) {
+                            if (sdmIMController.users) {
+                                var user = sdmIMController.users[_id];
+                                return (user && user.lastname)?user.firstname + ' ' + user.lastname:_id
+                            } else {
+                                return _id;
+                            }
+                        }
                         var refreshUsers = function() {
                             sdmUsers.getUsers().then(function(data){
                                 sdmIMController.users = data;
@@ -416,8 +424,14 @@ var _inputEl;
                                     )
                                 ) {
                                 sdmIMController.modalView = 'file list';
-                            } else {
+                            } else if (
+                                    sdmIMController.attachments.length || sdmIMController.userPermission === 'admin' ||
+                                    sdmIMController.userPermission === 'rw' || sdmIMController.user.root
+                                ){
+
                                 sdmIMController.modalView = 'attachments';
+                            } else {
+                                sdmIMController.modalView = 'notes';
                             }
                         });
 

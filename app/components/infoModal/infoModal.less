@@ -209,6 +209,7 @@ sdm-info-modal {
 
     div.info-modal-body {
         padding: 10px 40px 0 40px;
+        height: 64px;
         .sdm-field-line {
             display: flex;
             align-items: center;
@@ -402,10 +403,14 @@ sdm-info-modal {
 
     .notes-view {
         .sdm-notes {
-            height: 330px;
+            height: 370px;
             overflow: scroll;
             margin-bottom: 6px;
             margin-top: 6px;
+            &.with-input {
+                height: 320px;
+                margin-top: 6px;
+            }
         }
         .note-header {
             font-weight: 500;

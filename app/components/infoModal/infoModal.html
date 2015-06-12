@@ -12,12 +12,12 @@
     <div class="info-modal-body" ng-show="sdmIMController.loadingState === 0">
         <div class="sdm-field-line" ng-repeat="field in sdmIMController.data">
             <span class="field-name">{{field.key}}:</span>
-            <span class="sdm-value" ng-show="!field.editing" ng-click="sdmIMController.edit($event, field)" ng-class="{'sdm-editable': sdmIMController.editables[field.key], 'sdm-hover': field.hover}" ng-mouseenter="field.hover=true" ng-mouseleave="field.hover=false">
+            <span class="sdm-value" ng-show="!field.editing" ng-click="sdmIMController.edit($event, field)" ng-class="{'sdm-editable': sdmIMController.editables[field.key], 'sdm-hover': field.hover && (sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root)}" ng-mouseenter="field.hover=true" ng-mouseleave="field.hover=false">
                 {{field.value}}
             </span>
             <input type="text" class="sdm-edit" ng-model="field.value" ng-show="field.editing && sdmIMController.editables[field.key].type === 'text'" ng-blur="field.editing = false; sdmIMController.saveFields($event)" ng-keydown="$event.keyCode === 13?(field.editing = false||sdmIMController.saveFields($event)):'';">
             </input>
-            <button class="sdm-edit btn btn-xs btn-default" ng-class="{'sdm-hover': field.hover}" ng-show="sdmIMController.editables[field.key]" ng-click="sdmIMController.edit($event, field)" ng-mouseenter="field.hover=true" ng-mouseleave="field.hover=false">
+            <button class="sdm-edit btn btn-xs btn-default" ng-class="{'sdm-hover': field.hover && (sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root)}" ng-show="sdmIMController.editables[field.key] && (sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root)" ng-click="sdmIMController.edit($event, field)" ng-mouseenter="field.hover=true" ng-mouseleave="field.hover=false">
                 <span class="glyphicon glyphicon-pencil"></span>
             </button>
         </div>
@@ -30,10 +30,10 @@
         <li role="presentation"  ng-class="{active: sdmIMController.modalView === 'attachments'}" ng-click="sdmIMController.modalView = 'attachments'" ng-show="(sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root || (sdmIMController.userPermission === 'ro' && sdmIMController.attachments.length))">
             <a>Attachments</a>
         </li>
-        <li role="presentation" ng-class="{active: sdmIMController.modalView === 'notes'}" ng-click="sdmIMController.modalView = 'notes'">
+        <li role="presentation" ng-class="{active: sdmIMController.modalView === 'notes'}" ng-click="sdmIMController.modalView = 'notes'" ng-show="(sdmIMController.apiData.notes && sdmIMController.apiData.notes.length) || sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root">
             <a>Notes</a>
         </li>
-        <li role="presentation" ng-class="{active: sdmIMController.modalView === 'permissions'}" ng-click="sdmIMController.modalView = 'permissions'" ng-show="sdmIMController.apiData.permissions">
+        <li role="presentation" ng-class="{active: sdmIMController.modalView === 'permissions'}" ng-click="sdmIMController.modalView = 'permissions'" ng-show="sdmIMController.apiData.permissions && (sdmIMController.userPermission === 'admin' || sdmIMController.user.root)">
             <a>Permissions</a>
         </li>
     </ul>
@@ -200,7 +200,7 @@
                 <div class="flex-row user-permission" ng-repeat="permission in sdmIMController.apiData.permissions" ng-class="{gray:$index%2===0, 'first-body':$index===0}">
                     <div class="sdm-input-cell sdm-small4 permission-name">
                         <div class="permission-name">
-                            {{permission._id}}
+                            {{sdmIMController.getUsername(permission._id)}}
                         </div>
                     </div>
                     <div class="sdm-input-cell sdm-small2 select">
@@ -215,12 +215,12 @@
     </form>
     <!-- permissions end -->
     <!-- notes -->
-    <form name="formNotes" class="notes-view" ng-class="{error: formNotes.hasErrors}" ng-show="sdmIMController.loadingState === 0 && sdmIMController.modalView === 'notes'">
+    <form name="formNotes" class="notes-view" ng-class="{error: formNotes.hasErrors}" ng-show="sdmIMController.loadingState === 0 && sdmIMController.modalView === 'notes' && ((sdmIMController.apiData.notes && sdmIMController.apiData.notes.length) || sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root)">
         <div ng-keydown="sdmIMController.createNewNote($event)">
             <textarea class="form-control new-note" ng-model="sdmIMController.newNote" ng-show="sdmIMController.canModify"  placeholder="Enter your note">
             </textarea>
         </div>
-        <div class="sdm-notes">
+        <div class="sdm-notes" ng-class="{'with-input': sdmIMController.canModify}">
             <div ng-repeat="note in sdmIMController.apiDataNotes.slice().reverse()">
                 <div class="note-header">
                     <span class="author">{{note.author}} wrote:</span>
