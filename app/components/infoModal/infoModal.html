@@ -204,7 +204,7 @@
                         </div>
                     </div>
                     <div class="sdm-input-cell sdm-small2 select">
-                        <select class="form-control" ng-options="role.rid as role.name for role in sdmIMController.roles" ng-model="permission.access" ng-change="sdmIMController.arePermissionsChanged = true" ng-disabled="permission._id===sdmIMController.user.user_uid && !sdmIMController.user.root"></select>
+                        <select class="form-control" ng-options="role.rid as role.name for role in sdmIMController.roles" ng-model="permission.access" ng-change="sdmIMController.updatePermissions()" ng-disabled="permission._id===sdmIMController.user.user_uid && !sdmIMController.user.root"></select>
                     </div>
                     <div class="sdm-input-cell sdm-small2 remove">
                         <i class="fa fa-times-circle-o fa-2x" ng-click="sdmIMController.removeUser($index, form)"></i>

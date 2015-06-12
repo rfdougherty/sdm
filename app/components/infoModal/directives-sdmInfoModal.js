@@ -668,6 +668,19 @@ var _inputEl;
                             });
                         };
 
+                        sdmIMController.updatePermissions = function($event, form) {
+                            var url = BASE_URL + node.level.name + '/' + node.id;
+                            var payload = {};
+
+                            payload.permissions = sdmIMController.apiData.permissions;
+
+                            makeAPICall.async(url, {site: node.site}, 'PUT', payload).then(function(){
+                                var currentPath = $location.path();
+                                currentPath = currentPath.substring(1, currentPath.length);
+                                sdmViewManager.refreshView(currentPath);
+                            });
+                        }
+
                         sdmIMController.createUserInModal = function ($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
