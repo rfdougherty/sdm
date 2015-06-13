@@ -169,16 +169,15 @@
                         sdmULDController.upload = function() {
                             var previousSeries;
                             angular.forEach(sdmULDController.data.series, function(series, seriesUID) {
-                                var acq_no = null;
-                                if (series.tags['AcquisitionNumber'] && !isSiemens(series.tags['Manufacturer'].value[0])) {
-                                    acq_no = series.tags['AcquisitionNumber'].value[0];
-                                }
                                 var overwrite = {
                                     series_uid: seriesUID,
                                     group_name: sdmULDController.data.selectedGroup._id || 'unknown',
-                                    project_name: sdmULDController.data.selectedProject.name || 'untitled',
-                                    acq_no: acq_no
+                                    project_name: sdmULDController.data.selectedProject.name || 'untitled'
                                 };
+                                if (series.tags['AcquisitionNumber'] && !isSiemens(series.tags['Manufacturer'].value[0])) {
+                                    var acq_no = series.tags['AcquisitionNumber'].value[0];
+                                    overwrite.acq_no = acq_no;
+                                }
                                 var _uploadSeries = function() {
                                     currentSeries = series;
                                     return sdmDicomUploader.uploadSeries(

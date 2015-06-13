@@ -435,16 +435,12 @@ var _inputEl;
                             }
                         });
 
-                        sdmIMController.download = function(file) {
-                            var _node = {
-                                level: level,
-                                _id: node.id,
-                                file: file
-                            };
-                            sdmDownloadInterface.getDownloadURL(_node, true, false).then(function(response){
-                                window.open(response.url + '&attach=true', '_self');
-                            });
-                        };
+                         sdmIMController.download = function(file) {
+                             var url = APIUrl + '/file/' + file.filename;
+                             makeAPICall.async(url, null, 'POST', null).then(function(response){
+                                 window.open(url + '?ticket=' + response.ticket, '_self');
+                             });
+                         };
 
                         sdmIMController.close = function ($event) {
                             $scope.$parent.enableEvents();
@@ -543,42 +539,40 @@ var _inputEl;
                         }
 
                         sdmIMController.removeAttachment = function(attachment) {
-                            var url = APIUrl + '/attachment?name=' + attachment.name
-                                + attachment.ext;
-                            makeAPICall.async(url, null, 'DELETE', null).then(sdmIMController.updateAttachments);
+                            var url = APIUrl + '/file/' + attachment.filename;
+                            makeAPICall.async(url, null, 'DELETE', null).then(sdmIMController.updateAttachmentsAndFiles);
                         }
 
                         sdmIMController.downloadAttachment= function($index) {
-                            var url = APIUrl + '/attachment?name=' + sdmIMController.attachments[$index].name
-                                + sdmIMController.attachments[$index].ext;
+                            var url = APIUrl + '/file/' + sdmIMController.attachments[$index].filename;
 
                             makeAPICall.async(url, null, 'POST', null).then(function(response){
 
-                                window.open(response.url + '&attach=true', '_self');
+                                window.open(url + '?ticket=' + response.ticket, '_self');
                             });
                         };
 
                         sdmIMController.hasPapayaViewer = function(attachment) {
-                            var filename = attachment.name + attachment.ext;
+                            var filename = attachment.filename;
                             return filename.search(/\.nii(\.gz)?$/) >= 0;
                         }
 
                         sdmIMController.hasBbrowserViewer = function(attachment) {
-                            var filename = attachment.name + attachment.ext;
+                            var filename = attachment.filename;
                             return filename.search(/\.obj$/) >= 0;
                         }
 
                         sdmIMController.viewAttachment = function(attachment) {
-                            var fullname = attachment.name + attachment.ext;
-                            var url = APIUrl + '/attachment?name=' + fullname;
+                            var url = APIUrl + '/file/' + attachment.filename;
                             var callback;
                             if (sdmIMController.hasBbrowserViewer(attachment)) {
                                 callback = function(response) {
+                                    var ticketUrl = url + '?ticket=' + response.ticket + '&view=true';
                                     $("#bbrowser-viewer").html("");
                                     $("#bbrowser-viewer").load(
                                       "https://brainbrowser.cbrain.mcgill.ca/surface-viewer-widget?" +
                                       "version=2.3.0&" +
-                                      "model=" + response.url + "&" +
+                                      "model=" + ticketUrl + "&" +
                                       "width=600&" +
                                       "height=600&" +
                                       "format=wavefrontobj"
@@ -586,15 +580,15 @@ var _inputEl;
                                 };
                             } else if (sdmIMController.hasPapayaViewer(attachment)) {
                                 callback = function(response) {
-                                    papayaParams.images = [response.url];
+                                    papayaParams.images = [url + '?ticket=' + response.ticket + '&view=true'];
                                     papayaParams.showOrientation = false;
                                     papaya.Container.startPapaya();
                                 };
                             } else {
                                 callback = function(response) {
                                     sdmIMController.resourceViewer = {
-                                        fileUrl: response.url,
-                                        type: sdmIMController.getAttachmentType(attachment)
+                                        fileUrl: url + '?ticket=' + response.ticket + '&view=true',
+                                        mimetype: attachment.mimetype
                                     }
                                 };
                             }
@@ -602,13 +596,9 @@ var _inputEl;
                         };
 
                         sdmIMController.viewFileInPapaya = function(file) {
-                            var _node = {
-                                level: level,
-                                _id: node.id,
-                                file: file
-                            };
-                            sdmDownloadInterface.getDownloadURL(_node, true, false).then(function(response){
-                                papayaParams.images = [response.url];
+                            var url = APIUrl + '/file/' + file.filename;
+                            makeAPICall.async(url, null, 'POST', null).then(function(response){
+                                papayaParams.images = [url + '?ticket=' + response.ticket];
                                 papayaParams.showOrientation = false;
                                 papaya.Container.startPapaya();
                             });
