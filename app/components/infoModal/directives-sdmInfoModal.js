@@ -327,6 +327,7 @@ var _inputEl;
                         console.log(path);
                         sdmIMController.path = path.slice(1);
                         sdmIMController.title = level.slice(0, level.length - 1) + ': ';
+                        sdmIMController.level = node.level.name;
                         sdmIMController.name = node.name;
                         sdmIMController.user = sdmUserManager.getAuthData();
                         console.log(sdmIMController.user);

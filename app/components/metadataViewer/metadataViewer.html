@@ -1,0 +1,25 @@
+<sdm-metadata-viewer>
+    <textarea spellcheck="false" ng-model="sdmMVController.metadata" ng-change="sdmMVController.validateMetadata()"></textarea>
+    <div class="table-container" ng-show="sdmMVController.metadataErrors.length">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Error</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="error in sdmMVController.metadataErrors">
+                    <td ng-bind="error.field"></td>
+                    <td ng-bind="error.message"></td>
+                    <td><pre class="error-value" ng-bind="error.value | json"></pre></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="confirm-buttons">
+        <input type="button" class="metadata-viewer btn btn-default btn-xs" value="Close" ng-click="$parent.hidePopover($event, 0)">
+    </div>
+</sdm-metadata-viewer>
+
