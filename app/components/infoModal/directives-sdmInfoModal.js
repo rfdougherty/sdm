@@ -568,15 +568,21 @@ var _inputEl;
                             if (sdmIMController.hasBbrowserViewer(attachment)) {
                                 callback = function(response) {
                                     var ticketUrl = url + '?ticket=' + response.ticket + '&view=true';
-                                    $("#bbrowser-viewer").html("");
-                                    $("#bbrowser-viewer").load(
-                                      "https://brainbrowser.cbrain.mcgill.ca/surface-viewer-widget?" +
-                                      "version=2.3.0&" +
-                                      "model=" + ticketUrl + "&" +
-                                      "width=600&" +
-                                      "height=600&" +
-                                      "format=wavefrontobj"
-                                    );
+                                    sdmIMController.loadingBB = true;
+                                    BrainBrowser.config.set("worker_dir", "utils/bb/workers/");
+                                    setTimeout(function(){
+                                        BrainBrowser.SurfaceViewer.start("bbrowser-viewer", function(viewer) {
+                                            console.log(viewer);
+                                            viewer.render();
+                                            viewer.loadModelFromURL(ticketUrl, {
+                                                format: "wavefrontobj",
+                                                complete: function() {
+                                                    sdmIMController.loadingBB = false;
+                                                    $scope.$apply();
+                                                }
+                                            });
+                                        });
+                                    }, 0);
                                 };
                             } else if (sdmIMController.hasPapayaViewer(attachment)) {
                                 callback = function(response) {
