@@ -29,6 +29,7 @@
     <link rel="stylesheet/less" href="components/removeCollection/removeCollectionPopover.less" />
     <link rel="stylesheet/less" href="components/brainbrowser/brainbrowser.less" />
     <link rel="stylesheet/less" href="components/csvViewer/csvViewer.less" />
+    <link rel="stylesheet/less" href="components/jsonschema/metadataModal.less" />
     <link rel="stylesheet" href="utils/papaya.css" />
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.0.0/less.min.js"></script>
@@ -71,10 +72,10 @@
     <!--script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script-->
     <script src="//twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
 
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular-route.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular-cookies.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular-sanitize.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-route.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-cookies.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-sanitize.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/danialfarid-angular-file-upload/3.1.2/angular-file-upload.js"></script>
     <script src="bootstrap/js/ui-bootstrap-custom-tpls-0.13.0.js"></script>
 
@@ -175,6 +176,62 @@
     <script src="components/csvViewer/directives-sdmCsvViewer.js"></script>
     <script src="components/csvViewer/services-sdmCsvParser.js"></script>
     <script src="components/csvViewer/modules.js"></script>
+
+    <script src="utils/api-check.js"></script>
+    <script src="utils/formly.js"></script>
+    <script src="utils/angular-formly-templates-bootstrap.js"></script>
+
+    <script src="components/jsonschema/services-sdmToFormly.js"></script>
+    <script src="components/jsonschema/controllers-SdmMetadataCtrl.js"></script>
+    <script src="components/jsonschema/modules.js"></script>
+
+    <script type="text/ng-template" id="repeatSection.html">
+          <div>
+            <!--loop through each element in model array-->
+            <div class="{{hideRepeat}}">
+              <div class="repeatsection" ng-repeat="element in model[options.key]" ng-init="fields = copyFields(to.fields)">
+                <formly-form fields="fields"
+                             model="element"
+                             bind-name="'formly_ng_repeat' + index + $parent.$index">
+                </formly-form>
+                <div style="margin-bottom:20px;">
+                  <button type="button" class="btn btn-sm btn-danger" ng-click="model[options.key].splice($index, 1)">
+                    Remove
+                  </button>
+                </div>
+                <hr>
+            </div>
+            <p class="AddNewButton">
+              <button type="button" class="btn btn-primary" ng-click="addNew()" >{{to.btnText}}</button>
+            </p>
+          </div>
+    </script>
+
+    <script type="text/ng-template" id="multiInput.html">
+          <div>
+            <div class="clearfix">
+              <div class="row"
+                   style="margin-bottom:14px"
+                   ng-repeat="item in model[options.key] track by $index"
+                   ng-init="itemOptions = copyItemOptions()">
+                <formly-field class="no-padding col-xs-10"
+                              options="itemOptions"
+                              model="model[options.key]"
+                              form="form"
+                              index="$index">
+                </formly-field>
+                <div class="col-xs-2" style="margin-top:6px">
+                  <a ng-click="model[options.key].splice($index, 1)">
+                    x Remove
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div>
+              <button type="button" class="btn btn-success btn-sm" ng-click="newEntry(model, options.key)">Add</button>
+            </div>
+          </div>
+    </script>
 </body>
 
 </html>

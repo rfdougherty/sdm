@@ -25,8 +25,62 @@ var sdmApp = angular.module('sdm', [
     'sdm.removeCollection',
     'sdm.brainbrowser',
     'sdm.csvViewer',
-    'ui.bootstrap'
-]).run(['sdmViewManager', 'sdmUserManager',
+    'ui.bootstrap',
+    'formly',
+    'formlyBootstrap',
+    'sdm.jsonschema'
+]).config(['formlyConfigProvider', function(formlyConfigProvider) {
+    formlyConfigProvider.setType({
+        name: 'repeatSection',
+        templateUrl: 'repeatSection.html',
+        controller: function($scope) {
+            $scope.formOptions = {formState: $scope.formState};
+            $scope.addNew = addNew;
+
+            $scope.copyFields = copyFields;
+
+            function copyFields(fields) {
+                return angular.copy(fields);
+            }
+
+            function addNew() {
+                $scope.model[$scope.options.key] = $scope.model[$scope.options.key] || [];
+                var repeatsection = $scope.model[$scope.options.key];
+                var newsection = {};
+
+                repeatsection.push(newsection);
+            }
+        }
+    });
+    formlyConfigProvider.setType({
+        name: 'multiInput',
+        templateUrl: 'multiInput.html',
+        defaultOptions: {
+            noFormControl: true,
+            wrapper: ['bootstrapLabel', 'bootstrapHasError'],
+            templateOptions: {
+                inputOptions: {
+                    wrapper: null
+                }
+            }
+        },
+        controller: /* @ngInject */ function($scope) {
+            $scope.copyItemOptions = copyItemOptions;
+            $scope.newEntry = newEntry;
+
+            function copyItemOptions() {
+                return angular.copy($scope.to.inputOptions);
+            }
+            function newEntry(model, key) {
+                if (model[key]) {
+                    model[key].push('');
+                } else {
+                    model[key] = [''];
+                }
+            }
+        }
+    });
+}]).run(['sdmViewManager', 'sdmUserManager',
     function(sdmViewManager, sdmUserManager){
         var userData = sdmUserManager.getAuthData();
         sdmViewManager.updateViewAppearance(userData.preferences);

@@ -18,16 +18,17 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js',
-      'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.js',
+      'app/utils/bb/*.js',
+      'test/unit/jquery.min.1.10.2.js',
+      'test/unit/angular.1.3.0.js',
       'node_modules/angular-mocks/angular-mocks.js',
-      'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular-route.js',
-      'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular-cookies.js',
-      'app/config/default/*.js',
+      'test/unit/angular-route.1.3.0.js',
+      'test/unit/angular-cookies.1.3.0.js',
+      'app/custom/*.js',
       'app/*.js',
       'app/components/**/*.js',
-      'test/unit/mock/**/*.js',
-      'test/unit/spec/**/*.js'
+      'test/unit/spec/**/*.js',
+
     ],
 
     reporters: ['progress', 'coverage'],

@@ -272,6 +272,10 @@ var _inputEl;
                         var n = node;
                         sdmIMController.apiDataNotes = [];
                         sdmIMController.formatSize = sdmHumanReadableSize;
+                        makeAPICall.async(BASE_URL + level + '/schema').then(function(jsonSchema){
+                            console.log(jsonSchema);
+                            sdmIMController.jsonSchema = jsonSchema;
+                        })
                         while (n.parent){
                             path.unshift(n.parent.level.name==='sessions'?n.parent.name + ' - ' + n.parent.subject:n.parent.name);
                             n = n.parent;

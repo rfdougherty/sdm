@@ -1,0 +1,11 @@
+<div ng-controller="SdmMetadataCtrl as vm">
+    <form ng-submit="vm.onSubmit()" novalidate>
+        <formly-form model="vm.model" fields="vm.fields" form="vm.form">
+            <button type="submit" class="btn btn-primary submit-button">Submit</button>
+        </formly-form>
+    </form>
+    <h3>Model</h3>
+    <pre>{{vm.model | json}}</pre>
+    <h3>Schema</h3>
+    <pre>{{vm.schema | json}}</pre>
+</div>
