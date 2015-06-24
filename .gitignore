@@ -10,3 +10,4 @@ coverage
 instrumented
 bower_components
 *.old.*
+**/__*

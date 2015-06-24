@@ -326,8 +326,12 @@
                                 _id: isNew?sdmAMController.groupId:sdmAMController.selectedGroup._id,
                                 roles: roles
                             }
-                            if (name && sdmAMController.selectedGroup.name) {
-                                payload.name = isNew?sdmAMController.groupId:sdmAMController.selectedGroup.name;
+                            if (name) {
+                                if (isNew) {
+                                    payload.name = sdmAMController.groupId;
+                                } else if (sdmAMController.selectedGroup && sdmAMController.selectedGroup.name) {
+                                    payload.name = sdmAMController.selectedGroup.name
+                                }
                             }
                             var method = isNew?'POST':'PUT';
                             return sdmAdminInterface.editGroup(method, payload._id, payload)
@@ -371,6 +375,20 @@
                             }
                             saveGroup(true, true).then(loadData).then(function() {
                                 sdmAMController.selectedGroup = findGroupByID(sdmAMController.groupId);
+                                sdmAdminInterface.loadUsersForGroup(sdmAMController.selectedGroup).then(function (roles) {
+                                    sdmAMController.addedPermissions = roles;
+                                    sdmAMController.addedPermissions.forEach(function(permission){
+                                        var user = sdmAMController.users[permission._id]
+                                        if (user && user.lastname) {
+                                            permission.name = [user.firstname, user.lastname].join(' ')
+                                        } else {
+                                            permission.name = permission._id
+                                        }
+                                    })
+                                    var typeahead_hint_element = angular.element('#group-permissions .tt-hint');
+                                    typeahead_hint_element_color = typeahead_hint_element.css('background-color');
+                                    typeahead_hint_element.css('background-color', 'transparent');
+                                });
                                 sdmAMController.createSuccess = true;
                                 setTimeout(function(){
                                     $scope.$apply(function(){
