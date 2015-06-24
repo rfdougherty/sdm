@@ -1,3 +1,5 @@
+@import (less) "../../variables.less";
+
 .sdm-bbrowser-viewer {
     background-color: black;
     .popover-dialog {
@@ -31,6 +33,54 @@
           border: 3px solid rgba(255, 255, 255, .7);
           border-top-color: gray;
       }
+    }
+    .tools {
+      position: absolute;
+      top:10px;
+      right:10px;
+      z-index: 10001;
+      width: 20%;
+      margin: 10px;
+      color: white;
+      background-color: rgba(0, 0, 0, .7);
+      .tools-group {
+        padding: 10px;
+      }
+      border: 1px solid white;
+    }
+    .bbrowser-container {
+      width: 100%;
+      height: 100%;
+    }
+    .btn-group {
+      padding-left: 10px;
+    }
+    .autorotate {
+      .btn {
+        background-color: @lightestGray;
+        color: black;
+      }
+      .btn.active, .btn:active {
+        background-color: @darkGray;
+        color: white;
+        &:focus {
+          color: white;
+        }
+      }
+      .btn:focus {
+        outline: none;
+        color: black;
+      }
+      .btn.reset:focus {
+        outline: none;
+      }
+      .btn.reset {
+        float: right;
+      }
+    }
+    hr {
+      margin-top: 10px;
+      margin-bottom: 10px;
     }
 }
 

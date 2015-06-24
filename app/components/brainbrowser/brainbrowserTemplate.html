@@ -1,0 +1,40 @@
+<div class="bbrowser-container">
+    <div class="tools" ng-show="!loadingBB" >
+        <div class="tools-group">
+            <div ng-show="showSlider">Change opacity</div>
+            <input type="range" ng-init="opacity=100" min="-1" max="101" ng-model="opacity" ng-change="changeOpacity(opacity)" ng-show="showSlider">
+        </div>
+        <div class="tools-group autorotate">
+            Autorotate
+            <div class="btn-group">
+                <input type="button" class="btn btn-xs" value="x"
+                       ng-click="setRotation($event)"
+                       ng-class="{active: viewer.autorotate.x}">
+                <input type="button" class="btn btn-xs" value="y"
+                       ng-click="setRotation($event)"
+                       ng-class="{active: viewer.autorotate.y}">
+                <input type="button" class="btn btn-xs" value="z"
+                       ng-click="setRotation($event)"
+                       ng-class="{active: viewer.autorotate.z}">
+            </div>
+            <input type="button" class="btn btn-default btn-xs reset" ng-click="resetView()" value="Reset view">
+        </div>
+        <div class="tools-group background">
+            Background Color: <input type="color" ng-model="bbrowserColor" ng-change="setBackgroundcolor(bbrowserColor)">
+        </div>
+        <hr/>
+        <div class="tools-group">
+            <div>Select a point</div>
+            <div>(Shift+click on the surface)</div>
+            <br/>
+            <div>X: {{selectedPoint.x}}</div>
+            <div>Y: {{selectedPoint.y}}</div>
+            <div>Z: {{selectedPoint.z}}</div>
+            <div>Vertex number: {{selectedPoint.vertex}}</div>
+            <div ng-show="selectedPoint.value">Value: {{selectedPoint.value}}</div>
+        </div>
+    </div>
+    <span class="spinner" ng-show="loadingBB"></span>
+    <div id="bbrowser-viewer">
+    </div>
+</div>

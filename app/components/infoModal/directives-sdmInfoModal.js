@@ -567,22 +567,7 @@ var _inputEl;
                             var callback;
                             if (sdmIMController.hasBbrowserViewer(attachment)) {
                                 callback = function(response) {
-                                    var ticketUrl = url + '?ticket=' + response.ticket + '&view=true';
-                                    sdmIMController.loadingBB = true;
-                                    BrainBrowser.config.set("worker_dir", "utils/bb/workers/");
-                                    setTimeout(function(){
-                                        BrainBrowser.SurfaceViewer.start("bbrowser-viewer", function(viewer) {
-                                            console.log(viewer);
-                                            viewer.render();
-                                            viewer.loadModelFromURL(ticketUrl, {
-                                                format: "wavefrontobj",
-                                                complete: function() {
-                                                    sdmIMController.loadingBB = false;
-                                                    $scope.$apply();
-                                                }
-                                            });
-                                        });
-                                    }, 0);
+                                    sdmIMController.ticketUrl = url + '?ticket=' + response.ticket + '&view=true';
                                 };
                             } else if (sdmIMController.hasPapayaViewer(attachment)) {
                                 callback = function(response) {

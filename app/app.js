@@ -23,6 +23,7 @@ var sdmApp = angular.module('sdm', [
     'sdm.search',
     'sdm.uploadDicom',
     'sdm.removeCollection',
+    'sdm.brainbrowser',
     'ui.bootstrap'
 ]).run(['sdmViewManager', 'sdmUserManager',
     function(sdmViewManager, sdmUserManager){
@@ -66,6 +67,8 @@ var SDM_KEY_CACHED_ACCESS_DATA = "SDM_KEY_CACHED_ACCESS_DATA";
 var UNDEFINED_PLACEHOLDER = '(undefined)';
 var papayaParams = [];
 papayaParams.expandable = "true";
+
+BrainBrowser.config.set("worker_dir", "utils/bb/workers/");
 
 var naturalSortByName = function(a, b){
     if (typeof a.name === 'undefined') {
