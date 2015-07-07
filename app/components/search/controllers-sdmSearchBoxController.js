@@ -33,10 +33,10 @@
                 }
             });
             // using jquery to add a small effect
-            var refreshButton = angular.element('#sdm-refresh-button');
-            refreshButton.addClass('loading');
+            var refreshButton = angular.element('#sdm-search-button');
+            refreshButton.addClass('blinking');
             sdmViewManager.searchAcquisitions(params).then(function(){
-                refreshButton.removeClass('loading');
+                refreshButton.removeClass('blinking');
                 //_this.toggleBox();
             });
             _this.showSearchResults = showSearchResults = true;
