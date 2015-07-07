@@ -262,6 +262,9 @@ var _inputEl;
                         $scope.$parent.disableEvents();
                         var node = $scope.$parent.$parent.data;
                         var APIUrl = BASE_URL + node.level.name + '/' + node.id;
+                        sdmIMController.getPermalink = function(filename) {
+                            return APIUrl + '/file/' + filename + '?user=';
+                        }
                         var level = node.level.name;
                         $scope.node = node;
                         sdmIMController.data = {};
@@ -330,7 +333,6 @@ var _inputEl;
                         sdmIMController.tileViewer = function(){
                             tileViewer(sdmIMController.nodeId, $element.width(), $element.height());
                         };
-                        sdmIMController.baseUrl = BASE_URL + 'acquisitions/' + node.id + '/file';
                         console.log(path);
                         sdmIMController.path = path.slice(1);
                         sdmIMController.title = level.slice(0, level.length - 1);

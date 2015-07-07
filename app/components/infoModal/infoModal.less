@@ -92,15 +92,16 @@ sdm-info-modal {
             margin-bottom: 0px;
             margin-top: 15px;
             td {
-                width: 20%;
+                width: 16%;
                 &.centered {
                     text-align: center;
                 }
             }
 
             td:first-child {
-                width: 40%;
+                width: 36%;
             }
+            background-color: @lightestGray;
         }
         div.attachments-body {
 
@@ -118,7 +119,7 @@ sdm-info-modal {
                 margin-bottom: 0px;
                 table-layout: fixed;
                 td {
-                    width: 20%;
+                    width: 16%;
                     overflow:hidden;
                     text-overflow: ellipsis;
                     vertical-align: middle;
@@ -129,7 +130,13 @@ sdm-info-modal {
                 }
 
                 td:first-child {
-                    width: 40%;
+                    width: 36%;
+                }
+                td.permalink {
+                    overflow: visible;
+                    input {
+                        width: 100%;
+                    }
                 }
 
             }
@@ -142,11 +149,15 @@ sdm-info-modal {
             margin-bottom: 0px;
             font-weight: 500;
             td {
-                width: 33%;
+                width: 21%;
                 &.centered {
                     text-align: center;
                 }
             }
+            td:first-child {
+                width: 36%;
+            }
+            background-color: @lightestGray;
         }
         div.files-body {
             min-height: 150px;
@@ -164,13 +175,21 @@ sdm-info-modal {
                 margin-bottom: 0px;
                 table-layout: fixed;
                 td {
-                    width: 33%;
+                    width: 21%;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     &.centered {
                         text-align: center;
                     }
                     vertical-align: middle;
+                }
+                td.permalink {
+                    input {
+                        width: 100%;
+                    }
+                }
+                td:first-child {
+                    width: 36%;
                 }
 
             }
