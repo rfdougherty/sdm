@@ -33,7 +33,7 @@ angular.module('sdm.util.directives.sdmViewer',
                                     .attr({
                                         'data': displayFile.fileUrl
                                     });
-                if (displayFile.mimetype.search(/^(application\/pdf|text\/html)$/) > -1){
+                if (displayFile.mimetype.search(/^(application\/pdf|text\/html|text\/plain)$/) > -1){
                     objectEl.attr({
                         width: '90%',
                         height: '90%'
