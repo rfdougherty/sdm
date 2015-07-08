@@ -476,7 +476,7 @@
                 promise = deferred.promise;
             } else {
                 promise = getChildrenFromAPI(node, deferred);
-                promise.then(function(children){
+                promise = promise.then(function(children){
                     children.forEach(function (child) {
                         child.checked = node.checked;
                     });

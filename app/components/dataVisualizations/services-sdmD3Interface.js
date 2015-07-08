@@ -11,8 +11,12 @@
 
         var actions = {
             expandNode: function(node){
+                var element = angular.element(this);
+                element.addClass('blinking');
+                node.blinking = true;
                 sdmDataManager.expandNode(node)
                     .then(function(newNode){
+                        newNode.blinking = false;
                         sdmViewManager.triggerViewChange(newNode);
                     });
             },
@@ -258,7 +262,8 @@
                                     } else {
                                         icon = 'fa-ban';
                                     }
-                                    return 'fa nav-glyph expander ' + icon;
+                                    var blinking = d.blinking?' blinking':'';
+                                    return 'fa nav-glyph expander ' + icon + blinking;
                                 }).on('mouseup', actions.expandNode);
                         }
                         if (i === 0 && d.notes && d.notes.length > 0 && !d.hideGlyphs) {
