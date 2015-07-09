@@ -245,7 +245,7 @@
         <div class="sdm-notes" ng-class="{'with-input': sdmIMController.canModify}">
             <div ng-repeat="note in sdmIMController.apiDataNotes.slice().reverse()">
                 <div class="note-header">
-                    <span class="author">{{note.author}} wrote:</span>
+                    <span class="author">{{note.date}} - {{note.author}} wrote:</span>
                     <i class="fa fa-times-circle-o" ng-click="sdmIMController.removeNote($index, formNotes)"></i>
                 </div>
                 <div class="note-container" ng-bind-html="note.text | newlines"></div>

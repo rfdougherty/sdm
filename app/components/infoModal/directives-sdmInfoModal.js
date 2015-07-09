@@ -405,7 +405,8 @@ var _inputEl;
                                                 var author = sdmIMController.users[note.author];
                                                 return {
                                                     author: author.firstname + ' ' + author.lastname,
-                                                    text: note.text
+                                                    text: note.text,
+                                                    date: new Date(note.timestamp).toDateString()
                                                 }
                                             });
                                         })
