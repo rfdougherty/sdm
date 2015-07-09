@@ -1,0 +1,47 @@
+@import (less) "../../variables.less";
+
+.sdm-csv-viewer {
+    .popover-dialog {
+        height: 95%;
+        width: 90%;
+    }
+
+    .popover-dialog:before, .popover-dialog:after {
+        top: 0px;
+        left: 95%;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+    }
+    .sdm-csv-viewer-button {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        z-index: 10001;
+    }
+    .flex-row {
+        width: 100%;
+        display: flex;
+    }
+    .flex-cell {
+        flex: 1;
+        border-top: 1px solid black;
+        border-left: 1px solid black;
+        padding-left: 4px;
+        padding-right: 4px;
+        white-space: nowrap;
+        overflow: scroll;
+    }
+    .flex-row:first-child .flex-cell{
+        border-top: none;
+    }
+    .flex-cell:first-child {
+        border-left: none;
+    }
+    .csv-table {
+        margin: 20px;
+        border: 1px solid black;
+        max-height: 90%;
+        overflow: scroll;
+    }
+}

@@ -24,6 +24,7 @@ var sdmApp = angular.module('sdm', [
     'sdm.uploadDicom',
     'sdm.removeCollection',
     'sdm.brainbrowser',
+    'sdm.csvViewer',
     'ui.bootstrap'
 ]).run(['sdmViewManager', 'sdmUserManager',
     function(sdmViewManager, sdmUserManager){

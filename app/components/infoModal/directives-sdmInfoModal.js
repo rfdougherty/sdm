@@ -564,6 +564,10 @@ var _inputEl;
                             return filename.search(/\.obj$/) >= 0;
                         }
 
+                        sdmIMController.hasCsvViewer = function(attachment) {
+                            return attachment.mimetype === 'text/csv' || attachment.mimetype === 'text/tab-separated-values';
+                        }
+
                         sdmIMController.viewAttachment = function(attachment) {
                             var url = APIUrl + '/file/' + attachment.filename;
                             var callback;
@@ -571,7 +575,13 @@ var _inputEl;
                                 callback = function(response) {
                                     sdmIMController.ticketUrl = url + '?ticket=' + response.ticket + '&view=true';
                                 };
-                            } else if (sdmIMController.hasPapayaViewer(attachment)) {
+                            }  else if (sdmIMController.hasCsvViewer(attachment)) {
+                                callback = function(response) {
+                                    sdmIMController.mimetype = attachment.mimetype;
+                                    sdmIMController.csvTicketUrl = url + '?ticket=' + response.ticket + '&view=true';
+                                };
+                            }
+                            else if (sdmIMController.hasPapayaViewer(attachment)) {
                                 callback = function(response) {
                                     papayaParams.images = [url + '?ticket=' + response.ticket + '&view=true'];
                                     papayaParams.showOrientation = false;
