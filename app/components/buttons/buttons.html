@@ -4,6 +4,15 @@
         Actions <span class="caret"></span>
       </button>
       <ul class="dropdown-menu dropdown-menu-right" role="menu">
+        <li ng-show="sdmButtonsController.location() === '/projects'"><a href=""
+            sdm-popover
+            sdm-popover-template-content="components/createNewProject/createNewProjectModal.html"
+            sdm-popover-class="sdm-create-project"
+            sdm-popover-show="click"
+            sdm-popover-style-height="160px"
+            sdm-popover-style-width="320px"
+            sdm-popover-show-timeout="0"
+            sdm-append-to-body>Create Project</a></li>
         <li ng-show="sdmButtonsController.selectionButtonsEnabled()"><a href=""
             sdm-popover
             sdm-popover-template-content="components/createCollection/modalCreateCollection.html"

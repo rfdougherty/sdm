@@ -40,6 +40,7 @@
                         console.log($scope.$parent.$parent);
                         var selectCreatedProject = function(projectId) {
                             var sdmMSController = $scope.$parent.$parent.sdmMSController;
+                            if (!sdmMSController) return;
                             sdmMSController.getGroups().then(function(){
                                 sdmMSController.selectedGroup = sdmMSController.groups.filter(function(g){
                                     return g._id === sdmNPController.selectedGroup._id;
