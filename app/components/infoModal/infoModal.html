@@ -76,6 +76,15 @@
                                 sdm-popover-show-timeout="0"
                                 sdm-append-to-body ng-click="sdmIMController.viewFileInPapaya(file)">
                             </span>
+                            <span class="glyphicon glyphicon-eye-open"
+                                ng-show="file.filetype === 'text'"
+                                sdm-popover
+                                sdm-popover-template-content="components/genericViewer/genericViewer.html"
+                                sdm-popover-class="sdm-generic-viewer"
+                                sdm-popover-show="click"
+                                sdm-popover-show-timeout="0"
+                                sdm-append-to-body ng-click="sdmIMController.viewAttachment(file)">
+                            </span>
                         </td>
                     </tr>
                 </tbody>
