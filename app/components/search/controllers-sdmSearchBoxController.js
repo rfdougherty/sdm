@@ -66,6 +66,16 @@
         }
         _this.changeScanTypeDefault();
 
+        _this.changeSexDefault = function() {
+            if (_this.parameters.sex) {
+                _this.sexDefault = '';
+            } else {
+                _this.sexDefault = 'Select';
+            }
+        }
+
+        _this.changeSexDefault();
+
         _this.scanTypeValues = [];
         makeAPICall.async(BASE_URL + 'search').then(function(response){
             _this.scanTypeValues = response.properties.scan_type.enum;

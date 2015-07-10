@@ -69,6 +69,17 @@
                     </div>
 
                     <div class="sdm-search-group">
+                        <label for="sex">Subject Sex</label>
+                        <span class="input-group">
+                            <select class="form-control" form="sdm-search-box-form" id="sex" ng-class="{default:!sdmSearchBox.parameters.sex}" ng-model="sdmSearchBox.parameters.sex" ng-change="sdmSearchBox.changeSexDefault()">
+                                <option class="default" value="">{{sdmSearchBox.sexDefault}}</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </span>
+                    </div>
+
+                    <div class="sdm-search-group">
                         <label for="psdName">PSD Name:</label>
                         <span class="input-group">
                             <input type="text" id="psdName" ng-model="sdmSearchBox.parameters.psd" placeholder="Enter Pulse Sequence">
@@ -77,8 +88,6 @@
 
 
 
-                    <div class="sdm-search-group">
-                    </div>
                     <div class="sdm-search-group">
                     </div>
                     <div class="sdm-search-group sdm-search-buttons">
