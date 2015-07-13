@@ -586,7 +586,9 @@ var _inputEl;
                                 callback = function(response) {
                                     papayaParams.images = [url + '?ticket=' + response.ticket + '&view=true'];
                                     papayaParams.showOrientation = false;
-                                    papaya.Container.startPapaya();
+                                    setTimeout(function(){
+                                        papaya.Container.startPapaya();
+                                    }, 0)
                                 };
                             } else {
                                 callback = function(response) {
@@ -604,7 +606,9 @@ var _inputEl;
                             makeAPICall.async(url, null, 'POST', null).then(function(response){
                                 papayaParams.images = [url + '?ticket=' + response.ticket];
                                 papayaParams.showOrientation = false;
-                                papaya.Container.startPapaya();
+                                setTimeout(function(){
+                                    papaya.Container.startPapaya();
+                                }, 0);
                             });
                         }
 
