@@ -540,13 +540,19 @@ span.expander.glyphicon {
     }
 }
 
-i.fa.fa-chevron-right, i.fa.fa-chevron-down, i.fa.fa-ban {
+i.fa.fa-chevron-right, i.fa.fa-chevron-down, i.fa.fa-ban, i.fa.fa-times-circle {
     position: relative;
     top: 3px;
     width: 10px;
     &:hover {
         color: @blue;
         cursor: pointer;
+    }
+    &.fa-times-circle {
+        color: #d9534f;
+    }
+    &.fa-times-circle:hover {
+        color: #c9302c; //red danger
     }
 }
 

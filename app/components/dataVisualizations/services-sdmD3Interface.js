@@ -8,9 +8,16 @@
         ) {
 
         var calculateTextWidth = sdmTextWidthCalculator;
-
         var actions = {
-            expandNode: function(node){
+            expandNode: function(node, i, element){
+                if (node.toBeDeleted && node.level.name === 'projects') {
+                    sdmDataManager.deleteNode(node).then(function(){
+                        sdmViewManager.refreshView();
+                    });
+                    return;
+                } else if (!node.hasData && node.level.name === 'projects') {
+                    node.toBeDeleted = true;
+                }
                 var element = angular.element(this);
                 element.addClass('blinking');
                 node.blinking = true;
@@ -259,6 +266,8 @@
                                         icon = (d&&d.level.next_level&&d.hasData)?
                                             d.children?'fa-chevron-down':'fa-chevron-right'
                                             :'';
+                                    } else if (d.toBeDeleted) {
+                                        icon = 'fa-times-circle';
                                     } else {
                                         icon = 'fa-ban';
                                     }

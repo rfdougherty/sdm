@@ -513,6 +513,11 @@
             }
         };
 
+        var deleteNode = function(node) {
+            var url = BASE_URL + node.level.name + '/' + node.id;
+            return makeAPICall.async(url, null, 'DELETE');
+        }
+
         return {
             refreshViewTree: refreshViewTree,
             expandNode: expandNode,
@@ -522,7 +527,8 @@
             breadthFirstFullUntilLevel: breadthFirstFullUntilLevel,
             breadthFirstExpandCheckedGroups: breadthFirstExpandCheckedGroups,
             treeInit: treeInit,
-            sortTree: sortTree
+            sortTree: sortTree,
+            deleteNode: deleteNode
         }
     }
 
