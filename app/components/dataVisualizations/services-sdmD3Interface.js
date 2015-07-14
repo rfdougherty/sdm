@@ -295,7 +295,7 @@
                                 'sdm-popover-show-after': '400'
                             }).on('mouseenter', sdmCellOnHover, true);
                         }
-                        if (i === 0 && d.attachment_count > 0) {
+                        if (i === 0 && d.attachment_count > 0 && !d.hideGlyphs) {
                             d3DivContentWidth -= 13;
                             d3DivContent.style({'width':d3DivContentWidth + '%'});
                             // IMPORTANT: data in this tooltip is added to its scope in the sdmCellOnHover function

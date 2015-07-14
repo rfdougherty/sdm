@@ -29,7 +29,7 @@
                                 if (selection.length){
                                     sdmDownloadInterface.getDownloadURL(selection, false, sdmDLController.optional).then(function(response){
                                         console.log(response);
-                                        sdmDLController.downloadURL = BASE_URL + '/download?ticket=' + response.ticket;
+                                        sdmDLController.downloadURL = BASE_URL + 'download?ticket=' + response.ticket;
                                         sdmDLController.fileCount = response.file_cnt;
                                         sdmDLController.size = response.size;
                                         sdmDLController.loadingState--;

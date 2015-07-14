@@ -257,6 +257,17 @@
         Are you sure you want do dismiss your pending changes?
     </div>
     <div class="info-modal-confirm-buttons">
+        <input ng-show="sdmIMController.title === 'acquisition'" type="button"
+            class="btn btn-default"
+            ng-show="sdmIMController.jsonSchema"
+            sdm-popover
+            sdm-popover-template-content="components/jsonschema/metadataModal.html"
+            sdm-popover-class="sdm-metadata-modal"
+            sdm-popover-show="click"
+            sdm-popover-show-timeout="0"
+            sdm-append-to-body
+            value="View metadata"
+            ng-disabled="sdmULController.uploadInProgress"></input>
         <input type="button" id="info-modal-close" class="btn btn-default" ng-click="sdmIMController.close($event)" value="Close" ng-disabled="sdmULController.uploadInProgress"></input>
     </div>
     <!-- permissions end -->
