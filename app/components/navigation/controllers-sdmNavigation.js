@@ -43,5 +43,4 @@
     angular.module('sdm.navigation.controllers.sdmNavigation', ['sdm.main.services.sdmViewManager'])
         .controller('SdmNavigationController', SdmNavigationController);
 
-
 })();

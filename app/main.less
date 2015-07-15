@@ -153,7 +153,8 @@ body {
         font-weight: 500;
         font-size: 18px;
         margin-top: 6px;
-        .loading {
+        cursor: pointer;
+        &.loading {
             -webkit-animation:spinner 1.2s linear infinite;
             animation:spinner 1.2s linear infinite;
         }
@@ -528,15 +529,18 @@ span.expander.glyphicon {
     top: 5px;
     &:hover {
         color: @blue;
-        cursor: pointer; cursor: hand;
+        cursor: pointer;
     }
-    &.glyphicon-comment {
+    &.glyphicon-comment, &.glyphicon-paperclip {
         color: @softGray;
-        padding-right: 4px;
-        padding-left: 4px;
+        padding-right: 2px;
+        padding-left: 2px;
         &:hover {
             color: @blue;
         }
+    }
+    &.glyphicon-paperclip {
+        color: darken(@softGray, 10%)
     }
 }
 

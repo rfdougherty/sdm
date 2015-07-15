@@ -111,6 +111,7 @@ var naturalSortByName = function(a, b){
 var DataNode = function(data, site, level, children) {
     this.level = level;
     this.site = site;
+    this.attachment_count = data.attachment_count;
     this.id = data && data._id ?data._id: null;
     if (level) {
         angular.forEach(

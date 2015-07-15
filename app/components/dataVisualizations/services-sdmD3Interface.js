@@ -275,8 +275,10 @@
                                     return 'fa nav-glyph expander ' + icon + blinking;
                                 }).on('mouseup', actions.expandNode);
                         }
+                        var d3DivContentWidth = 85;
                         if (i === 0 && d.notes && d.notes.length > 0 && !d.hideGlyphs) {
-                            d3DivContent.style({'width':'70%'});
+                            d3DivContentWidth -= 12;
+                            d3DivContent.style({'width':d3DivContentWidth + '%'});
                             // IMPORTANT: data in this tooltip is added to its scope in the sdmCellOnHover function
                             d3Element.append('div').append('span').attr({
                                 'class': 'glyphicon nav-glyph expander glyphicon-comment',
@@ -291,7 +293,27 @@
                                 'sdm-popover-hide': 'mouseleave',
                                 'sdm-popover-show-timeout': '400',
                                 'sdm-popover-show-after': '400'
-                            }).on('mouseenter', sdmCellOnHover, true);;
+                            }).on('mouseenter', sdmCellOnHover, true);
+                        }
+                        if (i === 0 && d.attachment_count > 0) {
+                            d3DivContentWidth -= 13;
+                            d3DivContent.style({'width':d3DivContentWidth + '%'});
+                            // IMPORTANT: data in this tooltip is added to its scope in the sdmCellOnHover function
+                            var attachmentsText = d.attachment_count === 1?'1 attachment':(d.attachment_count + ' attachments');
+                            d3Element.append('div').append('span').attr({
+                                'class': 'glyphicon nav-glyph expander glyphicon-paperclip',
+                                'sdm-popover': '',
+                                'sdm-popover-class': 'sdm-tooltip',
+                                'sdm-popover-template-text':  attachmentsText,
+                                'sdm-popover-dynamic-position': 'false',
+                                'sdm-popover-show': 'mouseenter',
+                                'sdm-popover-hide': 'mouseleave',
+                                'sdm-popover-show-timeout': '400',
+                                'sdm-popover-show-after': '400',
+                                'sdm-tooltip-style':'',
+                                'sdm-tooltip-x':'7',
+                                'sdm-tooltip-y':'20',
+                            }).on('mouseenter', sdmCellOnHover, true);
                         }
                     }
                 }, this);
