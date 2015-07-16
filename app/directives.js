@@ -1,6 +1,5 @@
 'use strict';
 
-
 (function (){
     var sdmDirectives = angular.module('sdm.directives', []);
 
@@ -21,16 +20,15 @@
         }
     }]);
 
-    sdmDirectives.directive('selectOnClick', ['$window', function ($window) {
+    sdmDirectives.directive('selectImmediate', ['$window', function ($window) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
-                element.on('click', function () {
+                setTimeout(function(){
                     if (!$window.getSelection().toString()) {
-                        // Required for mobile Safari
-                        this.setSelectionRange(0, this.value.length)
+                        element[0].setSelectionRange(0, element[0].value.length)
                     }
-                });
+                }, 0);
             }
         };
     }]);

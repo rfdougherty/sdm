@@ -48,8 +48,8 @@
                 <thead>
                     <tr>
                         <td>File description</td>
-                        <td>Size</td>
-                        <td>Permalink</td>
+                        <td class="centered">Permalink</td>
+                        <td class="centered">Size</td>
                         <td class="centered">Viewer</td>
                     </tr>
                 </thead>
@@ -60,8 +60,19 @@
                 <tbody>
                     <tr class='file' ng-repeat="file in sdmIMController.files">
                         <td><a href ng-click="sdmIMController.download(file)">{{file.filetype}}: {{file.datatypes.join(', ')}}</a></td>
-                        <td>{{sdmIMController.formatSize(file.filesize)}}</td>
-                        <td class="permalink"><input type="text" select-on-click readonly ng-value="sdmIMController.getPermalink(file.filename)"></td>
+                        <td class="permalink centered">
+                            <span class="glyphicon glyphicon-link"
+                                sdm-popover
+                                sdm-popover-template-content="components/permalink/permalinkFile.html"
+                                sdm-popover-class="sdm-permalink"
+                                sdm-popover-show="mouseenter"
+                                sdm-popover-hide="mouseleave"
+                                sdm-popover-show-timeout="400"
+                                sdm-popover-hide-timeout="400"
+                                >
+                            </span>
+                        </td>
+                        <td class="centered">{{sdmIMController.formatSize(file.filesize)}}</td>
                         <td class="centered">
                             <span class="glyphicon glyphicon-eye-open"
                                   ng-show="file.filetype === 'montage'"
@@ -138,7 +149,7 @@
                         <tr>
                             <td>Filename</td>
                             <td>Size</td>
-                            <td>Permalink</td>
+                            <td class="centered">Permalink</td>
                             <td class="centered">Viewer</td>
                             <td ng-show="sdmIMController.userPermission !== 'ro' || sdmIMController.user.root" class="centered">Remove</td>
                         </tr>
@@ -151,7 +162,18 @@
                         <tr class='attachment' ng-repeat="attachment in sdmIMController.attachments">
                             <td><a href ng-click="sdmIMController.downloadAttachment($index)">{{attachment.filename}}</a></td>
                             <td>{{sdmIMController.formatSize(attachment.filesize)}}</td>
-                            <td class="permalink"><input type="text" select-on-click ng-value="sdmIMController.getPermalink(attachment.filename)" readonly></td>
+                            <td class="permalink centered">
+                                <span class="glyphicon glyphicon-link"
+                                    sdm-popover
+                                    sdm-popover-template-content="components/permalink/permalink.html"
+                                    sdm-popover-class="sdm-permalink"
+                                    sdm-popover-show="mouseenter"
+                                    sdm-popover-hide="mouseleave"
+                                    sdm-popover-show-timeout="400"
+                                    sdm-popover-hide-timeout="400"
+                                    >
+                                </span>
+                            </td>
                             <td class="centered">
                                 <a href >
                                     <span class="glyphicon glyphicon-eye-open"
@@ -348,9 +370,8 @@
 
         <!--pre>{{sdmIMController.apiData | json}}</pre-->
     </div>
+    <!-- metadata end -->
 
-
-    <!-- permissions end -->
     <!-- notes -->
     <form name="formNotes" class="notes-view" ng-class="{error: formNotes.hasErrors}" ng-show="sdmIMController.loadingState === 0 && sdmIMController.modalView === 'notes' && ((sdmIMController.apiData.notes && sdmIMController.apiData.notes.length) || sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root)">
         <div ng-keydown="sdmIMController.createNewNote($event)">

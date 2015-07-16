@@ -1,0 +1,53 @@
+@import (less) "../../variables.less";
+
+div.sdm-permalink {
+    .popover-dialog {
+        top: -7px;
+        left: 22px;
+        transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+        font-family: 'proxima-nova', "Helvetica Neue", Helvetica, Arial, sans-serif;
+        border: 1px solid @softGray;
+        box-shadow: 0px 0px 6px @lightestGray;
+        height: 30px;
+        width: 300px;
+        z-index: 10100;
+    }
+
+    .popover-dialog:before, .popover-dialog:after  {
+        content: " ";
+        top: 50%;
+        right: 100%;
+        left: initial;
+        height: 0;
+        width: 0;
+        transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+    }
+    .popover-dialog:before  {
+        border: 7px solid transparent;
+        border-right-color: @softGray;
+        margin-top: -7px;
+    }
+    .popover-dialog:after {
+        border: 6px solid transparent;
+        border-right-color: @lightestGray;
+        margin-top: -6px;
+    }
+    .popover-overlay {
+        background-color: transparent;
+    }
+    .title-popover {
+        padding: 5px 10px;
+        font-weight: 500;
+        border-bottom: 1px solid @mediumGray;
+        background-color: @lightestGray;
+    }
+    .input-popover {
+        padding: 3px 10px;
+        background-color: @lightestGray;
+    }
+
+}

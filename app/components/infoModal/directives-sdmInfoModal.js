@@ -519,6 +519,7 @@ var _inputEl;
                         };
 
                         sdmIMController.updateAttachmentsAndFiles = function() {
+                            sdmViewManager.refreshView();
                             return makeAPICall.async(APIUrl, {site: node.site}).then(
                                 function (apiData) {
                                     sdmIMController.attachments = [];
