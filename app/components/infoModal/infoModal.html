@@ -36,6 +36,9 @@
         <li role="presentation" ng-class="{active: sdmIMController.modalView === 'permissions'}" ng-click="sdmIMController.modalView = 'permissions'" ng-show="sdmIMController.apiData.permissions && (sdmIMController.userPermission === 'admin' || sdmIMController.user.root)">
             <a>Permissions</a>
         </li>
+        <li role="presentation" ng-class="{active: sdmIMController.modalView === 'metadata'}" ng-click="sdmIMController.modalView = 'metadata'" ng-show="(sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root || sdmIMController.userPermission === 'ro') && sdmIMController.title === 'acquisition'">
+            <a>Metadata</a>
+        </li>
     </ul>
 
     <!-- files -->
@@ -235,6 +238,118 @@
             </div>
         </div>
     </form>
+    <!-- end permissions -->
+
+    <!-- metadata -->
+    <div class="sdm-metadata" ng-show="sdmIMController.loadingState === 0 && sdmIMController.modalView === 'metadata'">
+        <table>
+            <tr>
+                <td>Protocol</td>
+                <td>{{sdmIMController.apiData.protocol}}</td>
+            </tr>
+            <tr>
+                <td>Description</td>
+                <td>{{sdmIMController.apiData.description}}</td>
+            </tr>
+            <tr>
+                <td>Series</td>
+                <td>{{sdmIMController.apiData.series}}</td>
+            </tr>
+            <tr>
+                <td>Datatype</td>
+                <td>{{sdmIMController.apiData.datatype}}</td>
+            </tr>
+
+            <tr>
+                <td>Phase Encode Undersample</td>
+                <td>{{sdmIMController.apiData.phase_encode_undersample}}</td>
+            </tr>
+            <tr>
+                <td>Slice Encode Undersample</td>
+                <td>{{sdmIMController.apiData.slice_encode_undersample}}</td>
+            </tr>
+            <tr>
+                <td>Duration</td>
+                <td>{{sdmIMController.apiData.duration}}</td>
+            </tr>
+            <tr>
+                <td>Averages</td>
+                <td>{{sdmIMController.apiData.num_averages}}</td>
+            </tr>
+            <tr>
+                <td>Size</td>
+                <td>{{sdmIMController.apiData.size.x}}x{{sdmIMController.apiData.size.y}}</td>
+            </tr>
+            <tr>
+                <td>Tr</td>
+                <td>{{sdmIMController.apiData.tr}}</td>
+            </tr>
+            <tr>
+                <td>Ti</td>
+                <td>{{sdmIMController.apiData.ti}}</td>
+            </tr>
+            <tr>
+                <td>Te</td>
+                <td>{{sdmIMController.apiData.te}}</td>
+            </tr>
+            <tr>
+                <td>PSD Name</td>
+                <td>{{sdmIMController.apiData.psd}}</td>
+            </tr>
+            <tr>
+                <td>Device</td>
+                <td>{{sdmIMController.apiData.device}}</td>
+            </tr>
+            <tr>
+                <td>Rx Coil</td>
+                <td>{{sdmIMController.apiData.rx_coil}}</td>
+            </tr>
+            <tr>
+                <td>Slices</td>
+                <td>{{sdmIMController.apiData.num_slices}}</td>
+            </tr>
+            <tr>
+                <td>Flip Angle</td>
+                <td>{{sdmIMController.apiData.flip_angle}}</td>
+            </tr>
+            <tr>
+                <td>Time Points</td>
+                <td>{{sdmIMController.apiData.num_timepoints}}</td>
+            </tr>
+            <tr>
+                <td>Pixel Bandwidth</td>
+                <td>{{sdmIMController.apiData.pixel_bandwidth}}</td>
+            </tr>
+            <tr>
+                <td>Acquisition Matrix</td>
+                <td>{{sdmIMController.apiData.acquisition_matrix.x}} {{sdmIMController.apiData.acquisition_matrix.y}}</td>
+            </tr>
+            <tr>
+                <td>Field of View</td>
+                <td>{{sdmIMController.apiData.fov.x}} {{sdmIMController.apiData.fov.y}}</td>
+            </tr>
+            <tr>
+                <td>mm per Voxel</td>
+                <td>{{sdmIMController.apiData.mm_per_voxel.x}} {{sdmIMController.apiData.mm_per_voxel.y}} {{sdmIMController.apiData.mm_per_voxel.z}}</td>
+            </tr>
+            <tr>
+                <td>Echos</td>
+                <td>{{sdmIMController.apiData.num_echos}}</td>
+            </tr>
+            <tr>
+                <td>Timestamp</td>
+                <td>{{sdmIMController.apiData.timestamp}}</td>
+            </tr>
+            <tr>
+                <td>Timezone</td>
+                <td>{{sdmIMController.apiData.timezone}}</td>
+            </tr>
+        </table>
+
+        <!--pre>{{sdmIMController.apiData | json}}</pre-->
+    </div>
+
+
     <!-- permissions end -->
     <!-- notes -->
     <form name="formNotes" class="notes-view" ng-class="{error: formNotes.hasErrors}" ng-show="sdmIMController.loadingState === 0 && sdmIMController.modalView === 'notes' && ((sdmIMController.apiData.notes && sdmIMController.apiData.notes.length) || sdmIMController.userPermission === 'admin' || sdmIMController.userPermission === 'rw' || sdmIMController.user.root)">
@@ -257,17 +372,6 @@
         Are you sure you want do dismiss your pending changes?
     </div>
     <div class="info-modal-confirm-buttons">
-        <input ng-show="sdmIMController.title === 'acquisition'" type="button"
-            class="btn btn-default"
-            ng-show="sdmIMController.jsonSchema"
-            sdm-popover
-            sdm-popover-template-content="components/jsonschema/metadataModal.html"
-            sdm-popover-class="sdm-metadata-modal"
-            sdm-popover-show="click"
-            sdm-popover-show-timeout="0"
-            sdm-append-to-body
-            value="View metadata"
-            ng-disabled="sdmULController.uploadInProgress"></input>
         <input type="button" id="info-modal-close" class="btn btn-default" ng-click="sdmIMController.close($event)" value="Close" ng-disabled="sdmULController.uploadInProgress"></input>
     </div>
     <!-- permissions end -->

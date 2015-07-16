@@ -531,6 +531,38 @@ sdm-info-modal {
         float: right;
         margin-top: 20px;
     }
+    div.sdm-metadata {
+        height: 370px;
+        overflow: scroll;
+        margin: 20px 40px;
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        table {
+          border-collapse: collapse;
+          width: 820px;
+          //margin: 0px 0px;
+
+          td {
+            border-bottom: 1px solid black;
+            border-right: 1px solid black;
+            padding-left: 10px;
+            width: 50%;
+            &:last-child {
+              border-right: none;
+            }
+            &:first-child {
+              font-weight: bold;
+            }
+          }
+          tr:last-child td {
+            border-bottom: none;
+          }
+          border-radius: 4px;
+          border: 1px solid black;
+          border-bottom: none;
+          border-top: none;
+        }
+    }
     .error-message {
         color: red;
     }
