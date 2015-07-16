@@ -66,7 +66,7 @@
                             var url = BASE_URL + [$scope.node.level.name,
                                 $scope.node.id,
                                 'file',
-                                file.name + '?flavor=attachment'].join('/');
+                                file.name + '?flavor=attachment&site=' + $scope.node.site].join('/');
                             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
                             var accessToken = typeof accessData !== undefined? accessData.access_token:undefined;
                             sdmMD5 = new SdmMD5(file);
@@ -97,7 +97,6 @@
                                 data: file,
                                 headers: {
                                     'Content-Type': file.type,
-                                    //'Content-Disposition': 'attachment; filename="' + file.name + '"',
                                     Authorization: accessToken,
                                     'Content-MD5': md5
                                 },
@@ -118,13 +117,13 @@
                                     return;
                                 } else if (status === 400) {
                                     addError('Received file was corrupted. Please retry.');
-                                } else if ((status === 401 || status === 0) && (!retry || retry < 3)) {
+                                } else if ((status === 401) && (!retry || retry < 3)) {
                                     sdmUserManager.refreshToken().then(
                                         function(){
                                             var accessData = $cookieStore.get(SDM_KEY_CACHED_ACCESS_DATA);
                                             var accessToken = typeof accessData !== undefined? accessData.access_token:undefined;
                                             var retry = retry?(retry + 1):1;
-                                            uploadToAPI(url, file, accessToken, sha, deferred, retry);
+                                            uploadToAPI(url, file, accessToken, md5, deferred, retry);
                                         });
                                 } else {
                                     addError('Error during upload. Please contact an administrator.');
