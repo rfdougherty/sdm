@@ -13,8 +13,8 @@ var _inputEl;
             'sdmUsers', 'sdmHumanReadableSize',
             function($location, $document, $q, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface,
                 sdmUserManager, sdmViewManager, sdmRoles, sdmUsers, sdmHumanReadableSize) {
-                var tileViewer = function(nodeId) {
-                    makeAPICall.async(BASE_URL + 'acquisitions/' + nodeId + '/tile').then(
+                var tileViewer = function(nodeId, site) {
+                    makeAPICall.async(BASE_URL + 'acquisitions/' + nodeId + '/tile', {site: site}).then(
                         function(tileInfo) {
                             console.log(tileInfo);
                             var maxZ, minZ;
@@ -107,7 +107,7 @@ var _inputEl;
                             }
 
                             function getData(z, x, y, timeout) {
-                                return makeAPICall.async(getUrl(z, x, y), null, 'GET', null, null, 'arraybuffer', timeout);
+                                return makeAPICall.async(getUrl(z, x, y), {site:site}, 'GET', null, null, 'arraybuffer', timeout);
                             }
 
                             function calculateRectangle(tiles){
@@ -272,7 +272,7 @@ var _inputEl;
                         var n = node;
                         sdmIMController.apiDataNotes = [];
                         sdmIMController.formatSize = sdmHumanReadableSize;
-                        makeAPICall.async(BASE_URL + level + '/schema').then(function(jsonSchema){
+                        makeAPICall.async(BASE_URL + level + '/schema', {site: node.site}).then(function(jsonSchema){
                             console.log(jsonSchema);
                             sdmIMController.jsonSchema = jsonSchema;
                         })
@@ -335,7 +335,7 @@ var _inputEl;
 
                         sdmIMController.nodeId = node.id;
                         sdmIMController.tileViewer = function(){
-                            tileViewer(sdmIMController.nodeId, $element.width(), $element.height());
+                            tileViewer(sdmIMController.nodeId, node.site);
                         };
                         console.log(path);
                         sdmIMController.path = path.slice(1);
@@ -444,8 +444,8 @@ var _inputEl;
 
                          sdmIMController.download = function(file) {
                              var url = APIUrl + '/file/' + file.filename;
-                             makeAPICall.async(url, null, 'POST', null).then(function(response){
-                                 window.open(url + '?ticket=' + response.ticket, '_self');
+                             makeAPICall.async(url, {site: node.site}, 'POST', null).then(function(response){
+                                 window.open(url + '?ticket=' + response.ticket + '&site=' + node.site, '_self');
                              });
                          };
 
@@ -547,15 +547,15 @@ var _inputEl;
 
                         sdmIMController.removeAttachment = function(attachment) {
                             var url = APIUrl + '/file/' + attachment.filename;
-                            makeAPICall.async(url, null, 'DELETE', null).then(sdmIMController.updateAttachmentsAndFiles);
+                            makeAPICall.async(url, {site: node.site}, 'DELETE', null).then(sdmIMController.updateAttachmentsAndFiles);
                         }
 
                         sdmIMController.downloadAttachment= function($index) {
                             var url = APIUrl + '/file/' + sdmIMController.attachments[$index].filename;
 
-                            makeAPICall.async(url, null, 'POST', null).then(function(response){
+                            makeAPICall.async(url, {site: node.site}, 'POST', null).then(function(response){
 
-                                window.open(url + '?ticket=' + response.ticket, '_self');
+                                window.open(url + '?ticket=' + response.ticket + '&site=' + node.site, '_self');
                             });
                         };
 
@@ -578,17 +578,26 @@ var _inputEl;
                             var callback;
                             if (sdmIMController.hasBbrowserViewer(attachment)) {
                                 callback = function(response) {
-                                    sdmIMController.ticketUrl = url + '?ticket=' + response.ticket + '&view=true';
+                                    sdmIMController.ticketUrl =
+                                        url + '?ticket=' + response.ticket +
+                                        '&site=' + node.site +
+                                        '&view=true';
                                 };
                             }  else if (sdmIMController.hasCsvViewer(attachment)) {
                                 callback = function(response) {
                                     sdmIMController.mimetype = attachment.mimetype;
-                                    sdmIMController.csvTicketUrl = url + '?ticket=' + response.ticket + '&view=true';
+                                    sdmIMController.csvTicketUrl =
+                                        url + '?ticket=' + response.ticket +
+                                        '&site=' + node.site +
+                                        '&view=true';
                                 };
                             }
                             else if (sdmIMController.hasPapayaViewer(attachment)) {
                                 callback = function(response) {
-                                    papayaParams.images = [url + '?ticket=' + response.ticket + '&view=true'];
+                                    papayaParams.images = [
+                                        url + '?ticket=' + response.ticket +
+                                        '&site=' + node.site + '&view=true'
+                                    ];
                                     papayaParams.showOrientation = false;
                                     setTimeout(function(){
                                         papaya.Container.startPapaya();
@@ -597,18 +606,20 @@ var _inputEl;
                             } else {
                                 callback = function(response) {
                                     sdmIMController.resourceViewer = {
-                                        fileUrl: url + '?ticket=' + response.ticket + '&view=true',
+                                        fileUrl: url + '?ticket=' + response.ticket +
+                                            '&site=' + node.site +
+                                            '&view=true',
                                         mimetype: attachment.mimetype
                                     }
                                 };
                             }
-                            makeAPICall.async(url, null, 'POST', null).then(callback);
+                            makeAPICall.async(url, {site: node.site}, 'POST', null).then(callback);
                         };
 
                         sdmIMController.viewFileInPapaya = function(file) {
                             var url = APIUrl + '/file/' + file.filename;
-                            makeAPICall.async(url, null, 'POST', null).then(function(response){
-                                papayaParams.images = [url + '?ticket=' + response.ticket];
+                            makeAPICall.async(url, {site: node.site}, 'POST', null).then(function(response){
+                                papayaParams.images = [url + '?ticket=' + response.ticket + '&site=' + node.site];
                                 papayaParams.showOrientation = false;
                                 setTimeout(function(){
                                     papaya.Container.startPapaya();
