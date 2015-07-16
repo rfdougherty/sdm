@@ -178,3 +178,13 @@ var substringMatcher = function(elements, field) {
     cb(matches);
   };
 };
+
+var ageConverter = function(seconds) {
+    var hours = seconds/3600;
+    var days = hours/24;
+    var months = days/30;
+    if (months < 1) return parseInt(days) + ' days';
+    var years = days/365;
+    if (years < 1) return parseInt(months) + ' months';
+    return parseInt(years) + ' years';
+}

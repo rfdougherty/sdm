@@ -125,6 +125,14 @@
                         {
                             key: 'Subject',
                             value: node.subject
+                        },
+                        {
+                            key: 'Subject Sex',
+                            value: apiData.subject.sex
+                        },
+                        {
+                            key: 'Subject Age',
+                            value: ageConverter(apiData.subject.age)
                         }
                     ]
                 }
@@ -288,6 +296,14 @@
                         {
                             key: 'Subject',
                             value: node.subject
+                        },
+                        {
+                            key: 'Subject Sex',
+                            value: apiData.subject.sex
+                        },
+                        {
+                            key: 'Subject Age',
+                            value: ageConverter(apiData.subject.age)
                         }
                     ]
                 }
