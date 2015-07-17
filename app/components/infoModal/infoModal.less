@@ -92,14 +92,14 @@ sdm-info-modal {
             margin-bottom: 0px;
             margin-top: 15px;
             td {
-                width: 16%;
+                width: 12%;
                 &.centered {
                     text-align: center;
                 }
             }
 
             td:first-child {
-                width: 36%;
+                width: 40%;
             }
             background-color: @lightestGray;
         }
@@ -119,7 +119,7 @@ sdm-info-modal {
                 margin-bottom: 0px;
                 table-layout: fixed;
                 td {
-                    width: 16%;
+                    width: 12%;
                     overflow:hidden;
                     text-overflow: ellipsis;
                     vertical-align: middle;
@@ -130,7 +130,7 @@ sdm-info-modal {
                 }
 
                 td:first-child {
-                    width: 36%;
+                    width: 40%;
                 }
                 td.permalink {
                     color: #428bca;
@@ -138,6 +138,9 @@ sdm-info-modal {
                     input {
                         width: 100%;
                     }
+                }
+                span.glyphicon-download-alt {
+                    color: #428bca;
                 }
 
             }
@@ -150,13 +153,13 @@ sdm-info-modal {
             margin-bottom: 0px;
             font-weight: 500;
             td {
-                width: 21%;
+                width: 15%;
                 &.centered {
                     text-align: center;
                 }
             }
             td:first-child {
-                width: 36%;
+                width: 40%;
             }
             background-color: @lightestGray;
         }
@@ -176,7 +179,7 @@ sdm-info-modal {
                 margin-bottom: 0px;
                 table-layout: fixed;
                 td {
-                    width: 21%;
+                    width: 15%;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     &.centered {
@@ -184,15 +187,18 @@ sdm-info-modal {
                     }
                     vertical-align: middle;
                 }
-                td.permalink {
-                    color: #428bca;
+                td {
                     overflow: visible;
                     input {
                         width: 100%;
                     }
+                    span.glyphicon {
+                        color: #428bca;
+                    }
                 }
+
                 td:first-child {
-                    width: 36%;
+                    width: 40%;
                 }
 
             }
@@ -237,7 +243,6 @@ sdm-info-modal {
             align-items: center;
         }
         .field-name {
-            //width: 45px;
             flex: 0 0 auto;
         }
         .sdm-value {
@@ -249,8 +254,6 @@ sdm-info-modal {
         }
         .sdm-editable {
             cursor: text;
-            //position: relative;
-            //top: -1px;
             height: 20px;
             margin-right: 2px;
             vertical-align: top;
