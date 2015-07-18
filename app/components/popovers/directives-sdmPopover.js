@@ -8,7 +8,7 @@
             var body = $document.find('body').eq(0);
             var templatePopover =
                 '<div class="popover" ng-class="sdmPopoverClass">' +
-                    '<div class="popover-overlay" ng-click="hidePopover($event, 0)"></div>' +
+                    '<div class="popover-overlay" ng-show="!sdmPopoverShowOnce" ng-click="hidePopover($event, 0)"></div>' +
                     '<div class="popover-dialog" ng-style="dialogStyle" ng-class="sdmPopoverClass">' +
                         '<div class="popover-content" ng-include="sdmPopoverTemplateContent">' +
                         '</div>' +
@@ -32,6 +32,7 @@
                 },
                 controllerAs: 'sdmPopoverController',
                 link: { pre: function($scope, $element, $attrs, sdmPopoverController) {
+                    console.log($attrs);
                     $scope.dialogStyle = {};
                     sdmPopoverController.setProperty('dialogStyle', $scope.dialogStyle);
                     var attrKeys = Object.getOwnPropertyNames($attrs);
@@ -110,17 +111,28 @@
                     $scope.enableEvents = function(){
                         console.log('enableEvents', $attrs.sdmPopoverClass);
                         $scope.hidePopover = $scope._hidePopover;
+                        $scope.sdmPopoverShowOnce = (typeof $attrs.sdmPopoverShowOnce !== 'undefined');
                         if ($attrs.sdmPopoverShow) {
                             $attrs.sdmPopoverShowMethod = function($event){
+                                if ($scope.sdmPopoverShowOnce) {
+                                    $element[0].removeEventListener($attrs.sdmPopoverShow, $attrs.sdmPopoverShowMethod);
+                                    $element[0].addEventListener($attrs.sdmPopoverHide, $attrs.sdmPopoverHideMethod);
+                                }
                                 return $scope.showPopover($event, $attrs.sdmPopoverShowTimeout)
                             }
                             $element[0].addEventListener($attrs.sdmPopoverShow, $attrs.sdmPopoverShowMethod);
                         }
                         if ($attrs.sdmPopoverHide) {
                             $attrs.sdmPopoverHideMethod = function($event){
-                                return $scope.hidePopover($event, $attrs.sdmPopoverHideTimeout)
+                                if ($scope.sdmPopoverShowOnce) {
+                                    $element[0].removeEventListener($attrs.sdmPopoverHide, $attrs.sdmPopoverHideMethod);
+                                    $element[0].addEventListener($attrs.sdmPopoverShow, $attrs.sdmPopoverShowMethod);
+                                }
+                                return $scope.hidePopover($event, $attrs.sdmPopoverHideTimeout);
                             }
-                            $element[0].addEventListener($attrs.sdmPopoverHide, $attrs.sdmPopoverHideMethod);
+                            if (!$scope.sdmPopoverShowOnce) {
+                                $element[0].addEventListener($attrs.sdmPopoverHide, $attrs.sdmPopoverHideMethod);
+                            }
                         }
                     }
 
