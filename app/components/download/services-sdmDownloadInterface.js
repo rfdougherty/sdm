@@ -1,35 +1,45 @@
 'use strict';
-
+var _deferred;
 angular.module('sdm.download.services.sdmDownloadInterface',
-    ['sdm.services', 'sdm.util.services.sdmHumanReadableSize'])
-    .factory('sdmDownloadInterface', ['$q', 'makeAPICall', 'sdmHumanReadableSize',
+    ['sdm.services'])
+    .factory('sdmDownloadInterface', ['$q', 'makeAPICall',
         function($q, makeAPICall, sdmHumanReadableSize) {
 
-            var getDownloadURL = function (selection, isSingleFile, optional) {
+            var getDownloadURL = function (selection, isSingleFile) {
                 var deferred = $q.defer(),
-                    url, data, nodes;
+                    url, nodes, sites;
                 if (isSingleFile){
                     url = BASE_URL + [selection.level, selection._id, 'file'].join('/');
                     data = selection.file;
                 } else {
                     url = BASE_URL + 'download';
-                    nodes = selection.map(function(node) {
-                            var level = node.level.name;
-                            level = level.slice(0, level.length - 1);
-                            return {
-                                _id: node.id,
-                                level: level
-                            }
+                    sites = {}
+                    selection.forEach(function(node) {
+                        var level = node.level.name;
+                        level = level.slice(0, level.length - 1);
+                        sites[node.site] = sites[node.site]||[]
+
+                        sites[node.site].push({
+                            _id: node.id,
+                            level: level
                         });
-                    data = {
-                        nodes: nodes,
-                        optional: optional || false
-                    };
+                    });
                 }
-                console.log(data);
-                makeAPICall.async(url, null, 'POST', data).then(function(response){
-                    response.size = sdmHumanReadableSize(response.size);
-                    deferred.resolve(response);
+                var promises = [];
+                angular.forEach(sites, function(nodes, site){
+                    var p = makeAPICall.async(url, {site:site}, 'POST', {nodes: nodes, optional: false})
+                        .then(function(response) {
+                            //response.size = sdmHumanReadableSize(response.size);
+                            //response.site = site;
+                            response.url = BASE_URL + 'download?ticket=' + response.ticket;
+                            response.url += '&site=' + site;
+                            response.site = site;
+                            return response;
+                        });
+                    promises.push(p);
+                });
+                $q.all(promises).then(function(responses){
+                    deferred.resolve(responses);
                 });
                 return deferred.promise;
             }

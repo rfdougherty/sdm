@@ -4,9 +4,12 @@
         <div>File count: {{sdmDLController.fileCount}}</div>
         <div>Total size: {{sdmDLController.size}}</div>
     </div>
+    <div id="error-body" ng-show="sdmDLController.error">
+        {{sdmDLController.error}}
+    </div>
     <form class="download-confirm-buttons" ng-submit="sdmDLController.download($event)">
         <input type="button" id="download-cancel" class="btn btn-default btn-xs" ng-click="sdmDLController.cancel($event)" value="Cancel"></input>
-        <input type="submit" id="download-save" class="btn btn-default btn-xs" value="Download" ng-show="sdmDLController.downloadURL" ng-disabled="sdmDLController.loadingState > 0"></input>
+        <input type="submit" id="download-save" class="btn btn-default btn-xs" value="Download" ng-show="sdmDLController.responses" ng-disabled="sdmDLController.loadingState > 0"></input>
     </form>
 
 </sdm-donwload-modal>

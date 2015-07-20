@@ -2,9 +2,10 @@
 
 (function() {
     angular.module('sdm.download.directives.sdmDownloadModal',['sdm.download.services.sdmDownloadInterface',
+        'sdm.util.services.sdmHumanReadableSize',
         'sdm.createCollection.services.sdmGetSelection'])
-        .directive('sdmDownloadModal', ['sdmDownloadInterface', 'sdmGetSelection',
-            function (sdmDownloadInterface, sdmGetSelection) {
+        .directive('sdmDownloadModal', ['sdmDownloadInterface', 'sdmGetSelection', 'sdmHumanReadableSize',
+            function (sdmDownloadInterface, sdmGetSelection, sdmHumanReadableSize) {
                 return {
                     restrict: 'E',
                     scope: false,
@@ -27,13 +28,21 @@
                             selectionPromise.then(function (selection) {
                                 console.log('selection', selection);
                                 if (selection.length){
-                                    sdmDownloadInterface.getDownloadURL(selection, false, sdmDLController.optional).then(function(response){
-                                        console.log(response);
-                                        sdmDLController.downloadURL = BASE_URL + 'download?ticket=' + response.ticket;
-                                        sdmDLController.fileCount = response.file_cnt;
-                                        sdmDLController.size = response.size;
+                                    sdmDownloadInterface.getDownloadURL(selection, false).then(function(responses){
+                                        sdmDLController.responses = responses;
+                                        sdmDLController.fileCount = 0;
+                                        sdmDLController.size_raw = 0;
+                                        sdmDLController.size = 0;
+                                        sdmDLController.responses.forEach(function(r){
+                                            sdmDLController.fileCount += r.file_cnt;
+                                            sdmDLController.size_raw += r.size;
+                                            sdmDLController.size = sdmHumanReadableSize(sdmDLController.size_raw);
+                                        });
                                         sdmDLController.loadingState--;
                                         sdmDLController.loadedOnce = true;
+                                    }).catch(function(error){
+                                        sdmDLController.error = "error while retrieving data";
+                                        sdmDLController.loadingState--;
                                     });
                                 } else {
                                     sdmDLController.loadedOnce = true;
@@ -45,9 +54,24 @@
                         }
                         sdmDLController.updateLink();
                         sdmDLController.download = function($event) {
-                            window.open(sdmDLController.downloadURL, '_self');
                             $event.stopPropagation();
                             $event.preventDefault();
+                            sdmDLController.responses.forEach(function(r, i){
+                                var iframe = document.getElementById('DownloadIframe' + i);
+                                if (iframe) {
+                                    iframe.parentElement.removeChild(iframe);
+                                }
+                                angular.element('<iframe>', {
+                                    id: 'DownloadIframe' + i,
+                                    style: 'display:none;'})
+                                    .appendTo('body');
+                                var iframe = document.getElementById('DownloadIframe' + i);
+                                var content = iframe.contentDocument;
+                                var form = '<form action="' + r.url +
+                                    '" method="GET"><input name="ticket" value="' + r.ticket + '"><input name="site" value="' + r.site + '"></form>';
+                                content.write(form);
+                                $('form', content).submit();
+                            });
                             $scope.$parent.enableEvents();
                             $scope.$parent._hidePopover($event, 0);
                         }
