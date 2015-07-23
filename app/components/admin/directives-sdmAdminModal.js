@@ -54,11 +54,11 @@
                                     {
                                         name: 'users',
                                         displayKey: 'value',
-                                        source: substringMatcher(sdmAMController.users, '_id')
+                                        source: substringMatcher(sdmAMController.users, 'extendedId')
                                     });
                                 typeaheadElement.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
                                     console.log(selectedUID);
-                                    sdmAMController[property] = selectedUID.value;
+                                    sdmAMController[property] = selectedUID.element._id;
                                 });
                             });
                             return typeaheadElement;

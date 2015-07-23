@@ -53,10 +53,10 @@
                                     {
                                         name: 'users',
                                         displayKey: 'value',
-                                        source: substringMatcher(sdmCCController.users, '_id')
+                                        source: substringMatcher(sdmCCController.users, 'extendedId')
                                     });
                                 typeaheadElement.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
-                                    sdmCCController.selectedUID = selectedUID.value;
+                                    sdmCCController.selectedUID = selectedUID.element._id;
                                 });
                                 var typeahead_hint_element = angular.element('#collection-permissions .tt-hint');
                                 typeahead_hint_element.css('background-color', 'transparent');

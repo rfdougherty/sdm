@@ -170,7 +170,7 @@ var substringMatcher = function(elements, field) {
       if (substrRegex.test(element[field])) {
         // the typeahead jQuery plugin expects suggestions to a
         // JavaScript object, refer to typeahead docs for more info
-        matches.push({ value: element[field] });
+        matches.push({ value: element[field], element: element});
       }
     });
 

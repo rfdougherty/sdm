@@ -298,12 +298,12 @@ var _inputEl;
                                 {
                                     name: 'users',
                                     displayKey: 'value',
-                                    source: substringMatcher(sdmIMController.users, '_id')
+                                    source: substringMatcher(sdmIMController.users, 'extendedId')
                                 }
                             );
                             $element.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
-                                console.log('typeahead');
-                                sdmIMController.selectedUID = selectedUID.value;
+                                console.log('typeahead', selectedUID);
+                                sdmIMController.selectedUID = selectedUID.element._id;
                             });
                             sdmIMController.loadingState--;
                         });

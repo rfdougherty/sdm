@@ -29,8 +29,6 @@ angular.module('sdm.download.services.sdmDownloadInterface',
                 angular.forEach(sites, function(nodes, site){
                     var p = makeAPICall.async(url, {site:site}, 'POST', {nodes: nodes, optional: false})
                         .then(function(response) {
-                            //response.size = sdmHumanReadableSize(response.size);
-                            //response.site = site;
                             response.url = BASE_URL + 'download?ticket=' + response.ticket;
                             response.url += '&site=' + site;
                             response.site = site;
