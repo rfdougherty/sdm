@@ -179,6 +179,9 @@ var substringMatcher = function(elements, field) {
 };
 
 var ageConverter = function(seconds) {
+    if (typeof seconds === 'undefined'){
+        return '';
+    }
     var hours = seconds/3600;
     var days = hours/24;
     var months = days/30;
