@@ -14,7 +14,7 @@
     </div>
 
     <div class="user-preferences-image">
-        <img ng-src="{{sdmUPController.gravatarURL + sdmUPController.email_hash}}?s=100&d=retro"></img>
+        <img class="avatar" ng-src="{{sdmUPController.avatar||(sdmUPController.gravatarURL + '?s=100&d=retro')}}"></img>
     </div>
 
     <div class="user-preferences-input">
@@ -32,6 +32,17 @@
             <span class="sdm-input-label">Phone</span>
             <span class="input-placeholder">{{sdmUPController.phone}}</span>
         </div>
+    </div>
+    <div class="edit-avatar" ng-show="sdmUPController.editable" sdm-popover
+        sdm-popover-template-content="components/userPreferences/avatar.html"
+        sdm-popover-class="sdm-permalink"
+        sdm-popover-show="click"
+        sdm-popover-hide="dblclick"
+        sdm-popover-show-timeout="0"
+        sdm-popover-hide-timeout="0"
+        sdm-popover-style-left="110px"
+        sdm-popover-show-once>
+            Edit avatar URL
     </div>
 
 </sdm-update-user-preferences>

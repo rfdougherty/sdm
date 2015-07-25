@@ -21,7 +21,8 @@
                             controller.firstname = userData.firstname;
                             controller.lastname = userData.lastname;
                             controller.user_uid = userData.user_uid;
-                            controller.email_hash = userData.email_hash;
+                            controller.avatar = userData.avatar;
+                            controller.avatarTemp = userData.avatar;
 
                             $scope.$parent.enableEvents();
                         };
@@ -37,14 +38,15 @@
                         controller.firstname = userData.firstname;
                         controller.lastname = userData.lastname;
                         controller.user_uid = userData.user_uid;
-                        controller.email_hash = userData.email_hash;
+                        controller.avatar = userData.avatar;
+                        controller.avatarTemp = userData.avatar;
                         controller.email = userData.email;
-                        //controller.phone = '650-999-0000';
                         sdmUserManager.getUserDataFromAPI().then(function(userData) {
                             controller.firstname = userData.firstname;
                             controller.lastname = userData.lastname;
                             controller.user_uid = userData.user_uid;
-                            controller.email_hash = userData.email_hash;
+                            controller.avatar = userData.avatar;
+                            controller.avatarTemp = userData.avatar;
                             controller.email = userData.email;
                             console.log(userData);
                             console.log('user preferences popover created');
@@ -54,10 +56,12 @@
                                 var data = {
                                     firstname: controller.firstname,
                                     lastname: controller.lastname,
-                                    email: controller.email
+                                    email: controller.email,
+                                    avatar: controller.avatarTemp
                                 }
                                 sdmUserManager.updateUserData(data).then(function(){
                                     controller.editable = false;
+                                    controller.avatar = controller.avatarTemp;
                                     $scope.$parent.enableEvents();
                                 });
                             };

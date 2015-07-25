@@ -30,7 +30,7 @@
                         root: data['root'],
                         wheel: data['wheel'],
                         logged_in: true,
-                        email_hash: data['email_hash'],
+                        avatar: data['avatar'],
                         preferences: data['preferences']
                     });
                     $cookieStore.put(SDM_KEY_CACHED_ACCESS_DATA, value_auth_data);
@@ -205,7 +205,7 @@
             value_auth_data.root = null;
             value_auth_data.wheel = null;
             value_auth_data.preferences = null;
-            value_auth_data.email_hash = null;
+            value_auth_data.avatar = null;
             $cookieStore.remove(SDM_KEY_CACHED_ACCESS_DATA);
             return value_auth_data;
         };

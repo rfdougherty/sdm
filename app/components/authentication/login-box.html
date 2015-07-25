@@ -4,7 +4,7 @@
 </div>
 <div ng-if="userData.logged_in != null" id="logged-in">
     <div class="user-preferences" sdm-popover sdm-popover-template-content="components/userPreferences/preferencesContentPopover.html" sdm-popover-style-top="61px" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-style-left="-279px" sdm-popover-class="sdm-user-preferences" sdm-popover-show="mouseenter" sdm-popover-hide="mouseleave">
-        <img ng-src="{{gravatarURL + userData.email_hash}}?s=50"></img>
+        <img ng-src="{{userData.avatar||(gravatarURL + '?s=50')}}"></img>
     </div>
     <div class="user-text">{{userData.firstname}} {{userData.lastname}}</div>
     <a id="logout" class="logout" ng-click="logout()">Logout</a>

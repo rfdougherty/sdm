@@ -64,6 +64,10 @@ sdm-update-user-preferences .user-preferences-image {
     padding-right: 10px;
     padding-left: 5px;
     padding-top: 5px;
+    img.avatar {
+        width: 100px;
+        height: 100px;
+    }
 }
 
 sdm-update-user-preferences .user-preferences-input {
@@ -94,4 +98,22 @@ sdm-update-user-preferences .user-preferences-input {
         }
     }
 
+}
+
+sdm-update-user-preferences .edit-avatar {
+    position: absolute;
+    bottom: 0px;
+    left: 7px;
+    color: @blue;
+    div.sdm-permalink {
+        .popover-dialog {
+            height: 30px;
+            width: 260px;
+            left: 110px;
+            input {
+                width: 100%;
+                height: 22px;
+            }
+        }
+    }
 }

@@ -60,7 +60,7 @@ sdmApp.config(['$routeProvider', function($routeProvider) {
     $routeProvider.otherwise({redirectTo: '/projects'});
 }]);
 
-var GRAVATAR_IMG_URL = 'https://www.gravatar.com/avatar/';
+var GRAVATAR_IMG_URL = 'https://www.gravatar.com/avatar';
 var SAVE = 'Save';
 var CLOSE = 'Close';
 var OK = 'Ok';
