@@ -288,24 +288,44 @@ var _inputEl;
                         });
 
                         var typeaheadElement = $element.find('#info-change-permissions .typeahead');
-                        sdmUsers.getUsers().then(function(data){
+                        var usersPromise = sdmUsers.getUsers().then(function(data){
                             sdmIMController.users = data;
-                            typeaheadElement.typeahead({
-                                    hint: true,
-                                    highlight: true,
-                                    minLength: 3
-                                },
-                                {
-                                    name: 'users',
-                                    displayKey: 'value',
-                                    source: substringMatcher(sdmIMController.users, 'extendedId')
+                            sdmIMController.loadingState--;
+                            return data;
+                        });
+                        makeAPICall.async(BASE_URL + 'sites?all=true').then(function(sites){
+                            var typeaheadArgs = [{
+                                hint: true,
+                                highlight: true,
+                                minLength: 3
+                            }];
+                            sites.map(function(site){
+                                if (site.onload) {
+                                    sdmIMController.localSiteId = site._id;
                                 }
-                            );
+                                return {
+                                    usersPromise: sdmUsers.getUsers(site),
+                                    site: site
+                                };
+                            }).forEach(function(value) {
+                                typeaheadArgs.push(
+                                    {
+                                        name: 'users',
+                                        displayKey: 'value',
+                                        limit: 100,
+                                        source: substringMatcher(null, 'extendedId', value.usersPromise),
+                                        templates: {
+                                            header: '<h4 class="league-name">' + value.site.name + '</h4>'
+                                        }
+                                    }
+                                );
+                            });
+                            typeaheadElement.typeahead.apply(typeaheadElement, typeaheadArgs);
                             $element.on('typeahead:autocompleted typeahead:selected', function(event, selectedUID) {
                                 console.log('typeahead', selectedUID);
                                 sdmIMController.selectedUID = selectedUID.element._id;
+                                sdmIMController.selectedUIDsite = selectedUID.element.site;
                             });
-                            sdmIMController.loadingState--;
                         });
                         sdmIMController.getUsername = function(_id) {
                             if (sdmIMController.users) {
@@ -315,6 +335,7 @@ var _inputEl;
                                 return _id;
                             }
                         }
+                        /**
                         var refreshUsers = function() {
                             sdmUsers.getUsers().then(function(data){
                                 sdmIMController.users = data;
@@ -332,7 +353,7 @@ var _inputEl;
                                 );
                             });
                         };
-
+                        **/
                         sdmIMController.nodeId = node.id;
                         sdmIMController.tileViewer = function(){
                             tileViewer(sdmIMController.nodeId, node.site);
@@ -656,23 +677,32 @@ var _inputEl;
                                 sdmIMController.permissionPlaceholder = "User UID is missing or invalid";
                                 return;
                             } else {
-                                if (!sdmIMController.users[sdmIMController.selectedUID]) {
-                                    sdmIMController.createUserInModal($event);
-                                    return;
-                                } else if (sdmIMController.apiData.permissions.map(
-                                        function(permission){
-                                            return permission._id;
-                                        }).indexOf(sdmIMController.selectedUID) >= 0 ) {
+                                if (!sdmIMController.selectedUIDsite && !sdmIMController.users[sdmIMController.selectedUID]) {
+                                    sdmIMController.permissionPlaceholder = 'User ' + sdmIMController.selectedUID + ' does not exist';
                                     form.hasErrors = true;
                                     form.newPermission.hasErrors = true;
                                     sdmIMController.selectedUID = null;
-                                    sdmIMController.permissionPlaceholder = "User already has permission";
+                                    //sdmIMController.createUserInModal($event);
                                     return;
+                                } else {
+                                    var matches = sdmIMController.apiData.permissions.filter(function(permission){
+                                        return permission._id === sdmIMController.selectedUID &&
+                                            (permission.site === sdmIMController.selectedUIDsite ||
+                                             sdmIMController.localSiteId === sdmIMController.selectedUIDsite);
+                                    });
+                                    if (matches.length > 0) {
+                                        form.hasErrors = true;
+                                        form.newPermission.hasErrors = true;
+                                        sdmIMController.selectedUID = null;
+                                        sdmIMController.permissionPlaceholder = "User already has permission";
+                                        return;
+                                    }
                                 }
                             }
                             sdmIMController.apiData.permissions.push({
                                 _id: sdmIMController.selectedUID,
-                                access: sdmIMController.selectedRole.rid
+                                access: sdmIMController.selectedRole.rid,
+                                site: sdmIMController.selectedUIDsite
                             });
 
                             var url = BASE_URL + node.level.name + '/' + node.id;
@@ -708,17 +738,19 @@ var _inputEl;
                                 sdmViewManager.refreshView(currentPath);
                             });
                         }
-
+                        /**
                         sdmIMController.createUserInModal = function ($event) {
-                            $event.stopPropagation();
-                            $event.preventDefault();
+                            if ($event){
+                                $event.stopPropagation();
+                                $event.preventDefault();
+                            }
                             sdmPopoverTrampoline.trigger(
                                 'sdm-create-user',
                                 'components/admin/userCreationModal.html',
                                 {refreshUsers: refreshUsers}
                             );
                         }
-
+                        **/
                         sdmIMController.saveFields = function ($event) {
                             var url = BASE_URL + node.level.name + '/' + node.id;
                             var payload = {};//{notes: sdmIMController.apiData.notes};

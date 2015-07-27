@@ -154,28 +154,26 @@ var DataNode = function(data, site, level, children) {
 
 
 
-var substringMatcher = function(elements, field) {
-  return function findMatches(q, cb) {
-    var matches, substrRegex;
+var substringMatcher = function(elements, field, elementsPromise) {
+    var passElements = function(elements, q, callback) {
+        var matches = [];
+        var substrRegex = new RegExp(q, 'i');
+        $.each(elements, function(i, element) {
+            if (substrRegex.test(element[field])) {
+                matches.push({ value: element[field], element: element});
+            }
+        });
+        callback(matches);
+    }
 
-    // an array that will be populated with substring matches
-    matches = [];
-
-    // regex used to determine if a string contains the substring `q`
-    substrRegex = new RegExp(q, 'i');
-
-    // iterate through the pool of strings and for any string that
-    // contains the substring `q`, add it to the `matches` array
-    $.each(elements, function(i, element) {
-      if (substrRegex.test(element[field])) {
-        // the typeahead jQuery plugin expects suggestions to a
-        // JavaScript object, refer to typeahead docs for more info
-        matches.push({ value: element[field], element: element});
-      }
-    });
-
-    cb(matches);
-  };
+    return function findMatches(q, cb, acb) {
+        passElements(elements||[], q, cb);
+        if (elementsPromise) {
+            elementsPromise.then(function(elements){
+                passElements(elements, q, acb);
+            });
+        }
+    };
 };
 
 var ageConverter = function(seconds) {

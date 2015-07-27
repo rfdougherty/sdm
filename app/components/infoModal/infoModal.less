@@ -315,13 +315,18 @@ sdm-info-modal {
         .enable-input input.tt-hint {
             visibility: hidden;
         }*/
+        div.tt-menu {
+            height: 200px;
+            overflow: scroll;
+        }
         div.tt-dataset-users {
             padding-left: 10px;
             border: 1px solid lightgrey;
-            height: 120px;
             width: 400px;
             background: white;
-            overflow: scroll;
+            .tt-cursor {
+                color: @blue;
+            }
         }
         .permissions-body {
             margin-top: 10px;

@@ -3,11 +3,18 @@
 angular.module('sdm.APIServices.services.sdmUsers', ['sdmHttpServices'])
     .factory('sdmUsers', ['$q', 'makeAPICall', function($q, makeAPICall){
         var userData = {};
-        var timestamp;
-        var refreshUsers = function () {
+        var timestamp= {};
+        var refreshUsers = function (siteObj) {
             var d = $q.defer();
-            userData = {};
             var url = BASE_URL + 'users';
+            var site;
+            if (siteObj) {
+                site = siteObj._id;
+                url += ('?site=' + site);
+            } else {
+                site = null;
+            }
+            var siteUsers = userData[site] = {};
             makeAPICall.async(url).then(function(users){
                 users.forEach(function(user){
                     if (user.firstname && user.lastname){
@@ -21,10 +28,11 @@ angular.module('sdm.APIServices.services.sdmUsers', ['sdmHttpServices'])
                             user.lastname ? user.lastname + ': ':'' +
                             user._id;
                     }
-                    userData[user._id] = user;
+                    user.site = site;
+                    siteUsers[user._id] = user;
                 });
-                timestamp = Date.now();
-                d.resolve(userData);
+                timestamp[site] = Date.now();
+                d.resolve(siteUsers);
             });
             return d.promise;
         };
@@ -33,14 +41,15 @@ angular.module('sdm.APIServices.services.sdmUsers', ['sdmHttpServices'])
             Date.now = function() { return new Date().getTime(); }
         }
 
-        var getUsers = function () {
+        var getUsers = function (siteObj) {
             var newTimestamp = Date.now();
-            if (!timestamp || newTimestamp - timestamp > 60000) {
-                timestamp = newTimestamp;
-                return refreshUsers();
+            var site = siteObj?siteObj._id:null;
+            if (!timestamp[site] || newTimestamp - timestamp[site] > 60000) {
+                timestamp[site] = newTimestamp;
+                return refreshUsers(siteObj);
             } else {
                 var d = $q.defer();
-                d.resolve(userData);
+                d.resolve(userData[site]);
                 return d.promise
             }
         };
