@@ -243,12 +243,14 @@
     <form name="form" ng-class="{error: form.hasErrors}" ng-show="sdmIMController.loadingState === 0 && sdmIMController.modalView === 'permissions'">
         <div id="info-change-permissions" ng-show="sdmIMController.isAdmin">
             <div class="flex-row">
-                <div class="sdm-input-cell sdm-small4"><!-- ng-class="{'enable-input':sdmAMController.selectedGroup}"-->
+                <div class="sdm-input-cell sdm-large8 permission-name"><!-- ng-class="{'enable-input':sdmAMController.selectedGroup}"-->
                     <div class="sdm-input-label">Give Access to User:</div>
                     <input class="form-control typeahead" type="text" ng-model="sdmIMController.selectedUID" placeholder="{{sdmIMController.permissionPlaceholder}}" name="newPermission" ng-class="{'sdm-invalid': form.newPermission.hasErrors, 'sdm-operation-success': sdmIMController.success}">
                 </div>
-                <div class="sdm-input-cell sdm-small2">
-                    <div class="sdm-input-label">Assign Permission Level</div>
+                <div class="sdm-input-cell sdm-small3 permission-site">
+                </div>
+                <div class="sdm-input-cell sdm-small3">
+                    <div class="sdm-input-label">Permission Level</div>
                     <select class="form-control" ng-init="" ng-class="{default:!sdmIMController.selectedRole}" ng-options="role.name for role in sdmIMController.roles" ng-model="sdmIMController.selectedRole" ng-change="sdmIMController.addUser($event, form)" ng-disabled="!sdmIMController.selectedUID"><option class="default" value="" disabled>Select</option></select>
                 </div>
                 <div class="sdm-input-cell sdm-small2 remove-header">
@@ -257,12 +259,17 @@
             </div>
             <div class="permissions-body">
                 <div class="flex-row user-permission" ng-repeat="permission in sdmIMController.apiData.permissions" ng-class="{gray:$index%2===0, 'first-body':$index===0}">
-                    <div class="sdm-input-cell sdm-small4 permission-name">
+                    <div class="sdm-input-cell sdm-large8 permission-name">
                         <div class="permission-name">
                             {{sdmIMController.getUsername(permission._id)}}
                         </div>
                     </div>
-                    <div class="sdm-input-cell sdm-small2 select">
+                    <div class="sdm-input-cell sdm-small3 permission-site">
+                        <div class="permission-name">
+                            {{permission.site?(sdmIMController.sitesName[permission.site]||permission.site):sdmIMController.localSite.name}}
+                        </div>
+                    </div>
+                    <div class="sdm-input-cell sdm-small3 select">
                         <select class="form-control" ng-options="role.rid as role.name for role in sdmIMController.roles" ng-model="permission.access" ng-change="sdmIMController.updatePermissions()" ng-disabled="permission._id===sdmIMController.user.user_uid && !sdmIMController.user.root"></select>
                     </div>
                     <div class="sdm-input-cell sdm-small2 remove">

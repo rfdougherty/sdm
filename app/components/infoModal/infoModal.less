@@ -309,20 +309,22 @@ sdm-info-modal {
         padding-left: 40px;
         padding-right: 40px;
         input.typeahead {
-            width: 400px;
+            width: 390px;
         }
         /*
         .enable-input input.tt-hint {
             visibility: hidden;
         }*/
         div.tt-menu {
-            height: 200px;
+            max-height: 200px;
             overflow: scroll;
+            border: 1px solid lightgrey;
+            background-color: white;
         }
         div.tt-dataset-users {
             padding-left: 10px;
-            border: 1px solid lightgrey;
-            width: 400px;
+            border: 1px solid white;
+            width: 390px;
             background: white;
             .tt-cursor {
                 color: @blue;

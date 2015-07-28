@@ -293,6 +293,7 @@ var _inputEl;
                             sdmIMController.loadingState--;
                             return data;
                         });
+                        sdmIMController.sitesName = {};
                         makeAPICall.async(BASE_URL + 'sites?all=true').then(function(sites){
                             var typeaheadArgs = [{
                                 hint: true,
@@ -301,8 +302,9 @@ var _inputEl;
                             }];
                             sites.map(function(site){
                                 if (site.onload) {
-                                    sdmIMController.localSiteId = site._id;
+                                    sdmIMController.localSite = site;
                                 }
+                                sdmIMController.sitesName[site._id] = site.name;
                                 return {
                                     usersPromise: sdmUsers.getUsers(site),
                                     site: site
@@ -688,7 +690,7 @@ var _inputEl;
                                     var matches = sdmIMController.apiData.permissions.filter(function(permission){
                                         return permission._id === sdmIMController.selectedUID &&
                                             (permission.site === sdmIMController.selectedUIDsite ||
-                                             sdmIMController.localSiteId === sdmIMController.selectedUIDsite);
+                                             sdmIMController.localSite._id === sdmIMController.selectedUIDsite);
                                     });
                                     if (matches.length > 0) {
                                         form.hasErrors = true;
