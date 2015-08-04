@@ -100,7 +100,7 @@
                                     Authorization: accessToken,
                                     'Content-MD5': md5
                                 },
-                                method: 'PUT'
+                                method: 'POST'
                             }).progress(function (evt) {
                                 sdmULController.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
                             }).success(function (data, status, headers, config) {
