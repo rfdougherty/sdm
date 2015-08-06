@@ -128,69 +128,6 @@
                             });
                             return results.length === 0?undefined:results[0];
                         }
-/**
-                        sdmCCController.save = function ($event, form, newCollection) {
-                            $event.stopPropagation();
-                            $event.preventDefault();
-                            if (!form.$valid) {
-                                console.log('form', form);
-                                form.hasErrors = true;
-                                sdmCCController.collectionPlaceholder = 'Please enter a name for the collection';
-                                return;
-                            }
-                            console.log(sdmCCController.collectionsCurator);
-                            console.log(sdmCCController.collectionName );
-                            if (!sdmCCController.collectionsCurator) {
-                                throw 'existing collections not initialized yet';
-                            } else {
-                                if (newCollection &&
-                                    sdmCCController.collectionsCurator.indexOf(sdmCCController.collectionName) >= 0 ) {
-                                    form.hasErrors = true;
-                                    form.collectionName.hasErrors = true;
-                                    sdmCCController.collectionPlaceholder =
-                                        'Collection "' + sdmCCController.collectionName + '" already exists';
-                                    sdmCCController.collectionName = null;
-                                    return;
-                                }
-                            }
-
-
-
-                            selection.then(function(selection) {
-                                console.log('selection', selection);
-
-                                if (!newCollection) {
-                                    updateCollection(sdmCCController.selectedCollection._id);
-                                    $scope.$parent.enableEvents();
-                                    $scope.$parent._hidePopover($event, 0);
-                                } else {
-                                    sdmCCController.addedPermissions = [
-                                        {
-                                            '_id': sdmCCController.curator.user_uid,
-                                            name: sdmCCController.curator.firstname + ' ' + sdmCCController.curator.lastname,
-                                            'access': 'admin'
-                                        }
-                                        ];
-                                    sdmCollectionsInterface.createCollection(
-                                        sdmCCController.collectionName,
-                                        sdmCCController.addedPermissions.map(function(p) {
-                                            return {
-                                                _id: p._id,
-                                                access: p.access
-                                            }
-                                        })
-                                    ).then(function(result){
-                                        initializeCollections().then(function(){
-                                            sdmCCController.selectedCollection = findCollectionByID(result._id);
-                                            sdmCCController.collectionName = null;
-                                            initializeTypeahead();
-                                        }).then(function(){
-                                            updateCollection(sdmCCController.selectedCollection._id);
-                                        });
-                                    })
-                                }
-                            });
-                        };**/
 
                         sdmCCController.createCollection = function() {
                             if (!sdmCCController.collectionsCurator) {

@@ -84,7 +84,7 @@
                                 <div class="permission-name">{{permission.name}}</div>
                             </div>
                             <div class="sdm-input-cell sdm-small2 select">
-                                <select class="form-control" ng-options="role.rid as role.name for role in sdmAMController.roles" ng-model="permission.access" ng-disabled="false"></select>
+                                <select class="form-control" ng-options="role.rid as role.name for role in sdmAMController.roles" ng-model="permission.access" ng-disabled="false" ng-change="sdmAMController.updateUserPermission(formGroup)"></select>
                             </div>
                             <div class="sdm-input-cell sdm-small2 remove">
                                 <i class="fa fa-times-circle-o fa-2x" ng-click="sdmAMController.removeUserFromGroup($index, formGroup)"></i>

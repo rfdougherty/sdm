@@ -355,6 +355,23 @@
                             });
                         };
 
+                        sdmAMController.updateUserPermission = function(form) {
+                            saveGroup(false).then(function(){
+                                sdmAMController.permissionPlaceholder = ' User permission changed';
+                                sdmAMController.success = true;
+                                form.newPermission.hasErrors = false;
+                                var viewValue = form.newPermission.$viewValue;
+                                sdmAMController.selectedUID = null;
+                                setTimeout(function(){
+                                    $scope.$apply(function(){
+                                        sdmAMController.success = false;
+                                        sdmAMController.selectedUID = viewValue;
+                                        sdmAMController.permissionPlaceholder = 'Enter User ID';
+                                    });
+                                }, 2000);
+                            });
+                        }
+
                         var findGroupByID = function(_id) {
                             var results = sdmAMController.existingGroups.filter(function(g){
                                 return g._id === _id;
