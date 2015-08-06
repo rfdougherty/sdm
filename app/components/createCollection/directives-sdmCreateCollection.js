@@ -141,24 +141,21 @@
                                 sdmCCController.collectionName = null;
                                 return;
                             }
-                            sdmCCController.addedPermissions = [
-                                {
-                                    '_id': sdmCCController.curator.user_uid,
-                                    name: sdmCCController.curator.firstname + ' ' + sdmCCController.curator.lastname,
-                                    'access': 'admin'
-                                }
-                                ];
                             sdmCollectionsInterface.createCollection(
-                                sdmCCController.collectionName,
-                                sdmCCController.addedPermissions.map(function(p) {
-                                    return {
-                                        _id: p._id,
-                                        access: p.access
-                                    }
-                                })
+                                sdmCCController.collectionName
                             ).then(function(result){
                                 initializeCollections().then(function(){
                                     sdmCCController.selectedCollection = findCollectionByID(result._id);
+
+                                    sdmCCController.selectedCollection.permissions.forEach(function (p) {
+                                        var user = sdmCCController.users[p._id];
+                                        if (user && user.lastname) {
+                                            p.name = user.firstname + ' ' + user.lastname;
+                                        } else {
+                                            p.name = p._id;
+                                        }
+                                    });
+                                    sdmCCController.addedPermissions = sdmCCController.selectedCollection.permissions;
                                     sdmCCController.collectionName = null;
                                     initializeTypeahead();
                                 });

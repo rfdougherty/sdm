@@ -59,12 +59,11 @@
                 return collections;
             }
 
-            var createCollection = function (name, permissions) {
+            var createCollection = function (name) {
                 var d = $q.defer();
                 var url = BASE_URL + 'collections';
                 var data = {
-                    name: name,
-                    permissions: permissions
+                    name: name
                 }
                 makeAPICall.async(url, null, 'POST', data).then(function(response){
                     d.resolve(response);
