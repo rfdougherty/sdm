@@ -1,5 +1,5 @@
 
-<div class="sdm-d3-map" ng-init="$parent.$parent.sdmIMController.tileViewer()"></div>
+<div class="sdm-d3-map" ng-init="$parent.$parent.sdmIMController.tileViewer($parent.$parent.file.filename)"></div>
 <div class="sdm-d3-buttons">
     <button class="sdm-d3-reset sdm-d3-viewer-button btn btn-default btn-xs">Reset</button>
     <button class="sdm-d3-zoom sdm-d3-viewer-button btn btn-default btn-xs" data-zoom="+1">Zoom in</button>
