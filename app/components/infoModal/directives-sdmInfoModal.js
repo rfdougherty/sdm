@@ -8,12 +8,14 @@ var _inputEl;
              'sdm.APIServices.services.sdmUsers',
              'sdm.popovers.services.sdmPopoverTrampoline',
              'sdm.util.services.sdmHumanReadableSize',
-             'sdm.util.services.sdmTileViewer',])
+             'sdm.util.services.sdmTileViewer',
+             'sdm.getNodeData.services.sdmGetPermalinks'])
         .directive('sdmInfoModal', ['$location', '$document', '$q', 'sdmPopoverTrampoline', 'makeAPICall',
             'sdmDownloadInterface', 'sdmUserManager', 'sdmViewManager', 'sdmRoles',
-            'sdmUsers', 'sdmHumanReadableSize', 'sdmTileViewer',
+            'sdmUsers', 'sdmHumanReadableSize', 'sdmTileViewer', 'sdmGetPermalinks',
             function($location, $document, $q, sdmPopoverTrampoline, makeAPICall, sdmDownloadInterface,
-                sdmUserManager, sdmViewManager, sdmRoles, sdmUsers, sdmHumanReadableSize, sdmTileViewer) {
+                sdmUserManager, sdmViewManager, sdmRoles, sdmUsers, sdmHumanReadableSize, sdmTileViewer,
+                sdmGetPermalinks) {
 
                 return {
                     restrict: 'E',
@@ -508,6 +510,15 @@ var _inputEl;
                                         sdmIMController.name = node.name = name;
                                     }
                                 });
+                        }
+                        sdmIMController.permalinks = [];
+                        sdmGetPermalinks(node).then(function(permalinks) {
+                            sdmIMController.permalinks = permalinks;
+                            var blob = new Blob(permalinks, {type: 'text/plain'});
+                            sdmIMController.permalinksURL = URL.createObjectURL(blob);
+                        });
+                        sdmIMController.getPermalinksList = function() {
+                            window.open(sdmIMController.permalinksURL);
                         }
                     }
                 }

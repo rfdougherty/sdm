@@ -200,7 +200,7 @@
                                                         binary += String.fromCharCode( bytes[ i ] );
                                                     }
                                                     var base64 = window.btoa( binary );
-                                                    cacheData[cacheKey] = 'data:image/png;base64,' + base64;
+                                                    cacheData[cacheKey] = 'data:image/jpg;base64,' + base64;
                                                     _this.setAttribute('src', cacheData[cacheKey] );
                                                 }
 

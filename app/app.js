@@ -25,6 +25,7 @@ var sdmApp = angular.module('sdm', [
     'sdm.removeCollection',
     'sdm.brainbrowser',
     'sdm.csvViewer',
+    'sdm.getNodeData',
     'ui.bootstrap'
 ]).run(['sdmViewManager', 'sdmUserManager',
     function(sdmViewManager, sdmUserManager){
@@ -130,6 +131,7 @@ var DataNode = function(data, site, level, children) {
     this.checked = false;
     this.indeterminate = false;
     this.notes = data.notes;
+    this.files = data.files;
     if (level.name.search(/projects|collections|sessions|acquisitions/) === 0){
         this.userHasPermissions = !!(data.permissions&&data.permissions.length);
         if (data.permissions) {
