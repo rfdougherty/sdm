@@ -1,7 +1,6 @@
 // This file is templated by scitran.py.
 // Edits to the generated file will not be saved!
-
-var BASE_URL = 'https://demo.scitran.io/api/';
+var BASE_URL = config.browser.api_prefix + '/';
 var VERIFICATION_ENDPOINT  = 'https://www.googleapis.com/oauth2/v1/tokeninfo';
 var AUTHENTICATION_ENDPOINT = 'https://accounts.google.com/o/oauth2/auth';
 var AUTHENTICATION_PROVIDER = 'Google';
