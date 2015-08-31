@@ -64,7 +64,8 @@
             }
             var deferred = $q.defer();
             console.log('refreshing');
-            Token.refreshToken({}).then(
+            var data = value_auth_data.user_uid?{login_hint: value_auth_data.user_uid}:{};
+            Token.refreshToken(data).then(
                 function(params) {
                     console.log('refreshed token');
                     login(params.access_token, deferred);
