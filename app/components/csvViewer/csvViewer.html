@@ -1,4 +1,7 @@
-<sdm-csv-viewer sdm-ticket-url="$parent.$parent.sdmIMController.csvTicketUrl" mimetype="$parent.$parent.sdmIMController.mimetype">
+<sdm-csv-viewer sdm-ticket-url="$parent.$parent.sdmIMController.csvTicketUrl" mimetype="$parent.$parent.sdmIMController.mimetype" filename="$parent.$parent.sdmIMController.filename">
+    <div class="csv-title">
+    {{filename}}
+    </div>
     <div class="csv-table" ng-show="showtable">
         <div class="flex-row" ng-repeat="row in data">
             <div class="flex-cell" ng-repeat="cell in row track by $index">

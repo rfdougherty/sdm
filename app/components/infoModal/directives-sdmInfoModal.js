@@ -610,6 +610,7 @@ var _inputEl;
                             }  else if (sdmIMController.hasCsvViewer(attachment)) {
                                 callback = function(response) {
                                     sdmIMController.mimetype = attachment.mimetype;
+                                    sdmIMController.filename = attachment.filename;
                                     sdmIMController.csvTicketUrl =
                                         url + '?ticket=' + response.ticket +
                                         '&site=' + node.site +

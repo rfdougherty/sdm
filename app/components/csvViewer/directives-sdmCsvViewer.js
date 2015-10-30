@@ -6,7 +6,8 @@
                 restrict: "E",
                 scope: {
                     sdmTicketUrl: '=',
-                    mimetype: '='
+                    mimetype: '=',
+                    filename: '='
                 },
                 //templateUrl: 'components/csvViewer/csvViewerTemplate.html',
                 transclude: false,
@@ -26,6 +27,7 @@
                             } else {
                                 return
                             }
+                            $scope.$parent.filename = $scope.filename;
                             parser(ticketUrl, function(error, data){
                                 console.log(data);
                                 var keys = Object.keys(data[0]);
