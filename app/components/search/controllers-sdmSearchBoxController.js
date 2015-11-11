@@ -76,10 +76,25 @@
 
         _this.changeSexDefault();
 
+        _this.projectNames = [];
+        makeAPICall.async(BASE_URL + 'projects').then(function(response){
+            _this.projectNames = response.map(function(proj){
+                return proj.name;
+            });
+        });
+
+        _this.groupNames = [];
+        makeAPICall.async(BASE_URL + 'groups').then(function(response){
+            _this.groupNames = response.map(function(group){
+                return group.name;
+            });
+        });
+
         _this.scanTypeValues = [];
         makeAPICall.async(BASE_URL + 'search').then(function(response){
             _this.scanTypeValues = response.properties.scan_type.enum;
         });
+
     };
 
     SdmSearchBoxController.$inject = ['makeAPICall', 'sdmViewManager'];
