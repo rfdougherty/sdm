@@ -134,12 +134,18 @@ var DataNode = function(data, site, level, children) {
         this.userHasPermissions = !!(data.permissions&&data.permissions.length);
         if (data.permissions) {
             if (!data.permissions.length) {
-                this.userAccess = 'no';
+                if (data.public) {
+                    this.userAccess = 'ro';
+                } else {
+                    this.userAccess = 'no';
+                }
             } else if (data.permissions.length > 1) {
                 this.userAccess = 'admin';
             } else {
                 this.userAccess = data.permissions[0].access;
             }
+        } else if (data.public) {
+            this.userAccess = 'ro';
         } else {
             this.userAccess = 'no';
         }

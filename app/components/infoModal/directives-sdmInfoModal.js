@@ -417,6 +417,8 @@ var _inputEl;
                                         console.log(sdmIMController.userPermission);
                                         sdmIMController.isAdmin = sdmIMController.userPermission === 'admin';
                                         sdmIMController.canModify = sdmIMController.userPermission.search(/rw$|admin$/) === 0;
+                                    } else if (apiData.public){
+                                        sdmIMController.userPermission = 'ro';
                                     }
                                     if (sdmIMController.user.root) {
                                         sdmIMController.isAdmin = sdmIMController.canModify = true;

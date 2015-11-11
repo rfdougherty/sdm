@@ -16,6 +16,11 @@ angular.module('sdm.APIServices.services.sdmUsers', ['sdmHttpServices'])
             }
             var siteUsers = userData[site] = {};
             makeAPICall.async(url).then(function(users){
+                if (typeof users === "undefined") {
+                    timestamp[site] = Date.now();
+                    d.resolve(siteUsers);
+                    return
+                }
                 users.forEach(function(user){
                     if (user.firstname && user.lastname){
                         user.extendedId =
