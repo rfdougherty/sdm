@@ -24,7 +24,7 @@
                     <div class="sdm-search-group">
                         <label for="groupName">Group Name</label>
                         <span class="input-group">
-                            <select class="form-control" form="sdm-search-box-form" id="groupName" ng-class="{default:!sdmSearchBox.parameters.group_name && sdmSearchBox.parameters.group_name !== 0}" ng-options="group for group in sdmSearchBox.groupNames" ng-model="sdmSearchBox.parameters.group_name">
+                            <select class="form-control" form="sdm-search-box-form" id="groupName" ng-class="{default:!sdmSearchBox.parameters.group_id && sdmSearchBox.parameters.group_name !== 0}" ng-options="group._id as group.name for group in sdmSearchBox.groups" ng-model="sdmSearchBox.parameters.group_id">
                             </select>
                         </span>
                     </div>

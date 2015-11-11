@@ -85,9 +85,7 @@
 
         _this.groupNames = [];
         makeAPICall.async(BASE_URL + 'groups').then(function(response){
-            _this.groupNames = response.map(function(group){
-                return group.name;
-            });
+            _this.groups = response
         });
 
         _this.scanTypeValues = [];
