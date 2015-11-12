@@ -37,14 +37,22 @@ sdm-tree-data-modal {
         border-radius: 4px 4px 0 0;
         border-bottom: solid 1px @mediumGray;
         font-weight: bold;
+        .spinner:before {
+            border-top-color: @blue;
+        }
+        .spinner:not(:required):before {
+            border: 2px solid rgba(0, 144, 219, .3);
+            border-top-color: @blue;
+        }
     }
     form.tree-data-confirm-buttons {
-        position: absolute;
-        bottom: 6px;
-        right: 10px;
-        text-align: right;
+        padding-top: 10px;
+        display: flex;
+        width: 100%;
         input {
             cursor: pointer;
+            flex: 1;
+            margin: 10px;
         }
     }
     input+label {
@@ -54,11 +62,17 @@ sdm-tree-data-modal {
         color: lightgray;
     }
     input#tree-data-open {
-        background-color: @mediumGray;
+        background-color: @blue;
         color: white;
+        &:disabled {
+            background-color: @mediumGray;
+        }
     }
     input#tree-data-save {
         background-color: @blue;
         color: white;
+        &:disabled {
+            background-color: @mediumGray;
+        }
     }
 }
