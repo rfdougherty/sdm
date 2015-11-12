@@ -103,7 +103,7 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
             var _get_permalink = function(node) {
                 var nodeURL = BASE_URL + node.level.name + '/' + node.id + '/file/';
                 var f = function(file) {
-                    return nodeURL + _get_filename(file) + '?user='
+                    return nodeURL + _get_filename(file)
                 }
                 return f
             }
@@ -157,7 +157,8 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
             var getTreeData = function (tree, deferred) {
                 var tree = tree || sdmViewManager.getCurrentViewData();
                 deferred = deferred || $q.defer()
-                var iterator = sdmDataManager.breadthFirstFull(tree);
+                var viewID = sdmViewManager.getCurrentView();
+                var iterator = sdmDataManager.breadthFirstFullOnSelection(tree, viewID);
                 var selection = {};
                 var nodeInSelection = function(node) {
                     return node && (node.indeterminate || node.checked) && node.level.name.search(/^(sessions|projects|acquisitions|collections)$/) >= 0;
@@ -166,9 +167,6 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
                     var element = iterator.next();
                     if (element) {
                         element.then(function(node){
-                            if (node && node.level.name === 'acquisitions') {
-                                console.log('acq node', node);
-                            }
                             if (nodeInSelection(node)) {
                                 var data =_extract_data[node.level.name](selection, node);
                                 selection[node.level.name] = selection[node.level.name] || {};
