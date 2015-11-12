@@ -25,17 +25,27 @@
                         sdmTDController.updateLink = function() {
                             sdmTDController.loadingState = 1;
                             selectionPromise.then(function (selection) {
-                                selection = JSON.stringify(selection, null, '\t');
+                                sdmTDController.selection = JSON.stringify(selection, null, '\t');
                                 console.log('treeData selection', selection);
-                                var blob = new Blob([selection], {type: 'text/plain'});
-                                sdmTDController.treeDataURL = URL.createObjectURL(blob);
+
                                 sdmTDController.loadingState -= 1;
                             });
                         }
                         sdmTDController.open = function ($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
-                            window.open(sdmTDController.treeDataURL, 'self');
+                            var blob = new Blob([sdmTDController.selection], {type: 'text/plain'});
+                            var treeDataURL = URL.createObjectURL(blob);
+                            window.open(treeDataURL, '_blank');
+                            $scope.$parent.enableEvents();
+                            $scope.$parent._hidePopover($event, 0);
+                        };
+                        sdmTDController.save = function ($event) {
+                            $event.stopPropagation();
+                            $event.preventDefault();
+                            var blob = new Blob([sdmTDController.selection], {type: 'octet/stream'});
+                            var treeDataURL = URL.createObjectURL(blob);
+                            window.open(treeDataURL, '_blank');
                             $scope.$parent.enableEvents();
                             $scope.$parent._hidePopover($event, 0);
                         };
