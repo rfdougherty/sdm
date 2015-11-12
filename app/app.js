@@ -25,7 +25,8 @@ var sdmApp = angular.module('sdm', [
     'sdm.removeCollection',
     'sdm.brainbrowser',
     'sdm.csvViewer',
-    'ui.bootstrap'
+    'ui.bootstrap',
+    'sdm.treedata'
 ]).run(['sdmViewManager', 'sdmUserManager',
     function(sdmViewManager, sdmUserManager){
         var userData = sdmUserManager.getAuthData();
@@ -109,6 +110,7 @@ var naturalSortByName = function(a, b){
 
 
 var DataNode = function(data, site, level, children) {
+    this.data = data;
     this.level = level;
     this.site = site;
     this.attachment_count = data.attachment_count;

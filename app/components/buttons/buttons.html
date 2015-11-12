@@ -21,11 +21,14 @@
             sdm-popover-show-timeout="0"
             sdm-append-to-body>Add to Collection</a></li>
         <li ng-show="sdmButtonsController.selectionButtonsEnabled()"><a href=""
-            sdm-popover sdm-popover-template-content="components/download/modalDownload.html" sdm-popover-class="sdm-download" sdm-popover-show="click" sdm-popover-style-height="160px" sdm-popover-style-width="320px" dm-popover-show-timeout="0" sdm-append-to-body>Download</a></li>
+            sdm-popover sdm-popover-template-content="components/download/modalDownload.html" sdm-popover-class="sdm-download" sdm-popover-show="click" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-show-timeout="0" sdm-append-to-body>Download</a></li>
+        <li ng-show="sdmButtonsController.selectionButtonsEnabled()"><a href=""
+            sdm-popover sdm-popover-template-content="components/treedata/modalTreeData.html" sdm-popover-class="sdm-tree-data" sdm-popover-show="click" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-show-timeout="0" sdm-append-to-body>Data Tree</a></li>
         <li ng-show="sdmButtonsController.selectionButtonsEnabled()"><a href="" ng-show="sdmButtonsController.location() === '/projects'" sdm-popover sdm-popover-template-content="components/moveSessions/moveSessionsPopover.html" sdm-popover-class="sdm-move-sessions" sdm-popover-show="click" sdm-popover-show-timeout="0" sdm-append-to-body sdm-popover-style-height="160px" sdm-popover-style-width="320px">Move sessions</a></li>
         <li ng-show="sdmButtonsController.selectionButtonsEnabled()"><a href="" ng-show="sdmButtonsController.location() === '/collections'" sdm-popover sdm-popover-template-content="components/removeCollection/removeCollectionPopover.html" sdm-popover-class="sdm-remove-collection" sdm-popover-show="click" sdm-popover-style-height="160px" sdm-popover-style-width="320px" sdm-popover-show-timeout="0" sdm-append-to-body>Remove</a></li>
         <li class="disabled" ng-show="!sdmButtonsController.selectionButtonsEnabled()">Add to Collection</li>
         <li class="disabled" ng-show="!sdmButtonsController.selectionButtonsEnabled()">Download</li>
+        <li class="disabled" ng-show="!sdmButtonsController.selectionButtonsEnabled()">Data Tree</li>
         <li class="disabled" ng-show="!sdmButtonsController.selectionButtonsEnabled() && sdmButtonsController.location() === '/projects'">Move sessions</li>
         <li class="disabled" ng-show="!sdmButtonsController.selectionButtonsEnabled() && sdmButtonsController.location() === '/collections'">Remove</li>
       </ul>

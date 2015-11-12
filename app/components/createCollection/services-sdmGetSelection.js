@@ -97,7 +97,95 @@ angular.module('sdm.createCollection.services.sdmGetSelection', [
                 return _getSelectionOnLevel(data, levelName);
             };
 
+            var _get_filename = function(file) {
+                return file.filename
+            }
+            var _get_permalink = function(node) {
+                var nodeURL = BASE_URL + node.level.name + '/' + node.id + '/file/';
+                var f = function(file) {
+                    return nodeURL + _get_filename(file) + '?user='
+                }
+                return f
+            }
+
+
+            var _extract_data = {
+                "projects": function(selection, node) {
+                    var _node = node.data;
+                    var data = {};
+                    data.files = (_node.files || []).map(_get_filename);
+                    data.urls = (_node.files || []).map(_get_permalink(node));
+                    data.name = _node.name;
+                    return data
+                },
+                "collections": function(selection, node) {
+                    var _node = node.data;
+                    var data = {};
+                    data.files = (_node.files || []).map(_get_filename);
+                    data.urls = (_node.files || []).map(_get_permalink(node));
+                    data.name = _node.name;
+                    return data
+                },
+                "sessions": function(selection, node) {
+                    var _node = node.data;
+                    var data = {};
+                    data.files = (_node.files || []).map(_get_filename);
+                    data.urls = (_node.files || []).map(_get_permalink(node));
+                    data.subject_code = _node.subject.code;
+                    data.subject_sex = _node.subject.sex;
+                    data.subject_age = _node.subject.age;
+                    data.project_id = _node.project_id;
+                    return data
+                },
+                "acquisitions": function(selection, node) {
+                    var _node = node.data;
+                    var data = {};
+                    data.files = (_node.files || []).map(_get_filename);
+                    data.urls = (_node.files || []).map(_get_permalink(node));
+                    data.description = _node.description;
+                    data.series = node.name;
+                    var parent_session = selection['sessions']?selection['sessions'][node.parent.id]:null;
+                    if (parent_session) {
+                        data.subject_code = parent_session.subject_code;
+                        data.subject_sex =  parent_session.subject_sex;
+                        data.subject_age =  parent_session.subject_age;
+                    }
+                    return data
+                },
+            }
+
+            var getTreeData = function (tree, deferred) {
+                var tree = tree || sdmViewManager.getCurrentViewData();
+                deferred = deferred || $q.defer()
+                var iterator = sdmDataManager.breadthFirstFull(tree);
+                var selection = {};
+                var nodeInSelection = function(node) {
+                    return node && (node.indeterminate || node.checked) && node.level.name.search(/^(sessions|projects|acquisitions|collections)$/) >= 0;
+                };
+                var iterate = function () {
+                    var element = iterator.next();
+                    if (element) {
+                        element.then(function(node){
+                            if (node && node.level.name === 'acquisitions') {
+                                console.log('acq node', node);
+                            }
+                            if (nodeInSelection(node)) {
+                                var data =_extract_data[node.level.name](selection, node);
+                                selection[node.level.name] = selection[node.level.name] || {};
+                                selection[node.level.name][node.id] = data;
+                            }
+                            iterate();
+                        });
+                    } else {
+                        deferred.resolve(selection);
+                    }
+                };
+                iterate();
+                return deferred.promise;
+            };
+
             return {
+                getTreeData: getTreeData,
                 getSelection: getSelection,
                 getSelectionOnLevel: getSelectionOnLevel
             }
