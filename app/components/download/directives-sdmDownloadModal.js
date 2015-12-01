@@ -17,6 +17,13 @@
                         sdmDLController.loadingState = -1;
                         var selectionPromise = sdmGetSelection.getSelection();
                         $scope.$parent.disableEvents();
+                        sdmDLController.filter = {
+                            attachments: false,
+                            dicom: true,
+                            nifti: true,
+                            montage: true,
+                            other: true
+                        };
                         sdmDLController.cancel = function ($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
@@ -28,7 +35,7 @@
                             selectionPromise.then(function (selection) {
                                 console.log('selection', selection);
                                 if (selection.length){
-                                    sdmDownloadInterface.getDownloadURL(selection, false).then(function(responses){
+                                    sdmDownloadInterface.getDownloadURL(selection, false, sdmDLController.filter).then(function(responses){
                                         sdmDLController.responses = responses;
                                         sdmDLController.fileCount = 0;
                                         sdmDLController.size_raw = 0;
@@ -67,8 +74,12 @@
                                     .appendTo('body');
                                 var iframe = document.getElementById('DownloadIframe' + i);
                                 var content = iframe.contentDocument;
+                                r.attachments = true;
                                 var form = '<form action="' + r.url +
-                                    '" method="GET"><input name="ticket" value="' + r.ticket + '"><input name="site" value="' + r.site + '"></form>';
+                                    '" method="GET"><input name="ticket" value="' + r.ticket +
+                                    '"><input name="site" value="' + r.site +
+                                    '"><input name="attachments" value="' + r.attachments +
+                                    '"></form>';
                                 content.write(form);
                                 $('form', content).submit();
                             });

@@ -5,7 +5,7 @@ angular.module('sdm.download.services.sdmDownloadInterface',
     .factory('sdmDownloadInterface', ['$q', 'makeAPICall',
         function($q, makeAPICall, sdmHumanReadableSize) {
 
-            var getDownloadURL = function (selection, isSingleFile) {
+            var getDownloadURL = function (selection, isSingleFile, filter) {
                 var deferred = $q.defer(),
                     url, nodes, sites;
                 if (isSingleFile){
@@ -27,7 +27,11 @@ angular.module('sdm.download.services.sdmDownloadInterface',
                 }
                 var promises = [];
                 angular.forEach(sites, function(nodes, site){
-                    var p = makeAPICall.async(url, {site:site}, 'POST', {nodes: nodes, optional: false})
+                    var body = {nodes: nodes, optional: false};
+                    if (filter) {
+                        body['filter'] = filter;
+                    }
+                    var p = makeAPICall.async(url, {site:site}, 'POST', body)
                         .then(function(response) {
                             response.url = BASE_URL + 'download?ticket=' + response.ticket;
                             response.url += '&site=' + site;

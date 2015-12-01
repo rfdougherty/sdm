@@ -1,6 +1,14 @@
 <sdm-download-modal>
     <div class="download-title">Download Files<span class="spinner" ng-show="sdmDLController.loadingState > 0"></span></div>
     <div id="download-body" ng-show="sdmDLController.loadedOnce">
+        <div class="download-types-list">
+            <div>Include:</div>
+            <input type="checkbox" ng-model="sdmDLController.filter.attachments" ng-change="sdmDLController.updateLink()"></input><span class="description">Attachments</span><br>
+            <input type="checkbox" ng-model="sdmDLController.filter.dicom" ng-change="sdmDLController.updateLink()"></input><span class="description">Dicoms</span><br>
+            <input type="checkbox" ng-model="sdmDLController.filter.nifti" ng-change="sdmDLController.updateLink()"></input><span class="description">Niftis</span><br>
+            <input type="checkbox" ng-model="sdmDLController.filter.montage" ng-change="sdmDLController.updateLink()"></input><span class="description">Montages</span><br>
+            <input type="checkbox" ng-model="sdmDLController.filter.other" ng-change="sdmDLController.updateLink()"></input><span class="description">Other types</span><br>
+        </div><br>
         <div>File count: {{sdmDLController.fileCount}}</div>
         <div>Total size: {{sdmDLController.size}}</div>
     </div>
