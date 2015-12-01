@@ -20,9 +20,9 @@
                         sdmDLController.filter = {
                             attachments: false,
                             dicom: true,
-                            nifti: true,
-                            montage: true,
-                            other: true
+                            nifti: false,
+                            montage: false,
+                            other: false
                         };
                         sdmDLController.cancel = function ($event) {
                             $event.stopPropagation();
@@ -55,6 +55,7 @@
                                     sdmDLController.loadedOnce = true;
                                     sdmDLController.fileCount = 0;
                                     sdmDLController.size = '0 Bytes';
+                                    sdmDLController.size_raw = 0;
                                     sdmDLController.loadingState--;
                                 }
                             });
