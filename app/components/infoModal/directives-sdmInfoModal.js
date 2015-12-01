@@ -704,11 +704,14 @@ var _inputEl;
                                     }
                                 }
                             }
-                            sdmIMController.apiData.permissions.push({
+                            var permission = {
                                 _id: sdmIMController.selectedUID,
-                                access: sdmIMController.selectedRole.rid,
-                                site: sdmIMController.selectedUIDsite
-                            });
+                                access: sdmIMController.selectedRole.rid
+                            }
+                            if (sdmIMController.selectedUIDsite !== sdmIMController.localSite._id){
+                                permission.site = sdmIMController.selectedUIDsite;
+                            }
+                            sdmIMController.apiData.permissions.push(permission);
 
                             var url = BASE_URL + node.level.name + '/' + node.id;
                             var payload = {};
