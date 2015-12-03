@@ -27,7 +27,9 @@ httpServices.factory('makeAPICall', ['$http', '$cookieStore', 'sdmUserManager', 
             if (!params) {
                 params = {};
             }
-
+            if (accessData && accessData.preferences.root_enabled) {
+                params.root = '1';
+            }
 
             var requestParams = {
                 method: method,

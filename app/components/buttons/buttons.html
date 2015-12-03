@@ -46,16 +46,16 @@
       </label>
     </div>
   </div>
-  <div class="radio-group user-access" ng-if="sdmButtonsController.userData.wheel">
+  <div class="radio-group user-access" ng-if="sdmButtonsController.userData.root">
     <div class="radio">
       <label>
-        <input type="radio" name="userAccess" value="default" ng-checked="!sdmButtonsController.userData.root" ng-click="sdmButtonsController.toggleSuperUser()">
+        <input type="radio" name="userAccess" value="default" ng-checked="!sdmButtonsController.userData.preferences.root_enabled" ng-click="sdmButtonsController.toggleSuperUser()">
         Default
       </label>
     </div>
     <div class="radio">
       <label>
-        <input type="radio" name="userAccess" value="superuser" ng-checked="sdmButtonsController.userData.root" ng-click="sdmButtonsController.toggleSuperUser()">
+        <input type="radio" name="userAccess" value="superuser" ng-checked="sdmButtonsController.userData.preferences.root_enabled" ng-click="sdmButtonsController.toggleSuperUser()">
         Site Admin
       </label>
     </div>

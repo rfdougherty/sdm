@@ -36,7 +36,7 @@
                                 'access': 'admin'
                             }];
                         sdmAMController.isGroupExisting = false;
-                        sdmAMController.wheel = false;
+                        sdmAMController.root = false;
                         sdmAMController.existingUser = {};
 
 
@@ -103,7 +103,7 @@
                             sdmAMController.userLastName = null;
                             sdmAMController.userID = null;
                             sdmAMController.email = null;
-                            sdmAMController.wheel = false;
+                            sdmAMController.root = false;
                         }
 
                         sdmAMController.saveUser = function ($event, form) {
@@ -121,7 +121,7 @@
                                 sdmAMController.userLastName,
                                 sdmAMController.userID,
                                 sdmAMController.email,
-                                sdmAMController.wheel
+                                sdmAMController.root
                             ).then(loadData).then(clearUserFields).then(refreshTypeahead)
                                 .then(function(){
                                     sdmAMController.userIDPlaceholder = 'User Created';
@@ -141,7 +141,7 @@
                             sdmAMController.existingUser.firstname = sdmAMController.userFirstName;
                             sdmAMController.existingUser.lastname = sdmAMController.userLastName;
                             sdmAMController.existingUser.email = sdmAMController.email;
-                            sdmAMController.existingUser.wheel = sdmAMController.wheel;
+                            sdmAMController.existingUser.root = sdmAMController.root;
 
                             sdmAdminInterface.updateUser(
                                 sdmAMController.existingUser
@@ -195,7 +195,7 @@
                                     sdmAMController.userFirstName = user.firstname;
                                     sdmAMController.userLastName = user.lastname;
                                     sdmAMController.email = user.email;
-                                    sdmAMController.wheel = user.wheel||false;
+                                    sdmAMController.root = user.root||false;
                                     $timeout(function () { $event.target.blur() }, 0, false);
                                     sdmAMController.existingUserLoaded = true;
 
@@ -205,7 +205,7 @@
                                 sdmAMController.userFirstName = null;
                                 sdmAMController.userLastName = null;
                                 sdmAMController.email = null;
-                                sdmAMController.wheel = false;
+                                sdmAMController.root = false;
                             }
                         }
                         sdmAMController.clearForm = function() {
@@ -215,7 +215,7 @@
                             sdmAMController.userFirstName = null;
                             sdmAMController.userLastName = null;
                             sdmAMController.email = null;
-                            sdmAMController.wheel = false;
+                            sdmAMController.root = false;
                             sdmAMController.existingUserLoaded = false;
                             usersth.typeahead('val', '');
                         }

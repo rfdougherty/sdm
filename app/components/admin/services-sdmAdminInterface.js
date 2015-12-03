@@ -8,13 +8,13 @@
                 roles[role.rid] = role.name;
             });
         });
-        var createNewUser = function(firstname, lastname, userid, email, wheel) {
+        var createNewUser = function(firstname, lastname, userid, email, root) {
             var url = BASE_URL + 'users';
             var payload = {
                 _id: userid,
                 firstname: firstname,
                 lastname: lastname,
-                wheel: wheel
+                root: root
             }
             if (email) {
                 payload.email = email;
@@ -28,7 +28,7 @@
             var payload = {
                 firstname: user.firstname,
                 lastname: user.lastname,
-                wheel: user.wheel,
+                root: user.root,
                 email: user.email
             }
             if (user.email) {
@@ -43,7 +43,7 @@
             var payload = {
                 firstname: user.firstname,
                 lastname: user.lastname,
-                wheel: user.wheel,
+                root: user.root,
                 email: user.email
             }
             return makeAPICall.async(url, null, 'DELETE').then(function(){

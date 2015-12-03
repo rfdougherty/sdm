@@ -28,7 +28,6 @@
                         firstname: data['firstname'],
                         lastname: data['lastname'],
                         root: data['root'],
-                        wheel: data['wheel'],
                         logged_in: true,
                         avatar: data['avatar'],
                         preferences: data['preferences']
@@ -102,7 +101,9 @@
         var toggleSuperUser = function() {
             console.log('togglesuperuser');
             var data = {
-                root: !value_auth_data.root
+                preferences: {
+                    root_enabled: !value_auth_data.preferences.root_enabled
+                }
             };
             return updateUserData(data);
         };
@@ -204,7 +205,6 @@
             value_auth_data.firstname = null;
             value_auth_data.lastname = null;
             value_auth_data.root = null;
-            value_auth_data.wheel = null;
             value_auth_data.preferences = null;
             value_auth_data.avatar = null;
             $cookieStore.remove(SDM_KEY_CACHED_ACCESS_DATA);
