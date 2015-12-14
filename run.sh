@@ -22,20 +22,20 @@ fi
 
 
 # Default config values
-if [ -z "$SCITRAN_SYSTEM_HOST" ]; then
-    SCITRAN_SYSTEM_HOST="127.0.0.1"
+if [ -z "$SCITRAN_RUNTIME_HOST" ]; then
+    SCITRAN_RUNTIME_HOST="127.0.0.1"
 fi
-if [ -z "$SCITRAN_SYSTEM_PORT" ]; then
-    SCITRAN_SYSTEM_PORT="8080"
+if [ -z "$SCITRAN_RUNTIME_PORT" ]; then
+    SCITRAN_RUNTIME_PORT="8080"
 fi
-if [ -z "$SCITRAN_SYSTEM_RUNTIME" ]; then
-    SCITRAN_SYSTEM_RUNTIME="./runtime"
+if [ -z "$SCITRAN_RUNTIME_PATH" ]; then
+    SCITRAN_RUNTIME_PATH="./runtime"
 fi
-if [ -z "$SCITRAN_SYSTEM_SSL_PEM" ]; then
-    SCITRAN_SYSTEM_SSL_PEM=""
+if [ -z "$SCITRAN_RUNTIME_SSL_PEM" ]; then
+    SCITRAN_RUNTIME_SSL_PEM=""
 fi
-if [ -z "$SCITRAN_SYSTEM_BOOTSTRAP" ]; then
-    SCITRAN_SYSTEM_BOOTSTRAP="bootstrap.json"
+if [ -z "$SCITRAN_RUNTIME_BOOTSTRAP" ]; then
+    SCITRAN_RUNTIME_BOOTSTRAP="bootstrap.json"
 fi
 if [ -z "$SCITRAN_PERSISTENT_PATH" ]; then
     SCITRAN_PERSISTENT_PATH="./persistent"
@@ -68,8 +68,8 @@ if [ -f "$SCITRAN_PERSISTENT_DB_PATH/mongod.lock" ]; then
 else
     echo "Creating database location at $SCITRAN_PERSISTENT_DB_PATH"
     mkdir -p $SCITRAN_PERSISTENT_DB_PATH
-    if ! [ -f "$SCITRAN_SYSTEM_BOOTSTRAP" ]; then
-        echo "Aborting. Please create $SCITRAN_SYSTEM_BOOTSTRAP from api/bootstrap.json.sample."
+    if ! [ -f "$SCITRAN_RUNTIME_BOOTSTRAP" ]; then
+        echo "Aborting. Please create $SCITRAN_RUNTIME_BOOTSTRAP from api/bootstrap.json.sample."
         exit 1
     fi
     BOOTSTRAP_USERS=1
@@ -108,25 +108,25 @@ else
     echo "Installed Virtualenv"
 fi
 
-if [ -d "$SCITRAN_SYSTEM_RUNTIME" ]; then
-    echo "Virtualenv exists present at $SCITRAN_SYSTEM_RUNTIME"
+if [ -d "$SCITRAN_RUNTIME_PATH" ]; then
+    echo "Virtualenv exists present at $SCITRAN_RUNTIME_PATH"
 else
-    echo "Creating 'scitran' Virtualenv at $SCITRAN_SYSTEM_RUNTIME"
-    virtualenv -p `brew --prefix`/bin/python --prompt="(scitran)" $SCITRAN_SYSTEM_RUNTIME
-    echo "Created 'scitran' Virtualenv at $SCITRAN_SYSTEM_RUNTIME"
+    echo "Creating 'scitran' Virtualenv at $SCITRAN_RUNTIME_PATH"
+    virtualenv -p `brew --prefix`/bin/python --prompt="(scitran)" $SCITRAN_RUNTIME_PATH
+    echo "Created 'scitran' Virtualenv at $SCITRAN_RUNTIME_PATH"
 fi
 
-if [ -f "$SCITRAN_SYSTEM_RUNTIME/bin/mongod" ]; then
+if [ -f "$SCITRAN_RUNTIME_PATH/bin/mongod" ]; then
     echo "MongoDB is installed"
 else
     echo "Installing MongoDB"
-    curl https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-3.0.7.tgz | tar xz -C $SCITRAN_SYSTEM_RUNTIME --strip-components 1
+    curl https://fastdl.mongodb.org/osx/mongodb-osx-x86_64-3.0.7.tgz | tar xz -C $SCITRAN_RUNTIME_PATH --strip-components 1
     echo "MongoDB installed"
 fi
 
 
 echo "Activating Virtualenv"
-source $SCITRAN_SYSTEM_RUNTIME/bin/activate
+source $SCITRAN_RUNTIME_PATH/bin/activate
 
 echo "Installing Python requirements"
 pip install -r requirements/0-prereqs.basic.txt
@@ -148,7 +148,7 @@ export PYTHONPATH=./scitran_api
 # Boostrap users
 if [ $BOOTSTRAP_USERS -eq 1 ]; then
     echo "Bootstrapping users"
-    scitran_api/bin/bootstrap.py users "mongodb://localhost:$SCITRAN_PERSISTENT_DB_PORT/scitran" "$SCITRAN_SYSTEM_BOOTSTRAP"
+    scitran_api/bin/bootstrap.py users "mongodb://localhost:$SCITRAN_PERSISTENT_DB_PORT/scitran" "$SCITRAN_RUNTIME_BOOTSTRAP"
 else
     echo "Database exists at $SCITRAN_PERSISTENT_PATH/db. Not bootstrapping users."
 fi
@@ -186,9 +186,9 @@ TEMP_INI_FILE=$(mktemp -t scitran_api)
 cat << EOF > $TEMP_INI_FILE
 [server:main]
 use = egg:Paste#http
-host = $SCITRAN_SYSTEM_HOST
-port = $SCITRAN_SYSTEM_PORT
-ssl_pem = $SCITRAN_SYSTEM_SSL_PEM
+host = $SCITRAN_RUNTIME_HOST
+port = $SCITRAN_RUNTIME_PORT
+ssl_pem = $SCITRAN_RUNTIME_SSL_PEM
 
 [composite:main]
 use = egg:Paste#cascade
@@ -202,8 +202,9 @@ document_root = .
 [app:api]
 paste.app_factory = api.paster:app_factory
 data_path = $SCITRAN_PERSISTENT_DATA_PATH
-api_uri = https://$SCITRAN_SYSTEM_HOST:$SCITRAN_SYSTEM_PORT/api
+api_uri = https://$SCITRAN_RUNTIME_HOST:$SCITRAN_RUNTIME_PORT/api
 insecure = true
+debug = true
 EOF
 
 paster serve --reload $TEMP_INI_FILE
