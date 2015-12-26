@@ -57,7 +57,7 @@ set +o allexport
 
 
 if [ ! -d "scitran_api" ]; then
-    git clone -b paster-aloha https://github.com/scitran/api.git scitran_api
+    git clone -b aloha https://github.com/scitran/api.git scitran_api
 fi
 if [ ! -d "scitran_data" ]; then
     git clone -b aloha https://github.com/scitran/data.git scitran_data
