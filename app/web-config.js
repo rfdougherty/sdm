@@ -7,7 +7,7 @@ config = {
 		insecure: true,
 	},
 	browser: {
-		api_prefix: "api",
+		api_prefix: "/api",
 		cache_expire: 5,
 		render_limit: 300,
 	},
