@@ -164,6 +164,8 @@ var _inputEl;
                                         console.log(sdmIMController.userPermission);
                                         sdmIMController.isAdmin = sdmIMController.userPermission === 'admin';
                                         sdmIMController.canModify = sdmIMController.userPermission.search(/rw$|admin$/) === 0;
+                                    } else if (apiData.public){
+                                        sdmIMController.userPermission = 'ro';
                                     }
                                     if (sdmIMController.user.root) {
                                         sdmIMController.isAdmin = sdmIMController.canModify = true;
@@ -357,6 +359,7 @@ var _inputEl;
                             }  else if (sdmIMController.hasCsvViewer(attachment)) {
                                 callback = function(response) {
                                     sdmIMController.mimetype = attachment.mimetype;
+                                    sdmIMController.filename = attachment.filename;
                                     sdmIMController.csvTicketUrl =
                                         url + '=' + response.ticket +
                                         '&site=' + node.site +

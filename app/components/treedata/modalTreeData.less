@@ -1,0 +1,78 @@
+@import (less) "../../variables.less";
+
+@min-width-table: 1170px;
+@min-width-body: @min-width-table + 30;
+
+div.sdm-tree-data{
+    .popover-overlay {
+        background-color: lightgray;
+    }
+    .popover-dialog {
+        padding: 0px;
+        border: none;
+    }
+    .popover-dialog:after {
+        border-bottom-color: @bgcol1;
+    }
+    .popover-dialog:before, .popover-dialog:after {
+        top: 0px;
+        left: 95%;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+    }
+    &.popover {
+        position: absolute;
+        min-width: @min-width-body;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+sdm-tree-data-modal {
+    div.tree-data-title {
+        padding: 10px;
+        margin-bottom: 20px;
+        background-color: @lightestGray;
+        border-radius: 4px 4px 0 0;
+        border-bottom: solid 1px @mediumGray;
+        font-weight: bold;
+        .spinner:before {
+            border-top-color: @blue;
+        }
+        .spinner:not(:required):before {
+            border: 2px solid rgba(0, 144, 219, .3);
+            border-top-color: @blue;
+        }
+    }
+    form.tree-data-confirm-buttons {
+        padding-top: 10px;
+        display: flex;
+        width: 100%;
+        input {
+            cursor: pointer;
+            flex: 1;
+            margin: 10px;
+        }
+    }
+    input+label {
+        font-weight: normal;
+    }
+    input:disabled+label {
+        color: lightgray;
+    }
+    input#tree-data-open {
+        background-color: @blue;
+        color: white;
+        &:disabled {
+            background-color: @mediumGray;
+        }
+    }
+    input#tree-data-save {
+        background-color: @blue;
+        color: white;
+        &:disabled {
+            background-color: @mediumGray;
+        }
+    }
+}

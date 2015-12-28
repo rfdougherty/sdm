@@ -15,15 +15,30 @@
             <form name="sdmSearchBox.form" id="sdm-search-box-form" ng-submit="sdmSearchBox.search()" novalidate>
                 <div id="sdm-search-form">
                     <div class="sdm-search-group">
+                        <label for="projectName">Project Name</label>
+                        <span class="input-group">
+                            <select class="form-control" form="sdm-search-box-form" id="projectName" ng-class="{default:!sdmSearchBox.parameters.project_name && sdmSearchBox.parameters.project_name !== 0}" ng-options="project for project in sdmSearchBox.projectNames" ng-model="sdmSearchBox.parameters.project_name">
+                            </select>
+                        </span>
+                    </div>
+                    <div class="sdm-search-group">
+                        <label for="groupName">Group Name</label>
+                        <span class="input-group">
+                            <select class="form-control" form="sdm-search-box-form" id="groupName" ng-class="{default:!sdmSearchBox.parameters.group_id && sdmSearchBox.parameters.group_name !== 0}" ng-options="group._id as group.name for group in sdmSearchBox.groups" ng-model="sdmSearchBox.parameters.group_id">
+                            </select>
+                        </span>
+                    </div>
+                    <div class="sdm-search-group">
+                        <label for="description">Description</label>
+                        <span class="input-group">
+                            <input type="text" id="description" ng-model="sdmSearchBox.parameters.description">
+                        </span>
+                    </div>
+                    <div class="sdm-search-group">
                         <label for="subjectCode">Subject Code</label>
                         <span class="input-group">
                             <input type="text" id="subjectCode" ng-model="sdmSearchBox.parameters.subj_code" placeholder="This is a unique ID">
                         </span>
-                    </div>
-                    <div class="sdm-search-group">
-                        <label for="subjectFirstName">First Name</label>
-                        <span class="input-group">
-                            <input type="text" id="subjectCode" ng-model="sdmSearchBox.parameters.subj_firstname" disabled>
                     </div>
                     <div class="sdm-search-group">
                         <label for="fromDate">From Date</label>
@@ -48,9 +63,9 @@
                         </span>
                     </div>
                     <div class="sdm-search-group">
-                        <label for="subjectLastName">Last Name</label>
+                        <label for="psdName">PSD Name:</label>
                         <span class="input-group">
-                            <input type="text" id="subjectLastName"  ng-model="sdmSearchBox.parameters.subj_lastname" disabled>
+                            <input type="text" id="psdName" ng-model="sdmSearchBox.parameters.psd" placeholder="Enter Pulse Sequence">
                         </span>
                     </div>
                     <div class="sdm-search-group">
@@ -79,17 +94,7 @@
                         </span>
                     </div>
 
-                    <div class="sdm-search-group">
-                        <label for="psdName">PSD Name:</label>
-                        <span class="input-group">
-                            <input type="text" id="psdName" ng-model="sdmSearchBox.parameters.psd" placeholder="Enter Pulse Sequence">
-                        </span>
-                    </div>
 
-
-
-                    <div class="sdm-search-group">
-                    </div>
                     <div class="sdm-search-group sdm-search-buttons">
                         <label></label>
                         <span class="input-group">

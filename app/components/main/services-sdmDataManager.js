@@ -231,6 +231,34 @@
             return breadthFirstAsync(tree, getChildren);
         };
 
+        /*
+        ** get a full tree expansion (limited to checked and indeterminate nodes)
+        ** from the API and from the local tree expansion.
+        **
+        ** IMPORTANT:
+        ** It doesn't modify the tree. See comments on breadthFirstAsync, getAllChildren and getChildrenFromAPI.
+        */
+        var breadthFirstFullOnSelection = function(tree, viewID) {
+            var getChildren = function (node){
+                return getAllChildrenOnSelection(node, viewID);
+            };
+            return breadthFirstAsync(tree, getChildren);
+        };
+
+        var getAllChildrenOnSelection = function (node, viewID, deferred) {
+            deferred = deferred || $q.defer();
+            var children = node.children&&node.children.length?node.children:node._children;
+            if (children && children.length) {
+                var children_selected = children.filter(function(child){
+                    return child.checked || child.indeterminate
+                });
+                deferred.resolve(children_selected);
+                return deferred.promise;
+            } else {
+                return getChildrenFromAPI(node, deferred, viewID);
+            }
+        };
+
         var breadthFirstExpandCheckedGroups = function(tree, viewID) {
             var getChildren = function (node, viewID) {
                 var deferred = $q.defer();
@@ -525,6 +553,7 @@
             getHeaderTitles: getHeaderTitles,
             breadthFirstFull: breadthFirstFull,
             breadthFirstFullUntilLevel: breadthFirstFullUntilLevel,
+            breadthFirstFullOnSelection: breadthFirstFullOnSelection,
             breadthFirstExpandCheckedGroups: breadthFirstExpandCheckedGroups,
             treeInit: treeInit,
             sortTree: sortTree,
