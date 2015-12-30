@@ -17,6 +17,13 @@
                         sdmDLController.loadingState = -1;
                         var selectionPromise = sdmGetSelection.getSelection();
                         $scope.$parent.disableEvents();
+                        sdmDLController.filter = {
+                            attachments: false,
+                            dicom: true,
+                            nifti: false,
+                            montage: false,
+                            other: false
+                        };
                         sdmDLController.cancel = function ($event) {
                             $event.stopPropagation();
                             $event.preventDefault();
@@ -28,7 +35,7 @@
                             selectionPromise.then(function (selection) {
                                 console.log('selection', selection);
                                 if (selection.length){
-                                    sdmDownloadInterface.getDownloadURL(selection, false).then(function(responses){
+                                    sdmDownloadInterface.getDownloadURL(selection, false, sdmDLController.filter).then(function(responses){
                                         sdmDLController.responses = responses;
                                         sdmDLController.fileCount = 0;
                                         sdmDLController.size_raw = 0;
@@ -48,6 +55,7 @@
                                     sdmDLController.loadedOnce = true;
                                     sdmDLController.fileCount = 0;
                                     sdmDLController.size = '0 Bytes';
+                                    sdmDLController.size_raw = 0;
                                     sdmDLController.loadingState--;
                                 }
                             });

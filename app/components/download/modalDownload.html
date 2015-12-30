@@ -1,15 +1,28 @@
 <sdm-download-modal>
     <div class="download-title">Download Files<span class="spinner" ng-show="sdmDLController.loadingState > 0"></span></div>
     <div id="download-body" ng-show="sdmDLController.loadedOnce">
-        <div>File count: {{sdmDLController.fileCount}}</div>
-        <div>Total size: {{sdmDLController.size}}</div>
+        <div class="download-types-list">
+            <div>Include:</div>
+            <input type="checkbox" ng-model="sdmDLController.filter.dicom" ng-change="sdmDLController.updateLink()"></input><span class="description">Dicoms</span><br>
+            <input type="checkbox" ng-model="sdmDLController.filter.nifti" ng-change="sdmDLController.updateLink()"></input><span class="description">Niftis</span><br>
+            <input type="checkbox" ng-model="sdmDLController.filter.montage" ng-change="sdmDLController.updateLink()"></input><span class="description">Montages</span><br>
+            <input type="checkbox" ng-model="sdmDLController.filter.other" ng-change="sdmDLController.updateLink()"></input><span class="description">Others (bval/bvec)</span><br>
+            <input type="checkbox" ng-model="sdmDLController.filter.attachments" ng-change="sdmDLController.updateLink()"></input><span class="description">Attachments</span><br><br>
+        </div>
+        <div class="statistics">
+            <div>File count: {{sdmDLController.fileCount}}</div>
+            <div>Total size: {{sdmDLController.size}}</div>
+        </div>
+        <div class="warning" ng-show="sdmDLController.size_raw > 10 * 1000000000">
+            You have selected a large amount of data. Download speeds vary and your download could be interrupted.  We recommend selecting and downloading no more than 10GB.
+        </div>
     </div>
     <div id="error-body" ng-show="sdmDLController.error">
         {{sdmDLController.error}}
     </div>
     <form class="download-confirm-buttons" ng-submit="sdmDLController.download($event)">
         <input type="button" id="download-cancel" class="btn btn-default btn-xs" ng-click="sdmDLController.cancel($event)" value="Cancel"></input>
-        <input type="submit" id="download-save" class="btn btn-default btn-xs" value="Download" ng-show="sdmDLController.responses" ng-disabled="sdmDLController.loadingState > 0"></input>
+        <input type="submit" id="download-save" class="btn btn-default btn-xs" value="Download" ng-show="sdmDLController.responses" ng-disabled="sdmDLController.loadingState > 0 || sdmDLController.size_raw > 40 * 1000000000"></input>
     </form>
 
 </sdm-donwload-modal>
