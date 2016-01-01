@@ -13,7 +13,7 @@
                 transclude: false,
                 replace: false,
                 link: function ($scope, $element) {
-                    $scope.parent.data = [];
+                    $scope.$parent.data = [];
                     var unbindWatcher = $scope.$watch('sdmTicketUrl', initViewer);
                     function initViewer(ticketUrl, oldTicket) {
                         console.log(ticketUrl, oldTicket);
